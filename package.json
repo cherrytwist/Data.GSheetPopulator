@@ -1,0 +1,30 @@
+{
+  "name": "populator-gsheet",
+  "version": "0.1.0",
+  "author": "Cherrytwist Foundation",
+  "private": false,
+  "license": "EUPL",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "populate": "ts-node-dev src/scripts/populate.ts",
+    "test-connection": "ts-node-dev src/scripts/test-connection.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cherrytwist/Populator.GSheet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cherrytwist/Populator.GSheet/issues"
+  },
+  "homepage": "https://github.com/cherrytwistPopulator.GSheet#readme",
+  "devDependencies": {
+    "ts-node-dev": "^1.0.0-pre.60"
+  },
+  "dependencies": {
+    "@types/node": "^14.6.0",
+    "googleapis": "^64.0.0",
+    "typescript": "^4.0.2",
+    "cherrytwist-lib": "^0.3.0"
+  }
+}
