@@ -1,19 +1,20 @@
-import { gql } from "graphql-request";
-import { GSheetsConnector } from "./GSheetsConnector";
-import { CherrytwistClient } from "src/CherrytwistClient";
-const winston = require("winston");
+import { gql } from 'graphql-request';
+import { GSheetsConnector } from './GSheetsConnector';
+import { CherrytwistClient, Organisation } from 'cherrytwist-lib';
+import { Logger } from 'winston';
+const winston = require('winston');
 
 enum Columns {
-  NAME = "NAME",
-  TEXT_ID = "TEXT_ID",
-  LOGO = "LOGO",
-  LEADING = "LEADING",
-  DESCRIPTION = "DESCRIPTION",
-  KEYWORDS = "KEYWORDS",
+  NAME = 'NAME',
+  TEXT_ID = 'TEXT_ID',
+  LOGO = 'LOGO',
+  LEADING = 'LEADING',
+  DESCRIPTION = 'DESCRIPTION',
+  KEYWORDS = 'KEYWORDS',
 }
 
 enum Tagsets {
-  KEYWORDS = "Keywords",
+  KEYWORDS = 'Keywords',
 }
 
 export class OrganisationsSheetPopulator {
@@ -24,10 +25,10 @@ export class OrganisationsSheetPopulator {
   profiler;
 
   // Create the ecoverse with enough defaults set/ members populated
-  constructor(ctClient: CherrytwistClient) {
+  constructor(ctClient: CherrytwistClient, logger: Logger, profiler: Logger) {
     this.ctClient = ctClient;
-    this.logger = ctClient.logger;
-    this.profiler = ctClient.profiler;
+    this.logger = logger;
+    this.profiler = profiler;
   }
 
   // Load users from a particular googlesheet
@@ -48,35 +49,29 @@ export class OrganisationsSheetPopulator {
 
     // Iterate over the rows
     for (let organisationRow of organisationsGSheet) {
-      const organisationName = organisationRow["NAME"];
+      const organisationName = organisationRow['NAME'];
       if (!organisationName) {
         // End of valid organisations
         break;
       }
 
-      const variable = gql`
-    {
-      "organisationData": {
-        "name": "${organisationName}"
-        }
-    }`;
-
       // start processing
       this.logger.info(`Processing organisation: ${organisationName}....`);
-      const organisationProfileID = "===> organisationCreation - FULL";
+      const organisationProfileID = '===> organisationCreation - FULL';
       this.profiler.profile(organisationProfileID);
 
       try {
-        const orgResponse = await this.ctClient.client.request(
-          this.ctClient.mutations.createOrganisationMutationStr,
-          variable
+        const organisation = await this.ctClient.createOrganisation(
+          organisationName
         );
-        const profileID = orgResponse.createOrganisation.profile.id;
+
+        const profileID = organisation?.profile.id;
+
         if (profileID) {
-          await this.ctClient.addTagset(
-            organisationRow[Columns.KEYWORDS],
-            "Keywords",
-            profileID
+          await this.ctClient.createTagset(
+            profileID,
+            'Keywords',
+            organisationRow[Columns.KEYWORDS]
           );
           await this.ctClient.updateProfile(
             profileID,
@@ -84,24 +79,26 @@ export class OrganisationsSheetPopulator {
             organisationRow[Columns.LOGO]
           );
         }
-        const organisationID = orgResponse.createOrganisation.id;
+        const organisationID = organisation?.id;
 
-        const challengesStr = organisationRow[Columns.LEADING];
-        if (challengesStr) {
-          const challengesArr = challengesStr.split(",");
-          for (let i = 0; i < challengesArr.length; i++) {
-            const challengeName = challengesArr[i].trim();
-            await this.ctClient.addChallengeLead(
-              challengeName,
-              organisationID
-            );
-            this.ctClient.logger.verbose(
-              `Added organisation as lead to challenge: ${challengesArr[0]}`
-            );
+        if (organisationID) {
+          const challengesStr = organisationRow[Columns.LEADING];
+          if (challengesStr) {
+            const challengesArr = challengesStr.split(',');
+            for (let i = 0; i < challengesArr.length; i++) {
+              const challengeName = challengesArr[i].trim();
+              await this.ctClient.addChallengeLead(
+                challengeName,
+                organisationID
+              );
+              this.logger.verbose(
+                `Added organisation as lead to challenge: ${challengesArr[0]}`
+              );
+            }
           }
         }
       } catch (e) {
-        this.ctClient.logger.error(
+        this.logger.error(
           `Unable to create organisation (${organisationName}): ${e.message}`
         );
       }
@@ -124,34 +121,21 @@ export class OrganisationsSheetPopulator {
       `====== Obtained gsheet ${sheetRange}  with ${organisationsGSheet.length} rows`
     );
 
-    // First get all the users
-    let organisationsJson = [];
+    // First get all the organisations
+    let organisationsJson: Organisation[] = [];
     try {
-      const orgsQuery = gql`
-        query {
-          organisations {
-            name
-            id
-            profile {
-              id
-              avatar
-              description
-            }
-          }
-        }
-      `;
-
-      const orgsResponse = await this.ctClient.client.request(orgsQuery);
-      if (orgsResponse) organisationsJson = orgsResponse.organisations;
+      const organisations = await this.ctClient.organisations();
+      if (organisations) organisationsJson = organisations;
     } catch (e) {
-      this.ctClient.logger.error(`Unable to load organisations data: ${e}`);
+      this.logger.error(`Unable to load organisations data: ${e}`);
     }
 
-    if (!organisationsJson) throw new Error('Unable to load organisaitons data');
+    if (!organisationsJson)
+      throw new Error('Unable to load organisaitons data');
 
     // Iterate over the rows
     for (let organisationRow of organisationsGSheet) {
-      const organisationName = organisationRow["NAME"];
+      const organisationName = organisationRow['NAME'];
       if (!organisationName) {
         // End of valid organisations
         break;
@@ -168,16 +152,28 @@ export class OrganisationsSheetPopulator {
       this.logger.info(`Processing organisation: ${organisationName}....`);
 
       // Find a matching organisation
-      const organisationJson = organisationsJson.find((organisation: { name: any; }) => organisation.name === organisationRow[Columns.NAME]);
-      if (!organisationJson) throw new Error(`Unable to load organisaiton with name: ${organisationRow[Columns.NAME]}`);
+      const organisationJson = organisationsJson.find(
+        (organisation: { name: any }) =>
+          organisation.name === organisationRow[Columns.NAME]
+      );
+      if (!organisationJson)
+        throw new Error(
+          `Unable to load organisaiton with name: ${
+            organisationRow[Columns.NAME]
+          }`
+        );
       try {
         const profileID = organisationJson.profile.id;
         if (profileID) {
-          await this.ctClient.updateProfile(profileID, organisationRow[Columns.DESCRIPTION], organisationRow[Columns.LOGO]);
+          await this.ctClient.updateProfile(
+            profileID,
+            organisationRow[Columns.DESCRIPTION],
+            organisationRow[Columns.LOGO]
+          );
           this.logger.info(`....updated: ${organisationName}....`);
         }
       } catch (e) {
-        this.ctClient.logger.error(
+        this.logger.error(
           `Unable to create organisation (${organisationName}): ${e.message}`
         );
       }
