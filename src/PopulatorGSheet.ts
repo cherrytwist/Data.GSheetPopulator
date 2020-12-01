@@ -85,25 +85,25 @@ export class PopulatorGSheet {
     const sheetRange = `${sheetName}!A1:Z1200`;
     const teamsGSheet = await this.gsheetConnector.getObjectArray(sheetRange);
     this.logger.info(
-      `===================================================================`
+      '==================================================================='
     );
     this.logger.info(
       `====== Obtained gsheet ${sheetRange}  with ${teamsGSheet.length} rows`
     );
 
     // Iterate over the rows
-    for (let teamRow of teamsGSheet) {
+    for (const teamRow of teamsGSheet) {
       const teamName = teamRow['NAME'];
       if (!teamRow) {
         // End of valid teams
         break;
       }
-      const challengeName = teamRow['CHALLENGE'];
+      // const challengeName = teamRow['CHALLENGE'];
       // todo: tag the team with the challenge name
 
       // start processing
       this.logger.info(`Processing team: ${teamName}....`);
-      const teamProfileID = '===> teamCreation - FULL';
+      // const teamProfileID = '===> teamCreation - FULL';
 
       try {
         const group = await this.ctClient.createEcoverseGroup(teamName);

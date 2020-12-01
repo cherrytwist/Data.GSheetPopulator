@@ -1,8 +1,6 @@
-import { gql } from 'graphql-request';
 import { GSheetsConnector } from './GSheetsConnector';
 import { CherrytwistClient, Organisation } from 'cherrytwist-lib';
 import { Logger } from 'winston';
-const winston = require('winston');
 
 enum Columns {
   NAME = 'NAME',
@@ -13,9 +11,9 @@ enum Columns {
   KEYWORDS = 'KEYWORDS',
 }
 
-enum Tagsets {
-  KEYWORDS = 'Keywords',
-}
+// enum Tagsets {
+//   KEYWORDS = 'Keywords',
+// }
 
 export class OrganisationsSheetPopulator {
   // The populator to use to interact with the server
@@ -41,14 +39,14 @@ export class OrganisationsSheetPopulator {
       sheetRange
     );
     this.logger.info(
-      `===================================================================`
+      '==================================================================='
     );
     this.logger.info(
       `====== Obtained gsheet ${sheetRange}  with ${organisationsGSheet.length} rows`
     );
 
     // Iterate over the rows
-    for (let organisationRow of organisationsGSheet) {
+    for (const organisationRow of organisationsGSheet) {
       const organisationName = organisationRow['NAME'];
       if (!organisationName) {
         // End of valid organisations
@@ -115,7 +113,7 @@ export class OrganisationsSheetPopulator {
       sheetRange
     );
     this.logger.info(
-      `===================================================================`
+      '==================================================================='
     );
     this.logger.info(
       `====== Obtained gsheet ${sheetRange}  with ${organisationsGSheet.length} rows`
@@ -134,19 +132,12 @@ export class OrganisationsSheetPopulator {
       throw new Error('Unable to load organisaitons data');
 
     // Iterate over the rows
-    for (let organisationRow of organisationsGSheet) {
+    for (const organisationRow of organisationsGSheet) {
       const organisationName = organisationRow['NAME'];
       if (!organisationName) {
         // End of valid organisations
         break;
       }
-
-      const variable = gql`
-    {
-      "organisationData": {
-        "name": "${organisationName}"
-        }
-    }`;
 
       // start processing
       this.logger.info(`Processing organisation: ${organisationName}....`);

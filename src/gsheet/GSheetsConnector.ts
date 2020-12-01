@@ -1,26 +1,30 @@
-import fs from "fs";
-import readline from "readline";
-import { google, sheets_v4 } from "googleapis";
-import { OAuth2Client } from "google-auth-library";
+import fs from 'fs';
+import readline from 'readline';
+import { google, sheets_v4 } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 
-const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 
 export class GSheetsConnector {
   sheetsObj?: sheets_v4.Sheets;
-  credentialPath = "";
-  tokenPath = "";
-  spreadsheetID: string = "";
+  credentialPath = '';
+  tokenPath = '';
+  spreadsheetID = '';
 
-  constructor(credentialPath: string, tokenPath: string, spreadsheetID: string) {
+  constructor(
+    credentialPath: string,
+    tokenPath: string,
+    spreadsheetID: string
+  ) {
     this.spreadsheetID = spreadsheetID;
     this.credentialPath = credentialPath;
     this.tokenPath = tokenPath;
   }
 
   async getSheetsObj() {
-    const cred = JSON.parse(fs.readFileSync(this.credentialPath, "utf8"));
+    const cred = JSON.parse(fs.readFileSync(this.credentialPath, 'utf8'));
     const auth = await this.authorize(cred);
-    this.sheetsObj = google.sheets({ version: "v4", auth });
+    this.sheetsObj = google.sheets({ version: 'v4', auth });
     return this.sheetsObj;
   }
 
@@ -43,7 +47,7 @@ export class GSheetsConnector {
     const header = array.splice(0, 1)[0];
     const output = [] as any[];
 
-    array.forEach((el) => {
+    array.forEach(el => {
       const entry = {} as any;
       header.forEach((h, i) => {
         entry[h] = el[i] ? el[i] : undefined;
@@ -63,7 +67,7 @@ export class GSheetsConnector {
     );
 
     try {
-      const token = JSON.parse(fs.readFileSync(this.tokenPath, "utf8"));
+      const token = JSON.parse(fs.readFileSync(this.tokenPath, 'utf8'));
       oAuth2Client.setCredentials(token);
       return oAuth2Client;
     } catch (e) {
@@ -73,11 +77,11 @@ export class GSheetsConnector {
 
   async getNewToken(oAuth2Client: OAuth2Client): Promise<OAuth2Client> {
     const authUrl = oAuth2Client.generateAuthUrl({
-      access_type: "offline",
+      access_type: 'offline',
       scope: SCOPES,
     });
 
-    console.log("Authorize this app by visiting this url: ", authUrl);
+    console.log('Authorize this app by visiting this url: ', authUrl);
 
     return (await new Promise((resolve, reject) => {
       const rl = readline.createInterface({
@@ -85,14 +89,16 @@ export class GSheetsConnector {
         output: process.stdout,
       });
 
-      rl.question("Enter the code from that page here: ", (code) => {
+      rl.question('Enter the code from that page here: ', code => {
         rl.close();
         oAuth2Client.getToken(code, (err, token) => {
-          reject(err);
+          if (err) reject(err);
+
           if (!token) {
-            reject();
+            return reject();
           }
-          oAuth2Client.setCredentials(token!);
+
+          oAuth2Client.setCredentials(token);
 
           fs.writeFileSync(this.tokenPath, JSON.stringify(token));
 

@@ -1,8 +1,6 @@
-import { gql } from 'graphql-request';
 import { CherrytwistClient } from 'cherrytwist-lib';
-import { GSheetsConnector } from './GSheetsConnector';
 import { Logger } from 'winston';
-const winston = require('winston');
+import { GSheetsConnector } from './GSheetsConnector';
 
 enum Columns {
   ROLE = 'ROLE',
@@ -67,7 +65,7 @@ export class UsersSheetPopulator {
     const sheetRange = `${sheetName}!A1:Z1200`;
     const teamsGSheet = await sheetsConnector.getObjectArray(sheetRange);
     this.logger.info(
-      `===================================================================`
+      '==================================================================='
     );
     this.logger.info(
       `====== Obtained gsheet ${sheetRange}  with ${teamsGSheet.length} rows`
@@ -75,7 +73,7 @@ export class UsersSheetPopulator {
 
     // Iterate over the rows
     let count = 0;
-    for (let userRow of teamsGSheet) {
+    for (const userRow of teamsGSheet) {
       const firstName = userRow[Columns.FIRST_NAME];
       if (!firstName) {
         // End of valid users
@@ -142,38 +140,18 @@ export class UsersSheetPopulator {
         // Add the user to the Teams Captains group if applicable
         const role = userRow[Columns.ROLE];
         if (role === 'Team members') {
-          const result = await this.addUserToRole(
-            Groups.TEAM_MEMBERS,
-            firstName,
-            userID
-          );
+          await this.addUserToRole(Groups.TEAM_MEMBERS, firstName, userID);
         } else if (role === 'Team lead') {
-          const result = await this.addUserToRole(
-            Groups.TEAM_LEADS,
-            firstName,
-            userID
-          );
+          await this.addUserToRole(Groups.TEAM_LEADS, firstName, userID);
         } else if (role === 'Challenge members') {
           // Todo - put the user in the right challenge
         } else if (role === 'Challenge lead') {
           // Todo - put the user in the right challenge
-          const result = await this.addUserToRole(
-            Groups.CHALLENGE_LEADS,
-            firstName,
-            userID
-          );
+          await this.addUserToRole(Groups.CHALLENGE_LEADS, firstName, userID);
         } else if (role === 'Stakeholder') {
-          const result = await this.addUserToRole(
-            Groups.STAKEHOLDERS,
-            firstName,
-            userID
-          );
+          await this.addUserToRole(Groups.STAKEHOLDERS, firstName, userID);
         } else if (role === 'Jedi') {
-          const result = await this.addUserToRole(
-            Groups.JEDIS,
-            firstName,
-            userID
-          );
+          await this.addUserToRole(Groups.JEDIS, firstName, userID);
         } else if (role === 'Users') {
           // Nothing to do, by being created already added to members i.e. user
         } else {
@@ -243,6 +221,7 @@ export class UsersSheetPopulator {
         //if (count >20) break;
         this.profiler.profile(userProfileID);
       } catch (e) {
+        debugger;
         if (e.response && e.response.errors) {
           this.logger.error(
             `Could not create user: ${e.response.errors[0].message}`

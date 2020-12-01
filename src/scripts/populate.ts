@@ -1,36 +1,11 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
-import { PopulatorGSheet, GSheetParams } from '../PopulatorGSheet';
+import { createLogger, createProfiler } from '../utils/create-logger';
 import environment from '../environments.json';
-import winston from 'winston';
+import { GSheetParams, PopulatorGSheet } from '../PopulatorGSheet';
 
 const main = async () => {
-  const logFormat = winston.format.combine(
-    winston.format.colorize(),
-    winston.format.simple()
-  );
-  const logger = winston.createLogger({
-    transports: [
-      new winston.transports.Console({ level: 'info', format: logFormat }),
-      new winston.transports.File({
-        filename: 'population-info.log',
-        level: 'warn',
-      }),
-      new winston.transports.File({
-        filename: 'population-warnings.log',
-        level: 'warn',
-      }),
-    ],
-  });
-
-  const profiler = winston.createLogger({
-    transports: [
-      new winston.transports.Console({ level: 'info', format: logFormat }),
-      new winston.transports.File({
-        filename: 'profile-info.log',
-        level: 'silly',
-      }),
-    ],
-  });
+  const logger = createLogger();
+  const profiler = createProfiler();
 
   const config = environment['local'];
   const ctClient = new CherrytwistClient({
@@ -45,12 +20,17 @@ const main = async () => {
   params.gsheetID = config.gsheet;
 
   // Loading data from google sheets
-  const gsheetPopulator = new PopulatorGSheet(ctClient, params, logger, profiler);
+  const gsheetPopulator = new PopulatorGSheet(
+    ctClient,
+    params,
+    logger,
+    profiler
+  );
 
   ////////// Now connect to google  /////////////////////////
-    const sheetsObj = await gsheetPopulator.gsheetConnector.getSheetsObj();
+  const sheetsObj = await gsheetPopulator.gsheetConnector.getSheetsObj();
   if (sheetsObj) {
-    logger.info(`[GSheet] Authentication succussful...`);
+    logger.info('[GSheet] Authentication succussful...');
   }
 
   await gsheetPopulator.loadChallenges('Challenges');

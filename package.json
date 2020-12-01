@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "cherrytwist-lib": "^0.3.0",
+    "dotenv": "^8.2.0",
     "googleapis": "^64.0.0",
     "nodemon": "^2.0.6",
     "typescript": "^4.1.0",

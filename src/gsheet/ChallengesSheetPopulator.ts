@@ -1,8 +1,6 @@
-import { gql } from 'graphql-request';
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { GSheetsConnector } from './GSheetsConnector';
 import { Logger } from 'winston';
-const winston = require('winston');
 
 enum Columns {
   NAME = 'CHALLENGE_NAME',
@@ -17,16 +15,16 @@ enum Columns {
   BACKGROUND = 'BACKGROUND',
 }
 
-enum Tagsets {
-  KEYWORDS = 'Keywords',
-}
+// enum Tagsets {
+//   KEYWORDS = 'Keywords',
+// }
 
 export class ChallengesSheetPopulator {
   // The ctClient to use to interact with the server
-  ctClient: CherrytwistClient;
+  private ctClient: CherrytwistClient;
 
-  logger;
-  profiler;
+  private logger: Logger;
+  private profiler: Logger;
 
   // Create the ecoverse with enough defaults set/ members populated
   constructor(ctClient: CherrytwistClient, logger: Logger, profiler: Logger) {
@@ -43,52 +41,19 @@ export class ChallengesSheetPopulator {
     const sheetRange = `${sheetName}!A1:Z1200`;
     const challengesGSheet = await sheetsConnector.getObjectArray(sheetRange);
     this.logger.info(
-      `===================================================================`
+      '==================================================================='
     );
     this.logger.info(
       `====== Obtained gsheet ${sheetRange}  with ${challengesGSheet.length} rows`
     );
 
     // Iterate over the rows
-    for (let challengeRow of challengesGSheet) {
+    for (const challengeRow of challengesGSheet) {
       const challengeName = challengeRow['CHALLENGE_NAME'];
       if (!challengeName) {
         // End of valid challenges
         break;
       }
-
-      const createChallengeVariable = gql`
-    {
-      "challengeData": {
-        "name": "${challengeRow[Columns.NAME]}",
-        "textID": "${challengeRow[Columns.TEXT_ID]}",
-        "state": "Defined",
-        "context": {
-          "tagline": "${challengeRow[Columns.TAGLINE]}",
-          "background": "${challengeRow[Columns.BACKGROUND]}",
-          "vision": "${challengeRow[Columns.VISION]}",
-          "impact": "${challengeRow[Columns.IMPACT]}",
-          "who": "${challengeRow[Columns.WHO]}",
-          "references": [
-            {
-              "name": "video",
-              "uri": "${challengeRow[Columns.VIDEO]}",
-              "description": "Video explainer for the challenge"
-            },
-            {
-              "name": "visual",
-              "uri": "${challengeRow[Columns.IMAGE]}",
-              "description": "Banner for the challenge"
-            },
-            {
-              "name": "visual2",
-              "uri": "${challengeRow[Columns.VISUAL]}",
-              "description": "Visual for the challenge"
-            }
-          ]
-        }
-      }
-    }`;
 
       // start processing
       this.logger.info(`Processing challenge: ${challengeName}....`);
@@ -96,7 +61,35 @@ export class ChallengesSheetPopulator {
       this.profiler.profile(challengeProfileID);
 
       try {
-        const challenge = await this.ctClient;
+        await this.ctClient.createChallenge({
+          name: `${challengeRow[Columns.NAME]}`,
+          textID: `${challengeRow[Columns.TEXT_ID]}`,
+          state: 'Defined',
+          context: {
+            tagline: `${challengeRow[Columns.TAGLINE]}`,
+            background: `${challengeRow[Columns.BACKGROUND]}`,
+            vision: `${challengeRow[Columns.VISION]}`,
+            impact: `${challengeRow[Columns.IMPACT]}`,
+            who: `${challengeRow[Columns.WHO]}`,
+            references: [
+              {
+                name: 'video',
+                uri: `${challengeRow[Columns.VIDEO]}`,
+                description: 'Video explainer for the challenge',
+              },
+              {
+                name: 'visual',
+                uri: `${challengeRow[Columns.IMAGE]}`,
+                description: 'Banner for the challenge',
+              },
+              {
+                name: 'visual2',
+                uri: `${challengeRow[Columns.VISUAL]}`,
+                description: 'Visual for the challenge',
+              },
+            ],
+          },
+        });
       } catch (e) {
         this.logger.error(
           `Unable to load challenge (${challengeName}): ${e.message}`
@@ -113,7 +106,7 @@ export class ChallengesSheetPopulator {
     const sheetRange = `${sheetName}!A1:Z1200`;
     const challengesGSheet = await sheetsConnector.getObjectArray(sheetRange);
     this.logger.info(
-      `===================================================================`
+      '==================================================================='
     );
     this.logger.info(
       `====== Obtained gsheet ${sheetRange}  with ${challengesGSheet.length} rows`
@@ -127,7 +120,7 @@ export class ChallengesSheetPopulator {
     }
 
     // Iterate over the rows
-    for (let challengeRow of challengesGSheet) {
+    for (const challengeRow of challengesGSheet) {
       const challengeName = challengeRow[Columns.NAME];
       if (!challengeName) {
         // End of valid challenges
@@ -152,39 +145,31 @@ export class ChallengesSheetPopulator {
       }
       try {
         const challengeID = challenge.id;
-        const updateChallengeVariable = gql`
-          {
-            "challengeID": ${challengeID},
-            "challengeData": {
-              "context": {
-                "tagline": "${challengeRow[Columns.TAGLINE]}",
-                "background": "${challengeRow[Columns.BACKGROUND]}",
-                "vision": "${challengeRow[Columns.VISION]}",
-                "impact": "${challengeRow[Columns.IMPACT]}",
-                "who": "${challengeRow[Columns.WHO]}",
-                "references": [
-                  {
-                    "name": "video",
-                    "uri": "${challengeRow[Columns.VIDEO]}",
-                    "description": "Video explainer for the challenge"
-                  },
-                  {
-                    "name": "visual",
-                    "uri": "${challengeRow[Columns.IMAGE]}",
-                    "description": "Banner for the challenge"
-                  },
-                  {
-                    "name": "visual2",
-                    "uri": "${challengeRow[Columns.VISUAL]}",
-                    "description": "Visual for the challenge"
-                  }
-                ]
-              }
-            }
-          }`;
-
-        const updatedChallenge = await this.ctClient.updateChallenge(challengeID, {
-          
+        await this.ctClient.updateChallenge(challengeID, {
+          context: {
+            tagline: `${challengeRow[Columns.TAGLINE]}`,
+            background: `${challengeRow[Columns.BACKGROUND]}`,
+            vision: `${challengeRow[Columns.VISION]}`,
+            impact: `${challengeRow[Columns.IMPACT]}`,
+            who: `${challengeRow[Columns.WHO]}`,
+            references: [
+              {
+                name: 'video',
+                uri: `${challengeRow[Columns.VIDEO]}`,
+                description: 'Video explainer for the challenge',
+              },
+              {
+                name: 'visual',
+                uri: `${challengeRow[Columns.IMAGE]}`,
+                description: 'Banner for the challenge',
+              },
+              {
+                name: 'visual2',
+                uri: `${challengeRow[Columns.VISUAL]}`,
+                description: 'Visual for the challenge',
+              },
+            ],
+          },
         });
         this.logger.info(`....updated: ${challengeName}....`);
       } catch (e) {
