@@ -7,7 +7,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
+    "format": "prettier --write src/**/*.ts",
+    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
+    "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
+    "nodemon": "nodemon",
     "populate": "ts-node-dev src/scripts/populate.ts",
+    "start": "npm run nodemon",
     "test-connection": "ts-node-dev src/scripts/test-connection.ts"
   },
   "repository": {
@@ -19,12 +25,19 @@
   },
   "homepage": "https://github.com/cherrytwistPopulator.GSheet#readme",
   "devDependencies": {
-    "ts-node-dev": "^1.0.0",
-    "@types/node": "^14.6.0"
+    "@types/node": "^14.6.0",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.2.1",
+    "ts-node-dev": "^1.0.0"
   },
   "dependencies": {
     "cherrytwist-lib": "^0.3.0",
     "googleapis": "^64.0.0",
+    "nodemon": "^2.0.6",
     "typescript": "^4.1.0",
     "winston": "^3.3.3"
   }
