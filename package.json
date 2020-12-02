@@ -35,7 +35,7 @@
     "ts-node-dev": "^1.0.0"
   },
   "dependencies": {
-    "cherrytwist-lib": "^0.3.0",
+    "cherrytwist-lib": "^0.4.1",
     "dotenv": "^8.2.0",
     "googleapis": "^64.0.0",
     "nodemon": "^2.0.6",
