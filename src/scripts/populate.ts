@@ -1,13 +1,18 @@
-import { CherrytwistClient, EnvironmentFactory } from "cherrytwist-lib";
-import { PopulatorGSheet, GSheetParams } from "../PopulatorGSheet";
+import { CherrytwistClient } from 'cherrytwist-lib';
+import { createLogger, createProfiler } from '../utils/create-logger';
+import environment from '../environments.json';
+import { GSheetParams, PopulatorGSheet } from '../PopulatorGSheet';
 
 const main = async () => {
-  const config = EnvironmentFactory.getEnvironmentConfig();
-  const ctClient = new CherrytwistClient(config);
-  ctClient.logger.info(`Cherrytwist server: ${config}`);
+  const logger = createLogger();
+  const profiler = createProfiler();
 
-  // Setup for authenitcating to the CT server
-  ctClient.loadAdminToken();
+  const config = environment['local'];
+  const ctClient = new CherrytwistClient({
+    graphqlEndpoint: config.server,
+  });
+
+  logger.info(`Cherrytwist server: ${config}`);
 
   const params = new GSheetParams();
   params.google_credentials_file = config.google_credentials;
@@ -15,21 +20,25 @@ const main = async () => {
   params.gsheetID = config.gsheet;
 
   // Loading data from google sheets
-  const gsheetPopulator = new PopulatorGSheet(ctClient, params);
+  const gsheetPopulator = new PopulatorGSheet(
+    ctClient,
+    params,
+    logger,
+    profiler
+  );
 
   ////////// Now connect to google  /////////////////////////
   const sheetsObj = await gsheetPopulator.gsheetConnector.getSheetsObj();
   if (sheetsObj) {
-    ctClient.logger.info(`[GSheet] Authentication succussful...`);
+    logger.info('[GSheet] Authentication succussful...');
   }
 
-  await gsheetPopulator.loadChallenges("Challenges");
-  await gsheetPopulator.loadTeams("Teams");
+  await gsheetPopulator.loadChallenges('Challenges');
+  await gsheetPopulator.loadTeams('Teams');
 
   // Obtain the identifiers for the groups + challenges as needed for users + orgs
-  await ctClient.ecoverseInfo.initialise(ctClient);
-  await gsheetPopulator.loadOrganisations("Organisations");
-  await gsheetPopulator.loadUsers("Users");
+  await gsheetPopulator.loadOrganisations('Organisations');
+  await gsheetPopulator.loadUsers('Users');
 };
 
 try {
