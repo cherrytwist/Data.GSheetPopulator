@@ -13,7 +13,7 @@
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
     "nodemon": "nodemon",
     "populate": "ts-node-dev src/scripts/populate.ts",
-    "start": "npm run nodemon",
+    "start": "ts-node-dev src/index.ts",
     "test-connection": "ts-node-dev src/scripts/test-connection.ts"
   },
   "repository": {

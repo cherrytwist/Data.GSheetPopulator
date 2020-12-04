@@ -1,0 +1,21 @@
+export type User = {
+  firstName: string;
+  lastName: string;
+  name: string;
+  challenges: string[];
+  groups: string[];
+  email: string;
+  phone: string;
+  city: string;
+  country: string;
+  gender: string;
+  avatar: string;
+  organisation: string;
+  jobTitle: string;
+  bio: string;
+  skills: string[];
+  keywords: string[];
+  linkedin: string;
+  twitter: string;
+  color: string;
+};

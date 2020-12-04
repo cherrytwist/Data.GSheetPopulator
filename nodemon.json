@@ -5,7 +5,7 @@
   "execMap": {
     "ts": "node -r ts-node/register"
   },
-  "exec": "npm run build",
+  "exec": "npm run start",
   "env": {
     "NODE_ENV": "development"
   },
