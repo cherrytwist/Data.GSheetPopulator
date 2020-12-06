@@ -1,7 +1,9 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { createLogger, createProfiler } from '../utils/create-logger';
 import environment from '../environments.json';
-import { GSheetParams, PopulatorGSheet } from '../PopulatorGSheet';
+import { Populator } from '../populator';
+import { XLSXAdapter } from '../adapters/xlsx';
+import path from 'path';
 
 const main = async () => {
   const logger = createLogger();
@@ -14,31 +16,12 @@ const main = async () => {
 
   logger.info(`Cherrytwist server: ${config}`);
 
-  const params = new GSheetParams();
-  params.google_credentials_file = config.google_credentials;
-  params.google_token_file = config.google_token;
-  params.gsheetID = config.gsheet;
-
-  // Loading data from google sheets
-  const gsheetPopulator = new PopulatorGSheet(
-    ctClient,
-    params,
-    logger,
-    profiler
+  const data = new XLSXAdapter(
+    path.join(__dirname, '..', 'data', 'sample.ods')
   );
-
-  ////////// Now connect to google  /////////////////////////
-  const sheetsObj = await gsheetPopulator.gsheetConnector.getSheetsObj();
-  if (sheetsObj) {
-    logger.info('[GSheet] Authentication succussful...');
-  }
-
-  await gsheetPopulator.loadChallenges('Challenges');
-  await gsheetPopulator.loadTeams('Teams');
-
-  // Obtain the identifiers for the groups + challenges as needed for users + orgs
-  await gsheetPopulator.loadOrganisations('Organisations');
-  await gsheetPopulator.loadUsers('Users');
+  // Loading data from google sheets
+  const populator = new Populator(ctClient, data, logger, profiler);
+  await populator.populate();
 };
 
 try {

@@ -13,7 +13,7 @@
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
     "nodemon": "nodemon",
     "populate": "ts-node-dev src/scripts/populate.ts",
-    "start": "npm run nodemon",
+    "start": "ts-node-dev src/index.ts",
     "test-connection": "ts-node-dev src/scripts/test-connection.ts"
   },
   "repository": {
@@ -40,6 +40,7 @@
     "googleapis": "^64.0.0",
     "nodemon": "^2.0.6",
     "typescript": "^4.1.0",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "xlsx": "^0.16.9"
   }
 }
