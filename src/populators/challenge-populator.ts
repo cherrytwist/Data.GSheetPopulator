@@ -1,4 +1,4 @@
-import { CherrytwistClient } from 'cherrytwist-lib';
+import { CherrytwistClient, Organisation } from 'cherrytwist-lib';
 import { Logger } from 'winston';
 import { DataAdapter } from '../adapters/adapter';
 import { Challenge } from '../models';
@@ -6,6 +6,8 @@ import { AbstractPopulator } from './abstract-populator';
 
 export class ChallengePopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
+  private organisations: Organisation[] = [];
+
   constructor(
     client: CherrytwistClient,
     data: DataAdapter,
@@ -18,6 +20,9 @@ export class ChallengePopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing challenges');
     const existingChallenges = await this.client.challenges();
+    this.organisations = ((await this.client.organisations()) ||
+      []) as Organisation[];
+
     // Iterate over the rows
     const challenges = this.data.challenges();
     for (let i = 0; i < challenges.length; i++) {
@@ -63,6 +68,9 @@ export class ChallengePopulator extends AbstractPopulator {
           references: this.getReferences(challenge),
         },
       });
+
+      this.logger.info(`....created: ${challenge.name}`);
+      await this.updateLeadingOrg(challenge);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
@@ -89,7 +97,8 @@ export class ChallengePopulator extends AbstractPopulator {
           references: this.getReferences(challenge),
         },
       });
-      this.logger.info(`....updated: ${challenge.name}...`);
+      this.logger.info(`....updated: ${challenge.name}`);
+      await this.updateLeadingOrg(challenge);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
@@ -121,5 +130,37 @@ export class ChallengePopulator extends AbstractPopulator {
         description: 'Visual for the challenge',
       },
     ];
+  }
+
+  private async updateLeadingOrg(challenge: Challenge) {
+    this.logger.info(
+      `Updating challenge leading organisations for : ${challenge.name}`
+    );
+
+    const organisationIDs = this.organisations.filter(o =>
+      challenge.leadingOrganisations.some(lo => lo === o.name)
+    );
+
+    for (let i = 0; i < organisationIDs.length; i++) {
+      const id = organisationIDs[i].id;
+      try {
+        await this.client.addChallengeLead(challenge.name, id);
+        this.logger.info(
+          `Added organisation as lead to challenge: ${challenge.name}`
+        );
+      } catch (e) {
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Unable to update leading organisation for challenge (${challenge.name}):${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(
+            `Unable to update leading organisation for challenge (${challenge.name}): ${e.message}`
+          );
+        }
+      } finally {
+        this.logger.info(`... updated ${challenge.name}`);
+      }
+    }
   }
 }

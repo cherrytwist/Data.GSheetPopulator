@@ -46,6 +46,7 @@ export class XLSXAdapter implements DataAdapter {
       vision: x.VISION,
       visual: x.VISUAL,
       who: x.WHO,
+      leadingOrganisations: toArray(x.LEAD_ORGS),
     }));
   }
 

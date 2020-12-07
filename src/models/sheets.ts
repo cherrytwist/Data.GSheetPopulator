@@ -34,6 +34,7 @@ export interface ChallengesSheet {
   IMAGE_FILE: string;
   IMAGE: string;
   VISUAL: string;
+  LEAD_ORGS: string;
 }
 
 export interface OpportunitiesSheet {
