@@ -58,7 +58,7 @@ export class EcoversePopulator extends AbstractPopulator {
         },
       });
 
-      this.logger.verbose(`Ecoverse updated: ${ecoverse.name}`);
+      this.logger.info(`Ecoverse updated: ${ecoverse.name}`);
     } catch (e) {
       this.logger.error(
         `Unable to update ecoverse (${ecoverse.name}): ${e.message}`

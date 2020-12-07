@@ -73,14 +73,14 @@ export class OpportunityPopulator extends AbstractPopulator {
           },
         });
 
-        this.logger.verbose(`Added group: ${opportunity.name}`);
+        this.logger.info(`Added group: ${opportunity.name}`);
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create opportunity (${opportunity.name}): ${e.response.errors[0].message}`
           );
         } else {
-          this.logger.error(`Could not create user: ${e}`);
+          this.logger.error(`Could not create opportunity: ${e}`);
         }
       }
     }
