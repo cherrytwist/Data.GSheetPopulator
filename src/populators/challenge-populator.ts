@@ -44,6 +44,7 @@ export class ChallengePopulator extends AbstractPopulator {
       } else {
         await this.createChallenge(challenge);
       }
+      this.profiler.profile(challengeProfileID);
     }
   }
 

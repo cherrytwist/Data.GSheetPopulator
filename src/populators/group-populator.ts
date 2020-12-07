@@ -45,6 +45,8 @@ export class GroupPopulator extends AbstractPopulator {
             `Unable to create group (${group.name}): ${e.message}`
           );
         }
+      } finally {
+        this.profiler.profile(organisationProfileID);
       }
     }
   }

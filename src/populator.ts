@@ -4,6 +4,7 @@ import { DataAdapter } from './adapters/adapter';
 import { ChallengePopulator } from './populators/challenge-populator';
 import { EcoversePopulator } from './populators/ecoverse-populator';
 import { GroupPopulator } from './populators/group-populator';
+import { HostPopulator } from './populators/host-populator';
 import { OpportunityPopulator } from './populators/opportunity-populator';
 import { OrganisationPopulator } from './populators/organisation-populator';
 import { UserPopulator } from './populators/user-populator';
@@ -78,11 +79,19 @@ export class Populator {
       this.profiler
     );
 
+    const hostPopulator = new HostPopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
     await ecoversePopulator.populate();
-    await groupPopulator.populate();
-    await userPopulator.populate();
-    await challengePopulator.populate();
-    await opportunityPopulator.populate();
-    await organisationPopulator.populate();
+    await hostPopulator.populate();
+    // await groupPopulator.populate();
+    // await userPopulator.populate();
+    // await challengePopulator.populate();
+    // await opportunityPopulator.populate();
+    // await organisationPopulator.populate();
   }
 }
