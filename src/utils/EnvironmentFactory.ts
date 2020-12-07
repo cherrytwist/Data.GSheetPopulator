@@ -4,12 +4,8 @@ import dotenv from 'dotenv';
 export interface EnvironmentConfig {
   name: string;
   server: string;
-  gsheet: string;
-  users_sheet: string;
+  file: string;
   admin_token: string;
-  populate_structure: boolean;
-  google_credentials: string;
-  google_token: string;
 }
 
 export class EnvironmentFactory {
