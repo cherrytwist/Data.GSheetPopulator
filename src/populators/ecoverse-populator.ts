@@ -30,29 +30,32 @@ export class EcoversePopulator extends AbstractPopulator {
     this.profiler.profile(ecoverseProfileID);
 
     try {
-      await this.client.updateEcoverseContext({
-        background: ecoverse.background,
-        impact: ecoverse.impact,
-        tagline: ecoverse.tagline,
-        vision: ecoverse.vision,
-        who: ecoverse.who,
-        references: [
-          {
-            name: 'website',
-            uri: ecoverse.refWebsite,
-            description: 'The ecoverse website',
-          },
-          {
-            name: 'logo',
-            uri: ecoverse.refLogo,
-            description: 'The ecoverse logo',
-          },
-          {
-            name: 'repo',
-            uri: ecoverse.refRepo,
-            description: 'The ecoverse repository',
-          },
-        ],
+      await this.client.updateEcoverse({
+        name: ecoverse.name,
+        context: {
+          background: ecoverse.background,
+          impact: ecoverse.impact,
+          tagline: ecoverse.tagline,
+          vision: ecoverse.vision,
+          who: ecoverse.who,
+          references: [
+            {
+              name: 'website',
+              uri: ecoverse.refWebsite,
+              description: 'The ecoverse website',
+            },
+            {
+              name: 'logo',
+              uri: ecoverse.refLogo,
+              description: 'The ecoverse logo',
+            },
+            {
+              name: 'repo',
+              uri: ecoverse.refRepo,
+              description: 'The ecoverse repository',
+            },
+          ],
+        },
       });
 
       this.logger.verbose(`Ecoverse updated: ${ecoverse.name}`);
