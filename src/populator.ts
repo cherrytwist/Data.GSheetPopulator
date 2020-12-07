@@ -88,10 +88,10 @@ export class Populator {
 
     await ecoversePopulator.populate();
     await hostPopulator.populate();
-    // await groupPopulator.populate();
-    // await userPopulator.populate();
-    // await challengePopulator.populate();
-    // await opportunityPopulator.populate();
-    // await organisationPopulator.populate();
+    await groupPopulator.populate();
+    await userPopulator.populate();
+    await challengePopulator.populate();
+    await opportunityPopulator.populate();
+    await organisationPopulator.populate();
   }
 }
