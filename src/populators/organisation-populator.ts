@@ -49,6 +49,12 @@ export class OrganisationPopulator extends AbstractPopulator {
             organisation.logo,
             organisation.description
           );
+          await this.client.addReference(
+            profileID,
+            'logo',
+            organisation.logo,
+            'Organisation logo'
+          );
         }
       } catch (e) {
         if (e.response && e.response.errors) {
