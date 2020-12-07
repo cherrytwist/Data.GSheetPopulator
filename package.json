@@ -12,7 +12,7 @@
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
     "nodemon": "nodemon",
-    "populate": "ts-node-dev src/scripts/populate.ts",
+    "populate": "ts-node-dev src/index.ts",
     "start": "ts-node-dev src/index.ts",
     "test-connection": "ts-node-dev src/scripts/test-connection.ts"
   },
