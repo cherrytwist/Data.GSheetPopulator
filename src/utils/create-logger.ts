@@ -11,7 +11,7 @@ export const createLogger = () => {
       new winston.transports.Console({ level: 'info', format: logFormat }),
       new winston.transports.File({
         filename: 'population-info.log',
-        level: 'warn',
+        level: 'info',
       }),
       new winston.transports.File({
         filename: 'population-warnings.log',

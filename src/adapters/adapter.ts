@@ -14,4 +14,5 @@ export interface DataAdapter {
   opportunities: () => Opportunity[];
   organisations: () => Organisation[];
   groups: () => Group[];
+  host: () => Organisation;
 }

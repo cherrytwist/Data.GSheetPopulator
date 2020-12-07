@@ -33,8 +33,8 @@ export class OpportunityPopulator extends AbstractPopulator {
 
       // start processing
       this.logger.info(`Processing group: ${opportunity.name}....`);
-      const organisationProfileID = '===> groupCreation - FULL';
-      this.profiler.profile(organisationProfileID);
+      const opportunityProfileID = '===> opportunityCreation - FULL';
+      this.profiler.profile(opportunityProfileID);
 
       const challenge = challenges.find(
         c => c.name.toLowerCase() === opportunity.challenge.toLowerCase()
@@ -65,7 +65,7 @@ export class OpportunityPopulator extends AbstractPopulator {
                 description: 'Video explainer for the opportunity',
               },
               {
-                name: 'visual',
+                name: 'poster',
                 uri: opportunity.image,
                 description: 'Banner for the opportunity',
               },
@@ -73,15 +73,17 @@ export class OpportunityPopulator extends AbstractPopulator {
           },
         });
 
-        this.logger.verbose(`Added group: ${opportunity.name}`);
+        this.logger.info(`Added group: ${opportunity.name}`);
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create opportunity (${opportunity.name}): ${e.response.errors[0].message}`
           );
         } else {
-          this.logger.error(`Could not create user: ${e}`);
+          this.logger.error(`Could not create opportunity: ${e}`);
         }
+      } finally {
+        this.profiler.profile(opportunityProfileID);
       }
     }
   }

@@ -4,6 +4,7 @@ export enum Sheets {
   Challenges = 'Challenges',
   Opportunities = 'Opportunities',
   Organisations = 'Organisations',
+  Host = 'Host',
   Groups = 'Groups',
   Users = 'Users',
 }

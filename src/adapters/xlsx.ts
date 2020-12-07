@@ -139,4 +139,22 @@ export class XLSXAdapter implements DataAdapter {
       logoFile: x.LOGO_FILE,
     }));
   };
+
+  public host = (): Organisation => {
+    const sheet = this.workbook.Sheets[Sheets.Host];
+    const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
+    if (result.length > 1) {
+      throw Error('More than 1 Host in the file');
+    }
+    const host = result[0];
+    return {
+      name: host.NAME,
+      textId: host.TEXT_ID,
+      leading: toArray(host.LEADING),
+      description: host.DESCRIPTION,
+      keywords: toArray(host.KEYWORDS),
+      logo: host.LOGO,
+      logoFile: host.LOGO_FILE,
+    };
+  };
 }

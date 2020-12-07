@@ -12,7 +12,7 @@
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
     "nodemon": "nodemon",
-    "populate": "ts-node-dev src/scripts/populate.ts",
+    "populate": "ts-node-dev src/index.ts",
     "start": "ts-node-dev src/index.ts",
     "test-connection": "ts-node-dev src/scripts/test-connection.ts"
   },
@@ -35,7 +35,7 @@
     "ts-node-dev": "^1.0.0"
   },
   "dependencies": {
-    "cherrytwist-lib": "^0.4.1",
+    "cherrytwist-lib": "^0.4.3",
     "dotenv": "^8.2.0",
     "googleapis": "^64.0.0",
     "nodemon": "^2.0.6",

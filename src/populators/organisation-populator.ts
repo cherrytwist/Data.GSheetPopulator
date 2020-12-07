@@ -1,6 +1,7 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
 import { DataAdapter } from '../adapters/adapter';
+import { Organisation } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganisationPopulator extends AbstractPopulator {
@@ -58,15 +59,21 @@ export class OrganisationPopulator extends AbstractPopulator {
           for (let i = 0; i < challenges.length; i++) {
             const challengeName = challenges[i].trim();
             await this.client.addChallengeLead(challengeName, organisationID);
-            this.logger.verbose(
+            this.logger.info(
               `Added organisation as lead to challenge: ${challengeName[0]}`
             );
           }
         }
       } catch (e) {
-        this.logger.error(
-          `Unable to create organisation (${organisation.name}): ${e.message}`
-        );
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Unable to create organisation (${organisation.name}):${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(`Could not create opportunity: ${e}`);
+        }
+      } finally {
+        this.profiler.profile(organisationProfileID);
       }
     }
   }

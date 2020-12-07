@@ -34,11 +34,19 @@ export class GroupPopulator extends AbstractPopulator {
       try {
         await this.client.createEcoverseGroup(group.name);
 
-        this.logger.verbose(`Added group: ${group.name}`);
+        this.logger.info(`Added group: ${group.name}`);
       } catch (e) {
-        this.logger.error(
-          `Unable to create group (${group.name}): ${e.message}`
-        );
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Unable to create group (${group.name}): ${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(
+            `Unable to create group (${group.name}): ${e.message}`
+          );
+        }
+      } finally {
+        this.profiler.profile(organisationProfileID);
       }
     }
   }
