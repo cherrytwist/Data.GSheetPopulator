@@ -10,4 +10,5 @@ export type Challenge = {
   imageFile: string;
   image: string;
   visual: string;
+  leadingOrganisations: string[];
 };

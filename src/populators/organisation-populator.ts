@@ -51,19 +51,6 @@ export class OrganisationPopulator extends AbstractPopulator {
             organisation.logo
           );
         }
-
-        const organisationID = newOrganisation?.id;
-
-        if (organisationID) {
-          const challenges = organisation.leading;
-          for (let i = 0; i < challenges.length; i++) {
-            const challengeName = challenges[i].trim();
-            await this.client.addChallengeLead(challengeName, organisationID);
-            this.logger.info(
-              `Added organisation as lead to challenge: ${challengeName[0]}`
-            );
-          }
-        }
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
