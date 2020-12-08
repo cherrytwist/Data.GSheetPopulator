@@ -1,6 +1,6 @@
 import { CherrytwistClient, ReferenceInput, UserInput } from 'cherrytwist-lib';
 import { Logger } from 'winston';
-import { DataAdapter } from '../adapters/adapter';
+import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Tagsets } from '../constants/enums';
 import { User } from '../models';
 import { AbstractPopulator } from './abstract-populator';
@@ -9,7 +9,7 @@ export class UserPopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: CherrytwistClient,
-    data: DataAdapter,
+    data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
   ) {

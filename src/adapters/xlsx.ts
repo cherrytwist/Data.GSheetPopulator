@@ -1,4 +1,3 @@
-import { toArray } from '../utils/string-to-array';
 import XLSX from 'xlsx';
 import {
   Challenge,
@@ -17,12 +16,14 @@ import {
   Sheets,
   UserSheet,
 } from '../models/sheets';
-import { DataAdapter } from './adapter';
+import { toArray } from '../utils/string-to-array';
+import { AbstractDataAdapter } from './data-adapter';
 
-export class XLSXAdapter implements DataAdapter {
+export class XLSXAdapter extends AbstractDataAdapter {
   private workbook: XLSX.WorkBook;
 
   constructor(fileName: string) {
+    super();
     try {
       this.workbook = XLSX.readFile(fileName);
     } catch (ex) {
@@ -30,6 +31,7 @@ export class XLSXAdapter implements DataAdapter {
       this.workbook = XLSX.utils.book_new();
     }
   }
+
   public challenges(): Challenge[] {
     const sheet = this.workbook.Sheets[Sheets.Challenges];
     const result = XLSX.utils.sheet_to_json(sheet) as ChallengesSheet[];

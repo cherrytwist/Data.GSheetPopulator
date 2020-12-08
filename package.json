@@ -1,5 +1,5 @@
 {
-  "name": "populator-gsheet",
+  "name": "cherrytwist-populator",
   "version": "0.1.0",
   "author": "Cherrytwist Foundation",
   "private": false,
@@ -7,14 +7,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.prod.json",
+    "prebuild": "npm run clean",
+    "clean": "rimraf ./dist",
     "format": "prettier --write src/**/*.ts",
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
     "nodemon": "nodemon",
     "populate": "ts-node-dev src/index.ts",
     "start": "ts-node-dev src/index.ts",
-    "test-connection": "ts-node-dev src/scripts/test-connection.ts"
+    "test-connection": "ts-node-dev src/scripts/test-connection.ts",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -39,8 +42,12 @@
     "dotenv": "^8.2.0",
     "googleapis": "^64.0.0",
     "nodemon": "^2.0.6",
+    "rimraf": "^3.0.2",
     "typescript": "^4.1.0",
     "winston": "^3.3.3",
     "xlsx": "^0.16.9"
-  }
+  },
+  "files": [
+    "dist/**/*"
+  ]
 }

@@ -1,6 +1,6 @@
-import { readFileSync } from 'fs';
 import dotenv from 'dotenv';
 
+import environments from '../environments.json';
 export interface EnvironmentConfig {
   name: string;
   server: string;
@@ -14,18 +14,12 @@ export class EnvironmentFactory {
   }
 
   static getEnvironmentConfig(): EnvironmentConfig {
-    const environmentsFile = process.env.CT_ENVIRONMENT_DEFINITIONS;
-    if (!environmentsFile)
-      throw new Error('CT_ENVIRONMENT_DEFINTIONS enironment variable not set');
-
     const environmentVar = process.env.CT_ENVIRONMENT;
     if (!environmentVar)
       throw new Error('CT_ENVIRONMENT enironment variable not set');
 
     // get the server endpoint
-    const environmentsStr = readFileSync(environmentsFile).toString();
-    const environmentsJson = JSON.parse(environmentsStr);
-    const environment = this.getEnvironment(environmentsJson, environmentVar);
+    const environment = this.getEnvironment(environments, environmentVar);
 
     return environment;
   }

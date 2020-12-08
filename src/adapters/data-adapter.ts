@@ -7,12 +7,12 @@ import {
   Organisation,
 } from '../models/index';
 
-export interface DataAdapter {
-  ecoverse: () => Ecoverse;
-  challenges: () => Challenge[];
-  users: () => User[];
-  opportunities: () => Opportunity[];
-  organisations: () => Organisation[];
-  groups: () => Group[];
-  host: () => Organisation;
+export abstract class AbstractDataAdapter {
+  abstract ecoverse(): Ecoverse;
+  abstract challenges(): Challenge[];
+  abstract users(): User[];
+  abstract opportunities(): Opportunity[];
+  abstract organisations(): Organisation[];
+  abstract groups(): Group[];
+  abstract host(): Organisation;
 }
