@@ -32,7 +32,7 @@ export class OpportunityPopulator extends AbstractPopulator {
       }
 
       // start processing
-      this.logger.info(`Processing group: ${opportunity.name}....`);
+      this.logger.info(`Processing opportunity: ${opportunity.name}....`);
       const opportunityProfileID = '===> opportunityCreation - FULL';
       this.profiler.profile(opportunityProfileID);
 
@@ -73,7 +73,7 @@ export class OpportunityPopulator extends AbstractPopulator {
           },
         });
 
-        this.logger.info(`Added group: ${opportunity.name}`);
+        this.logger.info(`...added opportunity: ${opportunity.name}`);
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(

@@ -1,7 +1,6 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
 import { DataAdapter } from '../adapters/adapter';
-import { Organisation } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganisationPopulator extends AbstractPopulator {
@@ -47,8 +46,14 @@ export class OrganisationPopulator extends AbstractPopulator {
           );
           await this.client.updateProfile(
             profileID,
-            organisation.description,
-            organisation.logo
+            organisation.logo,
+            organisation.description
+          );
+          await this.client.addReference(
+            profileID,
+            'logo',
+            organisation.logo,
+            'Organisation logo'
           );
         }
       } catch (e) {
