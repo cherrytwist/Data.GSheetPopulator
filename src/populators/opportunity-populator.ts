@@ -17,13 +17,19 @@ export class OpportunityPopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing opportunities');
 
+    const opportunities = this.data.opportunities();
+
+    if (opportunities.length === 0) {
+      this.logger.warn('No opportunities to import!');
+      return;
+    }
+
     const challenges = await this.client.challenges();
     if (!challenges) {
       this.logger.error('Can not process opportunites. Missing challenges');
       return;
     }
-    // Iterate over the rows
-    const opportunities = this.data.opportunities();
+
     for (let i = 0; i < opportunities.length; i++) {
       const opportunity = opportunities[i];
       if (!opportunity.name) {

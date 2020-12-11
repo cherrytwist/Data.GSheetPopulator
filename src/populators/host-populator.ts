@@ -17,8 +17,19 @@ export class HostPopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing host');
 
-    // Iterate over the rows
-    const host = this.data.host();
+    const hosts = this.data.hosts();
+    if (hosts.length === 0) {
+      this.logger.warn('No host to import!');
+      return;
+    }
+
+    if (hosts.length > 0) {
+      this.logger.warn(
+        'More than 1 host in source. Will import only the first one!'
+      );
+    }
+
+    const host = hosts[0];
 
     if (!host) {
       this.logger.error(

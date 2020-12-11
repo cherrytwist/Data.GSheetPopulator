@@ -18,8 +18,20 @@ export class EcoversePopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing ecoverse');
 
+    const ecoverses = this.data.ecoverses();
+    if (ecoverses.length === 0) {
+      this.logger.warn('No ecoverses to import!');
+      return;
+    }
+
+    if (ecoverses.length > 0) {
+      this.logger.warn(
+        'More than 1 ecoverse in source. Will import only the first one!'
+      );
+    }
+
     // Iterate over the rows
-    const ecoverse = this.data.ecoverse();
+    const ecoverse = ecoverses[0];
     if (!ecoverse.name) {
       // End of valid organisations
       return;

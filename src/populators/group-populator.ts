@@ -16,9 +16,12 @@ export class GroupPopulator extends AbstractPopulator {
 
   async populate() {
     this.logger.info('Processing groups');
-
-    // Iterate over the rows
     const groups = this.data.groups();
+    if (groups.length === 0) {
+      this.logger.warn('No groups to import!');
+      return;
+    }
+
     for (let i = 0; i < groups.length; i++) {
       const group = groups[i];
       if (!group.name) {

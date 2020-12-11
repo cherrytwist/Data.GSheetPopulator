@@ -106,16 +106,11 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   };
 
-  public ecoverse(): Ecoverse {
+  public ecoverses(): Ecoverse[] {
     const sheet = this.workbook.Sheets[Sheets.Ecoverse];
     const result = XLSX.utils.sheet_to_json(sheet) as EcoverseSheet[];
 
-    if (result.length > 1) {
-      throw Error('More than 1 Ecoverse in the file');
-    }
-
-    const ecoverse = result[0];
-    return {
+    return result.map(ecoverse => ({
       name: ecoverse.NAME,
       textId: ecoverse.TEXT_ID,
       background: ecoverse.BACKGROUND,
@@ -126,7 +121,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       refLogo: ecoverse.REF_LOGO,
       refRepo: ecoverse.REF_REPO,
       refWebsite: ecoverse.REF_WEBSITE,
-    };
+    }));
   }
 
   public organisations = (): Organisation[] => {
@@ -143,14 +138,11 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   };
 
-  public host = (): Organisation => {
+  public hosts = (): Organisation[] => {
     const sheet = this.workbook.Sheets[Sheets.Host];
     const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
-    if (result.length > 1) {
-      throw Error('More than 1 Host in the file');
-    }
-    const host = result[0];
-    return {
+
+    return result.map(host => ({
       name: host.NAME,
       textId: host.TEXT_ID,
       leading: toArray(host.LEADING),
@@ -158,6 +150,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       keywords: toArray(host.KEYWORDS),
       logo: host.LOGO,
       logoFile: host.LOGO_FILE,
-    };
+    }));
   };
 }

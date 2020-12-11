@@ -19,12 +19,18 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async populate() {
     this.logger.info('Processing challenges');
+    const challenges = this.data.challenges();
+
+    if (challenges.length === 0) {
+      this.logger.warn('No challenges to import!');
+      return;
+    }
+
     const existingChallenges = await this.client.challenges();
     this.organisations = ((await this.client.organisations()) ||
       []) as Organisation[];
 
     // Iterate over the rows
-    const challenges = this.data.challenges();
     for (let i = 0; i < challenges.length; i++) {
       const challenge = challenges[i];
 

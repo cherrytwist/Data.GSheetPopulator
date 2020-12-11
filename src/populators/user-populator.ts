@@ -20,9 +20,14 @@ export class UserPopulator extends AbstractPopulator {
     // Load users from a particular googlesheet
     this.logger.info('Processing users');
 
-    // Iterate over the rows
-    let count = 0;
     const users = this.data.users();
+
+    if (users.length === 0) {
+      this.logger.warn('No users to import!');
+      return;
+    }
+
+    let count = 0;
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
       // start processing
