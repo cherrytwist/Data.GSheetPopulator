@@ -1,7 +1,7 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { createLogger, createProfiler } from './utils/create-logger';
 import environment from './environments.json';
-import { Populator } from './populator';
+import { Populator } from './populators';
 import { XLSXAdapter } from './adapters/xlsx';
 import path from 'path';
 
@@ -22,8 +22,6 @@ const main = async () => {
   await populator.populate();
 };
 
-try {
-  main();
-} catch (error) {
+main().catch(error => {
   console.error(error);
-}
+});

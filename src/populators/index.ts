@@ -6,3 +6,4 @@ export * from './host-populator';
 export * from './opportunity-populator';
 export * from './organisation-populator';
 export * from './user-populator';
+export * from './populator';
