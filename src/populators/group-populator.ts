@@ -1,13 +1,13 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
-import { DataAdapter } from '../adapters/adapter';
+import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
 
 export class GroupPopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: CherrytwistClient,
-    data: DataAdapter,
+    data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
   ) {
@@ -16,11 +16,13 @@ export class GroupPopulator extends AbstractPopulator {
 
   async populate() {
     this.logger.info('Processing groups');
-
-    // Iterate over the rows
     const groups = this.data.groups();
-    for (let i = 0; i < groups.length; i++) {
-      const group = groups[i];
+    if (groups.length === 0) {
+      this.logger.warn('No groups to import!');
+      return;
+    }
+
+    for (const group of groups) {
       if (!group.name) {
         // End of valid organisations
         break;

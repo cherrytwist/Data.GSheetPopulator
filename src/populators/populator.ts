@@ -1,38 +1,24 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
-import { DataAdapter } from './adapters/adapter';
-import { ChallengePopulator } from './populators/challenge-populator';
-import { EcoversePopulator } from './populators/ecoverse-populator';
-import { GroupPopulator } from './populators/group-populator';
-import { HostPopulator } from './populators/host-populator';
-import { OpportunityPopulator } from './populators/opportunity-populator';
-import { OrganisationPopulator } from './populators/organisation-populator';
-import { UserPopulator } from './populators/user-populator';
+import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AbstractPopulator } from './abstract-populator';
+import { ChallengePopulator } from './challenge-populator';
+import { EcoversePopulator } from './ecoverse-populator';
+import { GroupPopulator } from './group-populator';
+import { HostPopulator } from './host-populator';
+import { OpportunityPopulator } from './opportunity-populator';
+import { OrganisationPopulator } from './organisation-populator';
+import { UserPopulator } from './user-populator';
 
-export class GSheetParams {
-  gsheetID = '';
-  google_credentials_file = '';
-  google_token_file = '';
-}
-
-export class Populator {
-  // The ctClient to use to interact with the server
-  client: CherrytwistClient;
-  data: DataAdapter;
-  logger: Logger;
-  profiler: Logger;
-
+export class Populator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: CherrytwistClient,
-    data: DataAdapter,
+    data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
   ) {
-    this.client = client;
-    this.data = data;
-    this.logger = logger;
-    this.profiler = profiler;
+    super(client, data, logger, profiler);
   }
 
   async populate() {

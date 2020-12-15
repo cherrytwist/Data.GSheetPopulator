@@ -1,6 +1,6 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
-import { createLogger } from 'src/utils/create-logger';
 import { EnvironmentFactory } from 'src/utils/EnvironmentFactory';
+import { createLogger } from '../utils/create-logger';
 
 const main = async () => {
   const logger = createLogger();
@@ -14,8 +14,4 @@ const main = async () => {
   await ctClient.testConnection();
 };
 
-try {
-  main();
-} catch (error) {
-  console.error(error);
-}
+main().catch(error => console.error(error));

@@ -1,6 +1,6 @@
 import { CherrytwistClient, Organisation } from 'cherrytwist-lib';
 import { Logger } from 'winston';
-import { DataAdapter } from '../adapters/adapter';
+import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
@@ -10,7 +10,7 @@ export class ChallengePopulator extends AbstractPopulator {
 
   constructor(
     client: CherrytwistClient,
-    data: DataAdapter,
+    data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
   ) {
@@ -19,15 +19,19 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async populate() {
     this.logger.info('Processing challenges');
+    const challenges = this.data.challenges();
+
+    if (challenges.length === 0) {
+      this.logger.warn('No challenges to import!');
+      return;
+    }
+
     const existingChallenges = await this.client.challenges();
     this.organisations = ((await this.client.organisations()) ||
       []) as Organisation[];
 
     // Iterate over the rows
-    const challenges = this.data.challenges();
-    for (let i = 0; i < challenges.length; i++) {
-      const challenge = challenges[i];
-
+    for (const challenge of challenges) {
       if (!challenge.name) {
         // End of valid challenges
         break;
@@ -141,8 +145,7 @@ export class ChallengePopulator extends AbstractPopulator {
       challenge.leadingOrganisations.some(lo => lo === o.name)
     );
 
-    for (let i = 0; i < organisationIDs.length; i++) {
-      const id = organisationIDs[i].id;
+    for (const { id } of organisationIDs) {
       try {
         await this.client.addChallengeLead(challenge.name, id);
         this.logger.info(

@@ -1,20 +1,23 @@
 {
-  "name": "populator-gsheet",
+  "name": "cherrytwist-populator",
   "version": "0.1.0",
   "author": "Cherrytwist Foundation",
   "private": false,
-  "license": "EUPL",
+  "license": "EUPL-1.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.prod.json",
+    "prebuild": "npm run clean",
+    "clean": "rimraf ./dist",
     "format": "prettier --write src/**/*.ts",
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
     "nodemon": "nodemon",
-    "populate": "ts-node-dev src/index.ts",
-    "start": "ts-node-dev src/index.ts",
-    "test-connection": "ts-node-dev src/scripts/test-connection.ts"
+    "populate": "ts-node-dev src/populate.ts",
+    "start": "npm run populate",
+    "test-connection": "ts-node-dev src/scripts/test-connection.ts",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -35,12 +38,16 @@
     "ts-node-dev": "^1.0.0"
   },
   "dependencies": {
-    "cherrytwist-lib": "^0.4.3",
+    "cherrytwist-lib": "^0.4.5",
     "dotenv": "^8.2.0",
     "googleapis": "^64.0.0",
     "nodemon": "^2.0.6",
+    "rimraf": "^3.0.2",
     "typescript": "^4.1.0",
     "winston": "^3.3.3",
     "xlsx": "^0.16.9"
-  }
+  },
+  "files": [
+    "dist/**/*"
+  ]
 }

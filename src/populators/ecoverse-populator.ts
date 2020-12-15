@@ -1,24 +1,37 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
-import { DataAdapter } from '../adapters/adapter';
+import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
 
 export class EcoversePopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: CherrytwistClient,
-    data: DataAdapter,
+    data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
   ) {
     super(client, data, logger, profiler);
+    this.name = 'ecoverse-populator';
   }
 
   async populate() {
     this.logger.info('Processing ecoverse');
 
+    const ecoverses = this.data.ecoverses();
+    if (ecoverses.length === 0) {
+      this.logger.warn('No ecoverses to import!');
+      return;
+    }
+
+    if (ecoverses.length > 0) {
+      this.logger.warn(
+        'More than 1 ecoverse in source. Will import only the first one!'
+      );
+    }
+
     // Iterate over the rows
-    const ecoverse = this.data.ecoverse();
+    const ecoverse = ecoverses[0];
     if (!ecoverse.name) {
       // End of valid organisations
       return;

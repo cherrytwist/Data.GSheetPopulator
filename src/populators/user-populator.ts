@@ -1,6 +1,6 @@
 import { CherrytwistClient, ReferenceInput, UserInput } from 'cherrytwist-lib';
 import { Logger } from 'winston';
-import { DataAdapter } from '../adapters/adapter';
+import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Tagsets } from '../constants/enums';
 import { User } from '../models';
 import { AbstractPopulator } from './abstract-populator';
@@ -9,7 +9,7 @@ export class UserPopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: CherrytwistClient,
-    data: DataAdapter,
+    data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
   ) {
@@ -20,11 +20,15 @@ export class UserPopulator extends AbstractPopulator {
     // Load users from a particular googlesheet
     this.logger.info('Processing users');
 
-    // Iterate over the rows
-    let count = 0;
     const users = this.data.users();
-    for (let i = 0; i < users.length; i++) {
-      const user = users[i];
+
+    if (users.length === 0) {
+      this.logger.warn('No users to import!');
+      return;
+    }
+
+    let count = 0;
+    for (const user of users) {
       // start processing
       this.logger.info(`Processing user: ${user.name} ...`);
       const userProfileID = '===> userCreation - FULL';
@@ -123,8 +127,7 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async addUserToChallenges(user: User) {
-    for (let i = 0; i < user.challenges.length; i++) {
-      const challenge = user.challenges[i];
+    for (const challenge of user.challenges) {
       if (challenge) {
         await this.client.addUserToChallengeByEmail(user.email, challenge);
       }
@@ -132,9 +135,7 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async addUserToGroups(userID: string, userName: string, groups: string[]) {
-    for (let i = 0; i < groups.length; i++) {
-      const groupName = groups[i];
-
+    for (const groupName of groups) {
       const group = await this.client.groupByName(groupName);
       // Add the user into the team members group
       if (!group) {

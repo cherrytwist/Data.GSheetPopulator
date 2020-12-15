@@ -1,4 +1,3 @@
-import { toArray } from '../utils/string-to-array';
 import XLSX from 'xlsx';
 import {
   Challenge,
@@ -17,12 +16,14 @@ import {
   Sheets,
   UserSheet,
 } from '../models/sheets';
-import { DataAdapter } from './adapter';
+import { toArray } from '../utils/string-to-array';
+import { AbstractDataAdapter } from './data-adapter';
 
-export class XLSXAdapter implements DataAdapter {
+export class XLSXAdapter extends AbstractDataAdapter {
   private workbook: XLSX.WorkBook;
 
   constructor(fileName: string) {
+    super();
     try {
       this.workbook = XLSX.readFile(fileName);
     } catch (ex) {
@@ -30,6 +31,7 @@ export class XLSXAdapter implements DataAdapter {
       this.workbook = XLSX.utils.book_new();
     }
   }
+
   public challenges(): Challenge[] {
     const sheet = this.workbook.Sheets[Sheets.Challenges];
     const result = XLSX.utils.sheet_to_json(sheet) as ChallengesSheet[];
@@ -104,16 +106,11 @@ export class XLSXAdapter implements DataAdapter {
     }));
   };
 
-  public ecoverse(): Ecoverse {
+  public ecoverses(): Ecoverse[] {
     const sheet = this.workbook.Sheets[Sheets.Ecoverse];
     const result = XLSX.utils.sheet_to_json(sheet) as EcoverseSheet[];
 
-    if (result.length > 1) {
-      throw Error('More than 1 Ecoverse in the file');
-    }
-
-    const ecoverse = result[0];
-    return {
+    return result.map(ecoverse => ({
       name: ecoverse.NAME,
       textId: ecoverse.TEXT_ID,
       background: ecoverse.BACKGROUND,
@@ -124,7 +121,7 @@ export class XLSXAdapter implements DataAdapter {
       refLogo: ecoverse.REF_LOGO,
       refRepo: ecoverse.REF_REPO,
       refWebsite: ecoverse.REF_WEBSITE,
-    };
+    }));
   }
 
   public organisations = (): Organisation[] => {
@@ -141,14 +138,11 @@ export class XLSXAdapter implements DataAdapter {
     }));
   };
 
-  public host = (): Organisation => {
+  public hosts = (): Organisation[] => {
     const sheet = this.workbook.Sheets[Sheets.Host];
     const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
-    if (result.length > 1) {
-      throw Error('More than 1 Host in the file');
-    }
-    const host = result[0];
-    return {
+
+    return result.map(host => ({
       name: host.NAME,
       textId: host.TEXT_ID,
       leading: toArray(host.LEADING),
@@ -156,6 +150,6 @@ export class XLSXAdapter implements DataAdapter {
       keywords: toArray(host.KEYWORDS),
       logo: host.LOGO,
       logoFile: host.LOGO_FILE,
-    };
+    }));
   };
 }
