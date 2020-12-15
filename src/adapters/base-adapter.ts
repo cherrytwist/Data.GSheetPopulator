@@ -8,7 +8,7 @@ import {
 } from '../models';
 import { AbstractDataAdapter } from './data-adapter';
 
-export class EmptyDataAdapter extends AbstractDataAdapter {
+export class BaseDataAdapter extends AbstractDataAdapter {
   ecoverses(): Ecoverse[] {
     return [];
   }

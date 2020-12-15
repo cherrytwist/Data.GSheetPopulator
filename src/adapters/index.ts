@@ -1,3 +1,3 @@
 export * from './data-adapter';
-export * from './empty-adapter';
+export * from './base-adapter';
 export * from './xlsx';

@@ -1,7 +1,7 @@
 import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { EmptyDataAdapter } from '../adapters/empty-adapter';
+import { BaseDataAdapter } from '../adapters/base-adapter';
 import { createLogger, createProfiler } from '../utils/create-logger';
 
 export abstract class AbstractPopulator {
@@ -19,7 +19,7 @@ export abstract class AbstractPopulator {
     profiler?: Logger
   ) {
     this.client = client;
-    this.data = data || new EmptyDataAdapter();
+    this.data = data || new BaseDataAdapter();
     this.logger = logger || createLogger();
     this.profiler = profiler || createProfiler();
     this.name = 'abstract-populator';
