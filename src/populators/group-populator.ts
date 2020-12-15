@@ -22,8 +22,7 @@ export class GroupPopulator extends AbstractPopulator {
       return;
     }
 
-    for (let i = 0; i < groups.length; i++) {
-      const group = groups[i];
+    for (const group of groups) {
       if (!group.name) {
         // End of valid organisations
         break;

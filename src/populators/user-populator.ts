@@ -28,8 +28,7 @@ export class UserPopulator extends AbstractPopulator {
     }
 
     let count = 0;
-    for (let i = 0; i < users.length; i++) {
-      const user = users[i];
+    for (const user of users) {
       // start processing
       this.logger.info(`Processing user: ${user.name} ...`);
       const userProfileID = '===> userCreation - FULL';
@@ -128,8 +127,7 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async addUserToChallenges(user: User) {
-    for (let i = 0; i < user.challenges.length; i++) {
-      const challenge = user.challenges[i];
+    for (const challenge of user.challenges) {
       if (challenge) {
         await this.client.addUserToChallengeByEmail(user.email, challenge);
       }
@@ -137,9 +135,7 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async addUserToGroups(userID: string, userName: string, groups: string[]) {
-    for (let i = 0; i < groups.length; i++) {
-      const groupName = groups[i];
-
+    for (const groupName of groups) {
       const group = await this.client.groupByName(groupName);
       // Add the user into the team members group
       if (!group) {

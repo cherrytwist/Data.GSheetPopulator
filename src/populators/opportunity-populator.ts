@@ -30,8 +30,7 @@ export class OpportunityPopulator extends AbstractPopulator {
       return;
     }
 
-    for (let i = 0; i < opportunities.length; i++) {
-      const opportunity = opportunities[i];
+    for (const opportunity of opportunities) {
       if (!opportunity.name) {
         // End of valid organisations
         break;

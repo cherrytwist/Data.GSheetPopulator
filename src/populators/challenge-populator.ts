@@ -31,9 +31,7 @@ export class ChallengePopulator extends AbstractPopulator {
       []) as Organisation[];
 
     // Iterate over the rows
-    for (let i = 0; i < challenges.length; i++) {
-      const challenge = challenges[i];
-
+    for (const challenge of challenges) {
       if (!challenge.name) {
         // End of valid challenges
         break;
@@ -147,8 +145,7 @@ export class ChallengePopulator extends AbstractPopulator {
       challenge.leadingOrganisations.some(lo => lo === o.name)
     );
 
-    for (let i = 0; i < organisationIDs.length; i++) {
-      const id = organisationIDs[i].id;
+    for (const { id } of organisationIDs) {
       try {
         await this.client.addChallengeLead(challenge.name, id);
         this.logger.info(

@@ -24,8 +24,7 @@ export class OrganisationPopulator extends AbstractPopulator {
       return;
     }
 
-    for (let i = 0; i < organisations.length; i++) {
-      const organisation = organisations[i];
+    for (const organisation of organisations) {
       if (!organisation.name) {
         // End of valid organisations
         break;
