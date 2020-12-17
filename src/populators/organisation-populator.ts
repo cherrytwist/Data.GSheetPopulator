@@ -17,7 +17,7 @@ export class OrganisationPopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing organisations');
 
-    const organisations = this.data.organisations();
+    const organisations = this.data.organizations();
 
     if (organisations.length === 0) {
       this.logger.warn('No organisations to import!');

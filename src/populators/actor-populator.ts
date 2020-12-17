@@ -20,6 +20,7 @@ export class ActorPopulator extends AbstractPopulator {
     await this.processActorGroups(opportunities);
     await this.processActors(opportunities);
     await this.processRelations(opportunities);
+    await this.processAspects(opportunities);
   }
 
   private async processActorGroups(opportunities: Opportunity[]) {
@@ -213,6 +214,66 @@ export class ActorPopulator extends AbstractPopulator {
         }
       } finally {
         this.profiler.profile(relationProfileID);
+      }
+    }
+  }
+
+  private async processAspects(opportunities: Opportunity[]) {
+    this.logger.info('Processing aspects');
+
+    const aspects = this.data.aspects();
+
+    if (aspects.length === 0) {
+      this.logger.warn('No aspects to import!');
+      return;
+    }
+
+    if (!(opportunities && opportunities.length > 0)) {
+      this.logger.error('Can not process aspects. Missing opportunities');
+      return;
+    }
+
+    for (const aspect of aspects) {
+      if (!aspect.title) {
+        // End of valid organizations
+        break;
+      }
+
+      // start processing
+      this.logger.info(`Processing aspect: ${aspect.title}....`);
+      const aspectProfileID = '===> aspectCreation - FULL';
+      this.profiler.profile(aspectProfileID);
+
+      const opportunity = opportunities.find(
+        c => c.name.toLowerCase() === aspect.opportunity.toLowerCase()
+      );
+
+      if (!opportunity) {
+        this.logger.warn(
+          `Skipping aspect '${aspect.title}'. Missing opportunity '${aspect.opportunity}'!`
+        );
+        continue;
+      }
+
+      try {
+        await this.client.createAspect(
+          opportunity.id,
+          aspect.title,
+          aspect.framing,
+          aspect.explanation
+        );
+
+        this.logger.info(`...added aspect: ${aspect.title}`);
+      } catch (e) {
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Unable to create aspect (${aspect.title}): ${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(`Could not create aspect: ${e}`);
+        }
+      } finally {
+        this.profiler.profile(aspectProfileID);
       }
     }
   }

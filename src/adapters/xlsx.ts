@@ -2,17 +2,19 @@ import XLSX from 'xlsx';
 import {
   Actor,
   ActorGroup,
+  Aspect,
   Challenge,
   Ecoverse,
   Group,
   Opportunity,
-  Organisation,
+  Organization,
   Relation,
   User,
 } from '../models';
 import {
   ActorGroupsSheet,
   ActorsSheet,
+  AspectSheet,
   ChallengesSheet,
   EcoverseSheet,
   GroupsSheet,
@@ -58,6 +60,18 @@ export class XLSXAdapter extends AbstractDataAdapter {
       name: x.NAME,
       description: x.DESCRIPTION,
       opportunity: x.OPPORTUNITY,
+    }));
+  }
+
+  aspects(): Aspect[] {
+    const sheet = this.workbook.Sheets[Sheets.Aspects];
+    const result = XLSX.utils.sheet_to_json(sheet) as AspectSheet[];
+    return result.map(x => ({
+      title: x.TITLE,
+      explanation: x.EXPLANATION,
+      framing: x.FRAMING,
+      opportunity: x.OPPORTUNITY,
+      project: x.PROJECT,
     }));
   }
 
@@ -153,7 +167,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   }
 
-  public organisations = (): Organisation[] => {
+  public organizations = (): Organization[] => {
     const sheet = this.workbook.Sheets[Sheets.Organisations];
     const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
     return result.map(x => ({
@@ -167,7 +181,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   };
 
-  public hosts = (): Organisation[] => {
+  public hosts = (): Organization[] => {
     const sheet = this.workbook.Sheets[Sheets.Host];
     const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
 

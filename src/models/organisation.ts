@@ -1,4 +1,4 @@
-export type Organisation = {
+export type Organization = {
   name: string;
   textId: string;
   leading: string[];

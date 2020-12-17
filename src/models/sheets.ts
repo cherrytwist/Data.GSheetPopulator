@@ -1,6 +1,7 @@
 export enum Sheets {
   Actors = 'Actors',
   ActorGroups = 'ActorGroups',
+  Aspects = 'Aspects',
   Ecoverse = 'Ecoverse',
   Information = 'Information',
   Challenges = 'Challenges',
@@ -113,4 +114,12 @@ export interface RelationSheet {
   ACTOR_ROLE: string;
   DESCRIPTION: string;
   OPPORTUNITY: string;
+}
+
+export interface AspectSheet {
+  TITLE: string;
+  FRAMING: string;
+  EXPLANATION: string;
+  OPPORTUNITY: string;
+  PROJECT: string;
 }
