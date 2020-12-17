@@ -5,10 +5,22 @@ import {
   Opportunity,
   Organisation,
   Group,
+  Actor,
+  ActorGroup,
+  Relation,
 } from '../models';
 import { AbstractDataAdapter } from './data-adapter';
 
 export class BaseDataAdapter extends AbstractDataAdapter {
+  relations(): Relation[] {
+    return [];
+  }
+  actors(): Actor[] {
+    return [];
+  }
+  actorGroups(): ActorGroup[] {
+    return [];
+  }
   ecoverses(): Ecoverse[] {
     return [];
   }

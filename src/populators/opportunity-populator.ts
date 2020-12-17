@@ -26,13 +26,13 @@ export class OpportunityPopulator extends AbstractPopulator {
 
     const challenges = await this.client.challenges();
     if (!challenges) {
-      this.logger.error('Can not process opportunites. Missing challenges');
+      this.logger.error('Can not process opportunities. Missing challenges');
       return;
     }
 
     for (const opportunity of opportunities) {
       if (!opportunity.name) {
-        // End of valid organisations
+        // End of valid organizations
         break;
       }
 

@@ -1,10 +1,13 @@
 import {
+  Actor,
+  ActorGroup,
   Challenge,
   Ecoverse,
-  Opportunity,
-  User,
   Group,
+  Opportunity,
   Organisation,
+  User,
+  Relation,
 } from '../models/index';
 
 export abstract class AbstractDataAdapter {
@@ -15,4 +18,7 @@ export abstract class AbstractDataAdapter {
   abstract organisations(): Organisation[];
   abstract groups(): Group[];
   abstract hosts(): Organisation[];
+  abstract actors(): Actor[];
+  abstract actorGroups(): ActorGroup[];
+  abstract relations(): Relation[];
 }

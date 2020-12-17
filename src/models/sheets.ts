@@ -1,4 +1,6 @@
 export enum Sheets {
+  Actors = 'Actors',
+  ActorGroups = 'ActorGroups',
   Ecoverse = 'Ecoverse',
   Information = 'Information',
   Challenges = 'Challenges',
@@ -7,6 +9,7 @@ export enum Sheets {
   Host = 'Host',
   Groups = 'Groups',
   Users = 'Users',
+  Relations = 'Relations',
 }
 
 export interface EcoverseSheet {
@@ -86,4 +89,28 @@ export interface UserSheet {
   LINKEDIN: string;
   TWITTER: string;
   COLOR: string;
+}
+
+export interface ActorGroupsSheet {
+  NAME: string;
+  DESCRIPTION: string;
+  OPPORTUNITY: string;
+}
+
+export interface ActorsSheet {
+  NAME: string;
+  DESCRIPTION: string;
+  ACTOR_GROUP: string;
+  VALUE: string;
+  IMPACT: string;
+  OPPORTUNITY: string;
+}
+
+export interface RelationSheet {
+  TYPE: string;
+  ACTOR_NAME: string;
+  ACTOR_TYPE: string;
+  ACTOR_ROLE: string;
+  DESCRIPTION: string;
+  OPPORTUNITY: string;
 }
