@@ -83,6 +83,7 @@ export interface UserSheet {
   GENDER: string;
   AVATAR: string;
   ORGANISATION: string;
+  OPPORTUNITIES: string;
   JOB_TITLE: string;
   BIO: string;
   SKILLS: string;
@@ -121,5 +122,4 @@ export interface AspectSheet {
   FRAMING: string;
   EXPLANATION: string;
   OPPORTUNITY: string;
-  PROJECT: string;
 }

@@ -1,4 +1,9 @@
-import { CherrytwistClient, ReferenceInput, UserInput } from 'cherrytwist-lib';
+import {
+  CherrytwistClient,
+  ReferenceInput,
+  UserInput,
+  Opportunity,
+} from 'cherrytwist-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Tagsets } from '../constants/enums';
@@ -17,7 +22,6 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async populate() {
-    // Load users from a particular googlesheet
     this.logger.info('Processing users');
 
     const users = this.data.users();
@@ -27,6 +31,8 @@ export class UserPopulator extends AbstractPopulator {
       return;
     }
 
+    const opportunities =
+      ((await this.client.opportunities()) as Opportunity[]) || [];
     let count = 0;
     for (const user of users) {
       // start processing
@@ -79,7 +85,7 @@ export class UserPopulator extends AbstractPopulator {
               },
               {
                 name: Tagsets.ORGANISATION,
-                tags: [user.organisation],
+                tags: [user.organization],
               },
               {
                 name: Tagsets.ORGANISATION_ROLES,
@@ -110,6 +116,13 @@ export class UserPopulator extends AbstractPopulator {
           createdUser.name,
           user.groups
         );
+        await this.addUserToOpportunities(
+          createdUser.id,
+          createdUser.name,
+          user.opportunities,
+          opportunities
+        );
+
         count++;
         //if (count >20) break;
         this.profiler.profile(userProfileID);
@@ -148,6 +161,38 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`... added user to group: ${groupName}`);
       }
       return true;
+    }
+  }
+
+  async addUserToOpportunities(
+    userID: string,
+    userName: string,
+    userOpportunities: string[],
+    opportunities: Opportunity[]
+  ) {
+    for (const opportunity of userOpportunities) {
+      const opportunityId = opportunities.find(x => x.name === opportunity)?.id;
+      if (!opportunityId) {
+        this.logger.error(
+          `Can not add user ${userName} to opportunity ${opportunity}, because the opportunity is missing.`
+        );
+        return;
+      }
+
+      try {
+        await this.client.addUserToOpportunity(userID, opportunityId);
+        this.logger.info(`... added user to opportunity: ${opportunity}`);
+      } catch (e) {
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Can not add user ${userName} to opportunity ${opportunity}: ${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(
+            `Can not add user ${userName} to opportunity ${opportunity}: ${e}`
+          );
+        }
+      }
     }
   }
 }

@@ -71,7 +71,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       explanation: x.EXPLANATION,
       framing: x.FRAMING,
       opportunity: x.OPPORTUNITY,
-      project: x.PROJECT,
     }));
   }
 
@@ -116,9 +115,10 @@ export class XLSXAdapter extends AbstractDataAdapter {
       jobTitle: x.JOB_TITLE,
       keywords: toArray(x.KEYWORDS),
       linkedin: x.LINKEDIN,
-      organisation: x.ORGANISATION,
+      organization: x.ORGANISATION,
       skills: toArray(x.SKILLS),
       twitter: x.TWITTER,
+      opportunities: toArray(x.OPPORTUNITIES),
     }));
   }
   public opportunities = (): Opportunity[] => {

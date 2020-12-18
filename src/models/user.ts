@@ -10,7 +10,8 @@ export type User = {
   country: string;
   gender: string;
   avatar: string;
-  organisation: string;
+  organization: string;
+  opportunities: string[];
   jobTitle: string;
   bio: string;
   skills: string[];

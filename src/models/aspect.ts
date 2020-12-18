@@ -3,5 +3,4 @@ export type Aspect = {
   framing: string;
   explanation: string;
   opportunity: string;
-  project: string;
 };
