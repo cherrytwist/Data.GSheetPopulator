@@ -21,12 +21,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cherrytwist/Populator.GSheet.git"
+    "url": "git+https://github.com/cherrytwist/populator.git"
   },
   "bugs": {
-    "url": "https://github.com/cherrytwist/Populator.GSheet/issues"
+    "url": "https://github.com/cherrytwist/populator/issues"
   },
-  "homepage": "https://github.com/cherrytwistPopulator.GSheet#readme",
+  "homepage": "https://github.com/cherrytwist/populator#readme",
   "devDependencies": {
     "@types/node": "^14.6.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
