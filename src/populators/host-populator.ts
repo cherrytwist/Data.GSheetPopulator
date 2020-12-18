@@ -23,7 +23,7 @@ export class HostPopulator extends AbstractPopulator {
       return;
     }
 
-    if (hosts.length > 0) {
+    if (hosts.length > 1) {
       this.logger.warn(
         'More than 1 host in source. Will import only the first one!'
       );

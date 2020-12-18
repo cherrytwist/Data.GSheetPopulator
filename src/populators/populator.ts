@@ -2,12 +2,13 @@ import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
+import { ActorPopulator } from './actor-populator';
 import { ChallengePopulator } from './challenge-populator';
 import { EcoversePopulator } from './ecoverse-populator';
 import { GroupPopulator } from './group-populator';
 import { HostPopulator } from './host-populator';
 import { OpportunityPopulator } from './opportunity-populator';
-import { OrganisationPopulator } from './organisation-populator';
+import { OrganizationPopulator } from './organisation-populator';
 import { UserPopulator } from './user-populator';
 
 export class Populator extends AbstractPopulator {
@@ -44,7 +45,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const organisationPopulator = new OrganisationPopulator(
+    const organizationPopulator = new OrganizationPopulator(
       this.client,
       this.data,
       this.logger,
@@ -52,6 +53,13 @@ export class Populator extends AbstractPopulator {
     );
 
     const opportunityPopulator = new OpportunityPopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    const actorPopulator = new ActorPopulator(
       this.client,
       this.data,
       this.logger,
@@ -74,9 +82,10 @@ export class Populator extends AbstractPopulator {
 
     await ecoversePopulator.populate();
     await hostPopulator.populate();
-    await organisationPopulator.populate();
+    await organizationPopulator.populate();
     await challengePopulator.populate();
     await opportunityPopulator.populate();
+    await actorPopulator.populate();
     await groupPopulator.populate();
     await userPopulator.populate();
   }

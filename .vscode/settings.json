@@ -8,5 +8,10 @@
   "javascript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.importModuleSpecifierEnding": "minimal",
   "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.preferences.importModuleSpecifierEnding": "minimal"
+  "typescript.preferences.importModuleSpecifierEnding": "minimal",
+  "cSpell.words": [
+    "cherrytwist",
+    "ecoverse",
+    "populator"
+  ]
 }

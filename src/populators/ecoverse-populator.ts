@@ -24,7 +24,7 @@ export class EcoversePopulator extends AbstractPopulator {
       return;
     }
 
-    if (ecoverses.length > 0) {
+    if (ecoverses.length > 1) {
       this.logger.warn(
         'More than 1 ecoverse in source. Will import only the first one!'
       );

@@ -1,14 +1,30 @@
 import {
-  Ecoverse,
+  Actor,
+  ActorGroup,
+  Aspect,
   Challenge,
-  User,
-  Opportunity,
-  Organisation,
+  Ecoverse,
   Group,
+  Opportunity,
+  Organization,
+  Relation,
+  User,
 } from '../models';
 import { AbstractDataAdapter } from './data-adapter';
 
 export class BaseDataAdapter extends AbstractDataAdapter {
+  aspects(): Aspect[] {
+    return [];
+  }
+  relations(): Relation[] {
+    return [];
+  }
+  actors(): Actor[] {
+    return [];
+  }
+  actorGroups(): ActorGroup[] {
+    return [];
+  }
   ecoverses(): Ecoverse[] {
     return [];
   }
@@ -21,13 +37,13 @@ export class BaseDataAdapter extends AbstractDataAdapter {
   opportunities(): Opportunity[] {
     return [];
   }
-  organisations(): Organisation[] {
+  organizations(): Organization[] {
     return [];
   }
   groups(): Group[] {
     return [];
   }
-  hosts(): Organisation[] {
+  hosts(): Organization[] {
     return [];
   }
 }

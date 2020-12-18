@@ -3,7 +3,7 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
 
-export class OrganisationPopulator extends AbstractPopulator {
+export class OrganizationPopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: CherrytwistClient,
@@ -17,7 +17,7 @@ export class OrganisationPopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing organisations');
 
-    const organisations = this.data.organisations();
+    const organisations = this.data.organizations();
 
     if (organisations.length === 0) {
       this.logger.warn('No organisations to import!');
