@@ -6,6 +6,11 @@
   "license": "EUPL-1.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "keywords": [
+    "data",
+    "populator",
+    "cherrytwist"
+  ],
   "scripts": {
     "build": "tsc --project tsconfig.prod.json",
     "prebuild": "npm run clean",
