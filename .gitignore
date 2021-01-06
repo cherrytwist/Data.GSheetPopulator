@@ -5,4 +5,4 @@ build
 .DS_Store
 dist
 secrets/*.json
-src/data/~*
+.~*
