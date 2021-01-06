@@ -16,7 +16,7 @@ const main = async () => {
 
   logger.info(`Cherrytwist server: ${config}`);
 
-  const data = new XLSXAdapter(path.join(__dirname, 'data', 'sample.ods'));
+  const data = new XLSXAdapter(path.join(__dirname, '..', 'cherrytwist-data-template.ods'));
   // Loading data from google sheets
   const populator = new Populator(ctClient, data, logger, profiler);
   await populator.populate();

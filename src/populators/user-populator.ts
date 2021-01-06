@@ -36,7 +36,7 @@ export class UserPopulator extends AbstractPopulator {
     let count = 0;
     for (const user of users) {
       // start processing
-      this.logger.info(`Processing user: ${user.name} ...`);
+      this.logger.info(`[${count}] - Processing user: ${user.name} ...`);
       const userProfileID = '===> userCreation - FULL';
       this.profiler.profile(userProfileID);
 
