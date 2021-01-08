@@ -15,9 +15,13 @@ export class ActorPopulator extends AbstractPopulator {
   }
 
   async populate() {
-    const opportunities =
+    let opportunities =
       ((await this.client.opportunities()) as Opportunity[]) || [];
     await this.processActorGroups(opportunities);
+    // Refresh opportunites/Load actor groups
+    opportunities =
+      ((await this.client.opportunities()) as Opportunity[]) || [];
+    debugger;
     await this.processActors(opportunities);
     await this.processRelations(opportunities);
     await this.processAspects(opportunities);
@@ -120,7 +124,7 @@ export class ActorPopulator extends AbstractPopulator {
       }
 
       const actorGroup = opportunity.actorGroups?.find(
-        g => g.name.toLowerCase() === actor.actorGroup
+        g => g.name.toLowerCase() === actor.actorGroup.toLowerCase()
       );
 
       if (!actorGroup) {
@@ -134,7 +138,9 @@ export class ActorPopulator extends AbstractPopulator {
         await this.client.createActor(
           actorGroup.id,
           actor.name,
-          actor.description
+          actor.value || '', // workaround data model inconsistency
+          actor.impact || '', // workaround data model inconsistency
+          actor.description || '' // workaround data model inconsistency
         );
 
         this.logger.info(`...added actor: ${actor.name}`);
