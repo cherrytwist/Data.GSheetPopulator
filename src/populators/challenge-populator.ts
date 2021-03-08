@@ -90,8 +90,10 @@ export class ChallengePopulator extends AbstractPopulator {
 
   // Load users from a particular googlesheet
   async updateChallengeContext(challengeId: string, challenge: Challenge) {
+    const challengeIdInt = parseInt(challengeId);
     try {
-      await this.client.updateChallenge(challengeId, {
+      await this.client.updateChallenge({
+        ID: challengeIdInt,
         context: {
           tagline: challenge.tagline,
           background: challenge.background,
