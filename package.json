@@ -1,6 +1,6 @@
 {
-  "name": "cherrytwist-populator",
-  "version": "0.1.4",
+  "name": "@cherrytwist/populator",
+  "version": "0.1.5",
   "author": "Cherrytwist Foundation",
   "private": false,
   "license": "EUPL-1.2",
