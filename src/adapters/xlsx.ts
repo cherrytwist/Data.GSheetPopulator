@@ -161,6 +161,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       impact: ecoverse.IMPACT,
       tagline: ecoverse.TAGLINE,
       who: ecoverse.WHO,
+      host: ecoverse.HOST,
       refLogo: ecoverse.REF_LOGO,
       refRepo: ecoverse.REF_REPO,
       refWebsite: ecoverse.REF_WEBSITE,
@@ -178,21 +179,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       keywords: toArray(x.KEYWORDS),
       logo: x.LOGO,
       logoFile: x.LOGO_FILE,
-    }));
-  };
-
-  public hosts = (): Organization[] => {
-    const sheet = this.workbook.Sheets[Sheets.Host];
-    const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
-
-    return result.map(host => ({
-      name: host.NAME,
-      textId: host.TEXT_ID,
-      leading: toArray(host.LEADING),
-      description: host.DESCRIPTION,
-      keywords: toArray(host.KEYWORDS),
-      logo: host.LOGO,
-      logoFile: host.LOGO_FILE,
     }));
   };
 

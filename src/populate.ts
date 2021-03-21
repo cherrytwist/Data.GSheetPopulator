@@ -1,9 +1,9 @@
-import { CherrytwistClient } from 'cherrytwist-lib';
 import { createLogger, createProfiler } from './utils/create-logger';
 import { Populator } from './populators';
 import { XLSXAdapter } from './adapters/xlsx';
 import path from 'path';
 import * as dotenv from 'dotenv';
+import { CherrytwistClient } from '@cherrytwist/client-lib';
 
 const main = async () => {
   dotenv.config();
@@ -19,6 +19,8 @@ const main = async () => {
 
   logger.info(`Cherrytwist server: ${server}`);
   logger.info(`Cherrytwist data template: ${dataTemplate}`);
+
+  await ctClient.validateConnection();
 
   const data = new XLSXAdapter(path.join(__dirname, '..', dataTemplate));
   // Loading data from google sheets

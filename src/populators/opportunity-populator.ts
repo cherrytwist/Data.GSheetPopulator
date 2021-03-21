@@ -1,4 +1,4 @@
-import { CherrytwistClient } from 'cherrytwist-lib';
+import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
@@ -24,12 +24,6 @@ export class OpportunityPopulator extends AbstractPopulator {
       return;
     }
 
-    const challenges = await this.client.challenges();
-    if (!challenges) {
-      this.logger.error('Can not process opportunities. Missing challenges');
-      return;
-    }
-
     for (const opportunity of opportunities) {
       if (!opportunity.name) {
         // End of valid organizations
@@ -41,11 +35,7 @@ export class OpportunityPopulator extends AbstractPopulator {
       const opportunityProfileID = '===> opportunityCreation - FULL';
       this.profiler.profile(opportunityProfileID);
 
-      const challenge = challenges.find(
-        c => c.name.toLowerCase() === opportunity.challenge.toLowerCase()
-      );
-
-      if (!challenge) {
+      if (!opportunity.challenge) {
         this.logger.warn(
           `Skipping opportunity '${opportunity.name}'. Missing challenge '${opportunity.challenge}'!`
         );
@@ -53,7 +43,8 @@ export class OpportunityPopulator extends AbstractPopulator {
       }
 
       try {
-        await this.client.createOpportunity(Number(challenge.id), {
+        await this.client.createOpportunity({
+          challengeID: opportunity.challenge,
           name: opportunity.name,
           textID: opportunity.textId,
           state: 'Defined',

@@ -7,7 +7,6 @@ export enum Sheets {
   Challenges = 'Challenges',
   Opportunities = 'Opportunities',
   Organisations = 'Organisations',
-  Host = 'Host',
   Groups = 'Groups',
   Users = 'Users',
   Relations = 'Relations',
@@ -21,6 +20,7 @@ export interface EcoverseSheet {
   VISION: string;
   IMPACT: string;
   WHO: string;
+  HOST: string;
   REF_WEBSITE: string;
   REF_LOGO: string;
   REF_REPO: string;

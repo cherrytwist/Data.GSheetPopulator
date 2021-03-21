@@ -3,7 +3,7 @@ import {
   ReferenceInput,
   UserInput,
   Opportunity,
-} from 'cherrytwist-lib';
+} from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Tagsets } from '../constants/enums';
@@ -107,6 +107,9 @@ export class UserPopulator extends AbstractPopulator {
 
         this.logger.info(`... created user: ${createdUser.name}`);
 
+        // add the user to the ecoverse
+        await this.client.addUserToEcoverse(createdUser.id);
+
         // Add the user to the challenge user group if applicable
         await this.addUserToChallenges(user);
 
@@ -140,9 +143,11 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async addUserToChallenges(user: User) {
+    const userInfo = await this.client.user(user.email);
+    if (!userInfo) throw new Error(`Unable to locate user: ${user.email}`);
     for (const challenge of user.challenges) {
       if (challenge) {
-        await this.client.addUserToChallengeByEmail(user.email, challenge);
+        await this.client.addUserToChallenge(challenge, `${userInfo.id}`);
       }
     }
   }

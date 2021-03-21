@@ -21,6 +21,5 @@ export abstract class AbstractDataAdapter {
   abstract opportunities(): Opportunity[];
   abstract organizations(): Organization[];
   abstract groups(): Group[];
-  abstract hosts(): Organization[];
   abstract relations(): Relation[];
 }

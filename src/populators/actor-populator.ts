@@ -1,4 +1,4 @@
-import { CherrytwistClient, Opportunity } from 'cherrytwist-lib';
+import { CherrytwistClient, Opportunity } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
