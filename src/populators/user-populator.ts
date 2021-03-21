@@ -2,7 +2,6 @@ import {
   CherrytwistClient,
   ReferenceInput,
   UserInput,
-  Opportunity,
 } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
@@ -31,8 +30,6 @@ export class UserPopulator extends AbstractPopulator {
       return;
     }
 
-    const opportunities =
-      ((await this.client.opportunities()) as Opportunity[]) || [];
     let count = 0;
     for (const user of users) {
       // start processing
@@ -122,8 +119,7 @@ export class UserPopulator extends AbstractPopulator {
         await this.addUserToOpportunities(
           createdUser.id,
           createdUser.name,
-          user.opportunities,
-          opportunities
+          user.opportunities
         );
 
         count++;
@@ -172,20 +168,11 @@ export class UserPopulator extends AbstractPopulator {
   async addUserToOpportunities(
     userID: string,
     userName: string,
-    userOpportunities: string[],
-    opportunities: Opportunity[]
+    userOpportunities: string[]
   ) {
     for (const opportunity of userOpportunities) {
-      const opportunityId = opportunities.find(x => x.name === opportunity)?.id;
-      if (!opportunityId) {
-        this.logger.error(
-          `Can not add user ${userName} to opportunity ${opportunity}, because the opportunity is missing.`
-        );
-        return;
-      }
-
       try {
-        await this.client.addUserToOpportunity(userID, opportunityId);
+        await this.client.addUserToOpportunity(userID, opportunity);
         this.logger.info(`... added user to opportunity: ${opportunity}`);
       } catch (e) {
         if (e.response && e.response.errors) {
