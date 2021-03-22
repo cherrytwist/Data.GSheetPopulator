@@ -66,7 +66,8 @@ export class OrganizationPopulator extends AbstractPopulator {
 
   async createOrganisation(organisationData: Organization) {
     const newOrganisation = await this.client.createOrganisation(
-      organisationData.name
+      organisationData.name,
+      organisationData.textId
     );
 
     const profileID = newOrganisation?.profile.id;
