@@ -1,6 +1,7 @@
 import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { Opportunity } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OpportunityPopulator extends AbstractPopulator {
@@ -24,56 +25,43 @@ export class OpportunityPopulator extends AbstractPopulator {
       return;
     }
 
-    for (const opportunity of opportunities) {
-      if (!opportunity.name) {
-        // End of valid organizations
+    const existingOpportunities = await this.client.opportunities();
+
+    for (const opportunityData of opportunities) {
+      if (!opportunityData.name) {
+        // End of valid opportunities
         break;
       }
 
       // start processing
-      this.logger.info(`Processing opportunity: ${opportunity.name}....`);
+      this.logger.info(`Processing opportunity: ${opportunityData.name}....`);
       const opportunityProfileID = '===> opportunityCreation - FULL';
       this.profiler.profile(opportunityProfileID);
 
-      if (!opportunity.challenge) {
+      if (!opportunityData.challenge) {
         this.logger.warn(
-          `Skipping opportunity '${opportunity.name}'. Missing challenge '${opportunity.challenge}'!`
+          `Skipping opportunity '${opportunityData.name}'. Missing challenge '${opportunityData.challenge}'!`
         );
         continue;
       }
 
-      try {
-        await this.client.createOpportunity({
-          challengeID: opportunity.challenge,
-          name: opportunity.name,
-          textID: opportunity.textId,
-          state: 'Defined',
-          context: {
-            background: opportunity.background,
-            impact: opportunity.impact,
-            who: opportunity.who,
-            vision: opportunity.vision,
-            tagline: opportunity.tagline,
-            references: [
-              {
-                name: 'video',
-                uri: opportunity.video,
-                description: 'Video explainer for the opportunity',
-              },
-              {
-                name: 'poster',
-                uri: opportunity.image,
-                description: 'Banner for the opportunity',
-              },
-            ],
-          },
-        });
+      const existingOpportunity = existingOpportunities?.find(
+        x => x.textID === opportunityData.textId
+      );
 
-        this.logger.info(`...added opportunity: ${opportunity.name}`);
+      try {
+        if (existingOpportunity) {
+          this.logger.info(
+            `Opportunity ${opportunityData.name} already exists! Updating`
+          );
+          await this.updateOpportunity(opportunityData, existingOpportunity);
+        } else {
+          await this.createOpportunity(opportunityData);
+        }
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create opportunity (${opportunity.name}): ${e.response.errors[0].message}`
+            `Unable to create opportunity (${opportunityData.name}): ${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create opportunity: ${e}`);
@@ -82,5 +70,67 @@ export class OpportunityPopulator extends AbstractPopulator {
         this.profiler.profile(opportunityProfileID);
       }
     }
+  }
+
+  async createOpportunity(opportunityData: Opportunity) {
+    await this.client.createOpportunity({
+      challengeID: opportunityData.challenge,
+      name: opportunityData.name,
+      textID: opportunityData.textId,
+      state: 'Defined',
+      context: {
+        background: opportunityData.background,
+        impact: opportunityData.impact,
+        who: opportunityData.who,
+        vision: opportunityData.vision,
+        tagline: opportunityData.tagline,
+        references: [
+          {
+            name: 'video',
+            uri: opportunityData.video,
+            description: 'Video explainer for the opportunity',
+          },
+          {
+            name: 'poster',
+            uri: opportunityData.image,
+            description: 'Banner for the opportunity',
+          },
+        ],
+      },
+    });
+
+    this.logger.info(`...added opportunity: ${opportunityData.name}`);
+  }
+
+  async updateOpportunity(
+    opportunityData: Opportunity,
+    existingOpportunity: any
+  ) {
+    await this.client.updateOpportunity({
+      ID: existingOpportunity.id,
+      name: opportunityData.name,
+      state: 'Defined',
+      context: {
+        background: opportunityData.background,
+        impact: opportunityData.impact,
+        who: opportunityData.who,
+        vision: opportunityData.vision,
+        tagline: opportunityData.tagline,
+        references: [
+          {
+            name: 'video',
+            uri: opportunityData.video,
+            description: 'Video explainer for the opportunity',
+          },
+          {
+            name: 'poster',
+            uri: opportunityData.image,
+            description: 'Banner for the opportunity',
+          },
+        ],
+      },
+    });
+
+    this.logger.info(`...updated opportunity: ${opportunityData.name}`);
   }
 }

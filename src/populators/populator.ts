@@ -23,6 +23,63 @@ export class Populator extends AbstractPopulator {
 
   async populate() {
     if (!this.data) throw new Error('No data to populate');
+    // organisations first as they are needed for Ecoverse + Challenges
+    await this.populateOrganisations();
+    await this.populateContext();
+    await this.populateCommunity();
+
+    // populate the specific opportunity entities. Todo: get this so it can also be updated
+    const actorPopulator = new ActorPopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+    await actorPopulator.populate();
+  }
+
+  async populateOrganisations() {
+    if (!this.data) throw new Error('No data to populate');
+    const organizationPopulator = new OrganizationPopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    await organizationPopulator.populate();
+  }
+
+  async populateContext() {
+    if (!this.data) throw new Error('No data to populate');
+    const challengePopulator = new ChallengePopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    const opportunityPopulator = new OpportunityPopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    const ecoversePopulator = new EcoversePopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    await ecoversePopulator.populate();
+    await challengePopulator.populate();
+    await opportunityPopulator.populate();
+  }
+
+  async populateCommunity() {
+    if (!this.data) throw new Error('No data to populate');
     const groupPopulator = new GroupPopulator(
       this.client,
       this.data,
@@ -37,48 +94,6 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const challengePopulator = new ChallengePopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
-    const organizationPopulator = new OrganizationPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
-    const opportunityPopulator = new OpportunityPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
-    const actorPopulator = new ActorPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
-    const ecoversePopulator = new EcoversePopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
-    // organisations first as they are needed for Ecoverse + Challenges
-    await organizationPopulator.populate();
-
-    await ecoversePopulator.populate();
-    await challengePopulator.populate();
-    await opportunityPopulator.populate();
-    await actorPopulator.populate();
     await groupPopulator.populate();
     await userPopulator.populate();
   }

@@ -19,3 +19,10 @@ Finally you should now be in a position to run the data population!
 
 Now you can navigate the web client and see a sample populated Ecoverse - enjoy!
 
+## Updating
+The data inside the template file will be iterating as you create the sample data to populate the ecoverse.
+
+The populator provides the ability to separately create / update the information on the following entities:
+* Organisation: execute `npm run populate-organisations`
+* Ecoverse/Challenge/Opportunity: execute `npm run populate-context`
+

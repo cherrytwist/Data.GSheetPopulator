@@ -1,6 +1,6 @@
 {
   "name": "@cherrytwist/populator",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Cherrytwist Foundation",
   "private": false,
   "license": "EUPL-1.2",
@@ -20,6 +20,8 @@
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
     "nodemon": "nodemon",
     "populate": "ts-node-dev src/populate.ts",
+    "populate-context": "ts-node-dev src/populate-context.ts",
+    "populate-organisations": "ts-node-dev src/populate-organisations.ts",
     "start": "npm run populate",
     "test-connection": "ts-node-dev src/scripts/test-connection.ts",
     "prepublishOnly": "npm run build"
