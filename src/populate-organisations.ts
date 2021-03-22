@@ -1,5 +1,5 @@
 import { createLogger, createProfiler } from './utils/create-logger';
-import { Populator } from './populators';
+import { OrganizationPopulator, Populator } from './populators';
 import { XLSXAdapter } from './adapters/xlsx';
 import path from 'path';
 import * as dotenv from 'dotenv';
@@ -24,8 +24,8 @@ const main = async () => {
 
   const data = new XLSXAdapter(path.join(__dirname, '..', dataTemplate));
   // Loading data from google sheets
-  const populator = new Populator(ctClient, data, logger, profiler);
-  await populator.populateOrganisations();
+  const populator = new OrganizationPopulator(ctClient, data, logger, profiler);
+  await populator.populate();
 };
 
 main().catch(error => {
