@@ -13,8 +13,10 @@ const main = async () => {
   const server = process.env.CT_SERVER || 'http://localhost:4000/graphql';
   const dataTemplate =
     process.env.CT_DATA_TEMPLATE || 'cherrytwist-data-template.ods';
+  const accessToken = process.env.CT_ACCESS_TOKEN || 'eyNotSet';
   const ctClient = new CherrytwistClient({
     graphqlEndpoint: server,
+    accessToken: `${accessToken}`,
   });
 
   logger.info(`Cherrytwist server: ${server}`);

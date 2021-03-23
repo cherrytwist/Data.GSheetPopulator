@@ -13,6 +13,7 @@ The spreadsheet does have a required format. An example of such a sheet is [prov
 * Edit this file to specify the values for the two environment variables:
     * CT_SERVER: The server file location
     * CT_DATA_TEMPLATE: The data template to use for population
+    * CT_ACCESS_TOKEN: for passing in an access token. The client-lib package then passes this as part of the Bearer http header.
 ## Execute the population
 Finally you should now be in a position to run the data population!
 * Execute `npm run populate`
