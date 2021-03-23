@@ -1,8 +1,8 @@
-import { CherrytwistClient } from 'cherrytwist-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { BaseDataAdapter } from '../adapters/base-adapter';
 import { createLogger, createProfiler } from '../utils/create-logger';
+import { CherrytwistClient } from '@cherrytwist/client-lib';
 
 export abstract class AbstractPopulator {
   protected client: CherrytwistClient;

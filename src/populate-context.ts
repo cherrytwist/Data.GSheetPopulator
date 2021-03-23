@@ -4,6 +4,7 @@ import { XLSXAdapter } from './adapters/xlsx';
 import path from 'path';
 import * as dotenv from 'dotenv';
 import { CherrytwistClient } from '@cherrytwist/client-lib';
+import { ContextPopulator } from './populators/context-populator';
 
 const main = async () => {
   dotenv.config();
@@ -24,7 +25,7 @@ const main = async () => {
 
   const data = new XLSXAdapter(path.join(__dirname, '..', dataTemplate));
   // Loading data from google sheets
-  const populator = new Populator(ctClient, data, logger, profiler);
+  const populator = new ContextPopulator(ctClient, data, logger, profiler);
   await populator.populate();
 };
 

@@ -1,4 +1,4 @@
-import { CherrytwistClient } from 'cherrytwist-lib';
+import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';

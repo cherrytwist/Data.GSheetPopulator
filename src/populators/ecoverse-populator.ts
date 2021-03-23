@@ -1,4 +1,4 @@
-import { CherrytwistClient } from 'cherrytwist-lib';
+import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
@@ -42,9 +42,30 @@ export class EcoversePopulator extends AbstractPopulator {
     const ecoverseProfileID = '===> ecoverseUpdate - FULL';
     this.profiler.profile(ecoverseProfileID);
 
+    //todo - set the organisation by name
+    const organisationName = ecoverse.host;
+    let hostOrgID: number | undefined = undefined;
+    if (organisationName) {
+      try {
+        const orgResponse = await this.client.organisation(organisationName);
+        hostOrgID = Number(orgResponse?.id) || undefined;
+      } catch (e) {
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Unable to identify ecoverse host (${organisationName}):${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(
+            `Unable to update ecoverse (${organisationName}): ${e.message}`
+          );
+        }
+      }
+    }
+
     try {
       await this.client.updateEcoverse({
         name: ecoverse.name,
+        hostID: hostOrgID,
         context: {
           background: ecoverse.background,
           impact: ecoverse.impact,

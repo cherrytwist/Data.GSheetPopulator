@@ -2,8 +2,7 @@ import {
   CherrytwistClient,
   ReferenceInput,
   UserInput,
-  Opportunity,
-} from 'cherrytwist-lib';
+} from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Tagsets } from '../constants/enums';
@@ -31,8 +30,6 @@ export class UserPopulator extends AbstractPopulator {
       return;
     }
 
-    const opportunities =
-      ((await this.client.opportunities()) as Opportunity[]) || [];
     let count = 0;
     for (const user of users) {
       // start processing
@@ -107,6 +104,9 @@ export class UserPopulator extends AbstractPopulator {
 
         this.logger.info(`... created user: ${createdUser.name}`);
 
+        // add the user to the ecoverse
+        await this.client.addUserToEcoverse(createdUser.id);
+
         // Add the user to the challenge user group if applicable
         await this.addUserToChallenges(user);
 
@@ -119,8 +119,7 @@ export class UserPopulator extends AbstractPopulator {
         await this.addUserToOpportunities(
           createdUser.id,
           createdUser.name,
-          user.opportunities,
-          opportunities
+          user.opportunities
         );
 
         count++;
@@ -140,9 +139,11 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async addUserToChallenges(user: User) {
+    const userInfo = await this.client.user(user.email);
+    if (!userInfo) throw new Error(`Unable to locate user: ${user.email}`);
     for (const challenge of user.challenges) {
       if (challenge) {
-        await this.client.addUserToChallengeByEmail(user.email, challenge);
+        await this.client.addUserToChallenge(challenge, `${userInfo.id}`);
       }
     }
   }
@@ -167,20 +168,11 @@ export class UserPopulator extends AbstractPopulator {
   async addUserToOpportunities(
     userID: string,
     userName: string,
-    userOpportunities: string[],
-    opportunities: Opportunity[]
+    userOpportunities: string[]
   ) {
     for (const opportunity of userOpportunities) {
-      const opportunityId = opportunities.find(x => x.name === opportunity)?.id;
-      if (!opportunityId) {
-        this.logger.error(
-          `Can not add user ${userName} to opportunity ${opportunity}, because the opportunity is missing.`
-        );
-        return;
-      }
-
       try {
-        await this.client.addUserToOpportunity(userID, opportunityId);
+        await this.client.addUserToOpportunity(userID, opportunity);
         this.logger.info(`... added user to opportunity: ${opportunity}`);
       } catch (e) {
         if (e.response && e.response.errors) {

@@ -1,6 +1,7 @@
-import { CherrytwistClient } from 'cherrytwist-lib';
+import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { Organization } from '../models/organisation';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganizationPopulator extends AbstractPopulator {
@@ -17,53 +18,42 @@ export class OrganizationPopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing organisations');
 
-    const organisations = this.data.organizations();
+    const organisationsData = this.data.organizations();
 
-    if (organisations.length === 0) {
+    if (organisationsData.length === 0) {
       this.logger.warn('No organisations to import!');
       return;
     }
 
-    for (const organisation of organisations) {
-      if (!organisation.name) {
+    const existingOrganisations = await this.client.organisations();
+
+    for (const organisationData of organisationsData) {
+      if (!organisationData.name) {
         // End of valid organisations
         break;
       }
 
       // start processing
-      this.logger.info(`Processing organisation: ${organisation.name}....`);
+      this.logger.info(`Processing organisation: ${organisationData.name}....`);
       const organisationProfileID = '===> organisationCreation - FULL';
       this.profiler.profile(organisationProfileID);
 
+      const existingOrganisation = existingOrganisations?.find(
+        x => x.name === organisationData.name
+      );
+
       try {
-        const newOrganisation = await this.client.createOrganisation(
-          organisation.name
-        );
-
-        const profileID = newOrganisation?.profile.id;
-
-        if (profileID) {
-          await this.client.createTagset(
-            profileID,
-            'Keywords',
-            organisation.keywords
+        if (existingOrganisation) {
+          this.logger.info(
+            `Organisation ${organisationData.name} already exists! Updating`
           );
-          await this.client.updateProfile(
-            profileID,
-            organisation.logo,
-            organisation.description
-          );
-          await this.client.addReference(
-            profileID,
-            'logo',
-            organisation.logo,
-            'Organisation logo'
-          );
+        } else {
+          await this.createOrganisation(organisationData);
         }
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create organisation (${organisation.name}):${e.response.errors[0].message}`
+            `Unable to create organisation (${organisationData.name}):${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create opportunity: ${e}`);
@@ -71,6 +61,50 @@ export class OrganizationPopulator extends AbstractPopulator {
       } finally {
         this.profiler.profile(organisationProfileID);
       }
+    }
+  }
+
+  async createOrganisation(organisationData: Organization) {
+    const newOrganisation = await this.client.createOrganisation(
+      organisationData.name,
+      organisationData.textId
+    );
+
+    const profileID = newOrganisation?.profile.id;
+
+    if (profileID) {
+      await this.client.createTagset(
+        profileID,
+        'Keywords',
+        organisationData.keywords
+      );
+      await this.client.updateProfile(
+        profileID,
+        organisationData.logo,
+        organisationData.description
+      );
+      await this.client.addReference(
+        profileID,
+        'logo',
+        organisationData.logo,
+        'Organisation logo'
+      );
+    }
+  }
+
+  async updateOrganisation(
+    organisationData: Organization,
+    existingOrganisation: any
+  ) {
+    const profileID = existingOrganisation?.profile.id;
+
+    if (profileID) {
+      // todo: fill this out more
+      await this.client.updateProfile(
+        profileID,
+        organisationData.logo,
+        organisationData.description
+      );
     }
   }
 }

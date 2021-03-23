@@ -1,4 +1,4 @@
-import { CherrytwistClient, Organisation } from 'cherrytwist-lib';
+import { CherrytwistClient, Organisation } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
@@ -90,10 +90,9 @@ export class ChallengePopulator extends AbstractPopulator {
 
   // Load users from a particular googlesheet
   async updateChallengeContext(challengeId: string, challenge: Challenge) {
-    const challengeIdInt = parseInt(challengeId);
     try {
       await this.client.updateChallenge({
-        ID: challengeIdInt,
+        ID: challengeId,
         context: {
           tagline: challenge.tagline,
           background: challenge.background,
@@ -149,9 +148,9 @@ export class ChallengePopulator extends AbstractPopulator {
 
     for (const { id } of organisationIDs) {
       try {
-        await this.client.addChallengeLead(challenge.name, id);
+        await this.client.addChallengeLead(challenge.textId, id);
         this.logger.info(
-          `Added organisation as lead to challenge: ${challenge.name}`
+          `Added organisation (${id}) as lead to challenge: ${challenge.textId}`
         );
       } catch (e) {
         if (e.response && e.response.errors) {
