@@ -2,6 +2,7 @@ import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Opportunity } from '../models';
+import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OpportunityPopulator extends AbstractPopulator {
@@ -84,22 +85,31 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
-        references: [
-          {
-            name: 'video',
-            uri: opportunityData.video,
-            description: 'Video explainer for the opportunity',
-          },
-          {
-            name: 'poster',
-            uri: opportunityData.image,
-            description: 'Banner for the opportunity',
-          },
-        ],
+        references: this.getReferences(opportunityData),
       },
     });
 
     this.logger.info(`...added opportunity: ${opportunityData.name}`);
+  }
+
+  private getReferences(opportunityData: Opportunity) {
+    const references = new ReferencesCreator();
+    references.addReference(
+      'video',
+      opportunityData.video,
+      'Video explainer for the opportunity'
+    );
+    references.addReference(
+      'visual',
+      opportunityData.image,
+      'Banner for the opportunity'
+    );
+    references.addReference(
+      'jitsi',
+      opportunityData.jitsi,
+      'Jitsi meeting space for the opportunity'
+    );
+    return references.getReferences();
   }
 
   async updateOpportunity(

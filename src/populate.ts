@@ -1,30 +1,21 @@
 import { createLogger, createProfiler } from './utils/create-logger';
 import { Populator } from './populators';
-import { XLSXAdapter } from './adapters/xlsx';
-import path from 'path';
 import * as dotenv from 'dotenv';
-import { CherrytwistClient } from '@cherrytwist/client-lib';
+import { createClientUsingEnvVars } from './utils/create-client-using-envvars';
+import { createDataAdapterUsingEnvVars } from './utils/create-data-adapter-using-envvars';
 
 const main = async () => {
   dotenv.config();
   const logger = createLogger();
   const profiler = createProfiler();
 
-  const server = process.env.CT_SERVER || 'http://localhost:4000/graphql';
-  const dataTemplate =
-    process.env.CT_DATA_TEMPLATE || 'cherrytwist-data-template.ods';
-  const accessToken = process.env.CT_ACCESS_TOKEN || 'eyNotSet';
-  const ctClient = new CherrytwistClient({
-    graphqlEndpoint: server,
-    accessToken: `${accessToken}`,
-  });
-
-  logger.info(`Cherrytwist server: ${server}`);
-  logger.info(`Cherrytwist data template: ${dataTemplate}`);
-
+  const ctClient = await createClientUsingEnvVars();
+  logger.info(`Cherrytwist server: ${ctClient.config.graphqlEndpoint}`);
   await ctClient.validateConnection();
 
-  const data = new XLSXAdapter(path.join(__dirname, '..', dataTemplate));
+  const data = await createDataAdapterUsingEnvVars();
+  logger.info(`Cherrytwist data template: ${data.filename}`);
+
   // Loading data from google sheets
   const populator = new Populator(ctClient, data, logger, profiler);
   await populator.populate();

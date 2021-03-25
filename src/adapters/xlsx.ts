@@ -29,11 +29,13 @@ import { AbstractDataAdapter } from './data-adapter';
 
 export class XLSXAdapter extends AbstractDataAdapter {
   private workbook: XLSX.WorkBook;
+  public filename!: string;
 
   constructor(fileName: string) {
     super();
     try {
       this.workbook = XLSX.readFile(fileName);
+      this.filename = fileName;
     } catch (ex) {
       console.error(ex.message);
       this.workbook = XLSX.utils.book_new();
@@ -90,6 +92,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       vision: x.VISION,
       visual: x.VISUAL,
       who: x.WHO,
+      jitsi: x.JITSI,
       leadingOrganisations: toArray(x.LEAD_ORGS),
     }));
   }
@@ -136,6 +139,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       textId: x.TEXT_ID,
       video: x.VIDEO,
       vision: x.VISION,
+      jitsi: x.JITSI,
       who: x.WHO,
     }));
   };
