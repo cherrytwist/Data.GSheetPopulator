@@ -54,7 +54,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(actorGroupProfileID);
 
       const opportunity = opportunities.find(
-        c => c.name.toLowerCase() === actorGroup.opportunity.toLowerCase()
+        c => c.textID.toLowerCase() === actorGroup.opportunity.toLowerCase()
       );
 
       if (!opportunity) {
@@ -187,7 +187,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(relationProfileID);
 
       const opportunity = opportunities.find(
-        c => c.name.toLowerCase() === relation.opportunity.toLowerCase()
+        c => c.textID.toLowerCase() === relation.opportunity.toLowerCase()
       );
 
       if (!opportunity) {
@@ -251,7 +251,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(aspectProfileID);
 
       const opportunity = opportunities.find(
-        c => c.name.toLowerCase() === aspect.opportunity.toLowerCase()
+        c => c.textID.toLowerCase() === aspect.opportunity.toLowerCase()
       );
 
       if (!opportunity) {

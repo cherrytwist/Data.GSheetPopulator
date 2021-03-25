@@ -10,4 +10,5 @@ export type Opportunity = {
   who: string;
   video: string;
   image: string;
+  jitsi: string;
 };

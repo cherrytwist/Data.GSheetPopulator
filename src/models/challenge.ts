@@ -10,5 +10,6 @@ export type Challenge = {
   imageFile: string;
   image: string;
   visual: string;
+  jitsi: string;
   leadingOrganisations: string[];
 };

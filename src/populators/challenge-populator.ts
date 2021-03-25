@@ -2,6 +2,7 @@ import { CherrytwistClient, Organisation } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
+import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 
 export class ChallengePopulator extends AbstractPopulator {
@@ -118,23 +119,28 @@ export class ChallengePopulator extends AbstractPopulator {
   }
 
   private getReferences(challenge: Challenge) {
-    return [
-      {
-        name: 'video',
-        uri: challenge.video,
-        description: 'Video explainer for the challenge',
-      },
-      {
-        name: 'visual',
-        uri: challenge.image,
-        description: 'Banner for the challenge',
-      },
-      {
-        name: 'visual2',
-        uri: challenge.visual,
-        description: 'Visual for the challenge',
-      },
-    ];
+    const references = new ReferencesCreator();
+    references.addReference(
+      'video',
+      challenge.video,
+      'Video explainer for the challenge'
+    );
+    references.addReference(
+      'visual',
+      challenge.image,
+      'Banner for the challenge'
+    );
+    references.addReference(
+      'visual2',
+      challenge.visual,
+      'Visual for the challenge'
+    );
+    references.addReference(
+      'jitsi',
+      challenge.jitsi,
+      'Jitsi meeting space for the challenge'
+    );
+    return references.getReferences();
   }
 
   private async updateLeadingOrg(challenge: Challenge) {

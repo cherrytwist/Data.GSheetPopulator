@@ -3,6 +3,7 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
 import { ActorPopulator } from './actor-populator';
+import { CommunityPopulator } from './community-populator';
 import { ContextPopulator } from './context-populator';
 import { OrganizationPopulator } from './organisation-populator';
 
@@ -34,7 +35,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const communityPopulator = new ContextPopulator(
+    const communityPopulator = new CommunityPopulator(
       this.client,
       this.data,
       this.logger,

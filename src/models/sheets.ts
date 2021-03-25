@@ -38,6 +38,7 @@ export interface ChallengesSheet {
   IMAGE_FILE: string;
   IMAGE: string;
   VISUAL: string;
+  JITSI: string;
   LEAD_ORGS: string;
 }
 
@@ -53,6 +54,7 @@ export interface OpportunitiesSheet {
   WHO: string;
   VIDEO: string;
   IMAGE: string;
+  JITSI: string;
 }
 
 export interface OrganisationsSheet {
