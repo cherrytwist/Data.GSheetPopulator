@@ -1,4 +1,9 @@
-# Populate an Ecoverse with data from a spreadsheet
+<p align="center">
+  <a href="http://cherrytwist.org/" target="blank"><img src="https://cherrytwist.org/wp-content/uploads/2020/10/cherrytwist-2.png" width="240" alt="Cherrytwist Logo" /></a>
+</p>
+<p align="center"><i>Enabling society to collaborate. Building a better future, together.</i></p>
+
+# Populate a Cherrytwist Ecoverse with data from a spreadsheet
 This repository has functionality to enable the population of an Ecoverse with data from a spreadshet. The spreadsheet is a local file, in the "OpenDocument Spreadsheet" (ODS) format.
 
 ## Google Sheet Format
@@ -16,6 +21,7 @@ The spreadsheet does have a required format. An example of such a sheet is [prov
     * CT_ACCESS_TOKEN: for passing in an access token. The client-lib package then passes this as part of the Bearer http header.
 ## Execute the population
 Finally you should now be in a position to run the data population!
+* Execute `npm install` - to ensure the dependencies in the project are installed
 * Execute `npm run populate`
 
 Now you can navigate the web client and see a sample populated Ecoverse - enjoy!
