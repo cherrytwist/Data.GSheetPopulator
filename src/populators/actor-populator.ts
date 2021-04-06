@@ -113,7 +113,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(actorProfileID);
 
       const opportunity = opportunities.find(
-        c => c.name.toLowerCase() === actor.opportunity.toLowerCase()
+        c => c.textID.toLowerCase() === actor.opportunity.toLowerCase()
       );
 
       if (!opportunity) {
