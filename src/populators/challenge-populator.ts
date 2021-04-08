@@ -100,7 +100,7 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challenge.vision,
           impact: challenge.impact,
           who: challenge.who,
-          references: this.getReferences(challenge),
+          createReferences: this.getReferences(challenge),
         },
       });
       this.logger.info(`....updated: ${challenge.name}`);

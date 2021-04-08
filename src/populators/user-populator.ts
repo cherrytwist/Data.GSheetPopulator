@@ -1,7 +1,7 @@
 import {
   CherrytwistClient,
-  ReferenceInput,
-  UserInput,
+  CreateReferenceInput,
+  CreateUserInput,
 } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
@@ -40,7 +40,7 @@ export class UserPopulator extends AbstractPopulator {
       try {
         // Add the user
         this.profiler.profile('userCreation');
-        const references: ReferenceInput[] = [];
+        const references: CreateReferenceInput[] = [];
 
         if (user.linkedin) {
           references.push({
@@ -58,7 +58,7 @@ export class UserPopulator extends AbstractPopulator {
           });
         }
 
-        const userData: UserInput = {
+        const userData: CreateUserInput = {
           name: user.name,
           firstName: user.firstName,
           lastName: user.lastName,
