@@ -64,6 +64,7 @@ export class EcoversePopulator extends AbstractPopulator {
 
     try {
       await this.client.updateEcoverse({
+        ID: '1',
         name: ecoverse.name,
         hostID: hostOrgID,
         context: {
@@ -72,7 +73,7 @@ export class EcoversePopulator extends AbstractPopulator {
           tagline: ecoverse.tagline,
           vision: ecoverse.vision,
           who: ecoverse.who,
-          references: [
+          createReferences: [
             {
               name: 'website',
               uri: ecoverse.refWebsite,

@@ -75,7 +75,7 @@ export class OpportunityPopulator extends AbstractPopulator {
 
   async createOpportunity(opportunityData: Opportunity) {
     await this.client.createOpportunity({
-      challengeID: opportunityData.challenge,
+      parentID: opportunityData.challenge,
       name: opportunityData.name,
       textID: opportunityData.textId,
       state: 'Defined',
@@ -126,7 +126,7 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
-        references: [
+        createReferences: [
           {
             name: 'video',
             uri: opportunityData.video,
