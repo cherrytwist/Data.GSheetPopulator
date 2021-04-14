@@ -126,18 +126,18 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
-        createReferences: [
-          {
-            name: 'video',
-            uri: opportunityData.video,
-            description: 'Video explainer for the opportunity',
-          },
-          {
-            name: 'poster',
-            uri: opportunityData.image,
-            description: 'Banner for the opportunity',
-          },
-        ],
+        // createReferences: [
+        //   {
+        //     name: 'video',
+        //     uri: opportunityData.video,
+        //     description: 'Video explainer for the opportunity',
+        //   },
+        //   {
+        //     name: 'poster',
+        //     uri: opportunityData.image,
+        //     description: 'Banner for the opportunity',
+        //   },
+        // ],
       },
     });
 
