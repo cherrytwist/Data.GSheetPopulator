@@ -61,6 +61,7 @@ export class ChallengePopulator extends AbstractPopulator {
   async createChallenge(challenge: Challenge) {
     try {
       await this.client.createChallenge({
+        parentID: 1, // TODO: Change it with the ID of the Ecoverse when multi ecoverse feature is finished
         name: challenge.name,
         textID: challenge.textId,
         state: 'Defined',
@@ -100,7 +101,6 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challenge.vision,
           impact: challenge.impact,
           who: challenge.who,
-          createReferences: this.getReferences(challenge),
         },
       });
       this.logger.info(`....updated: ${challenge.name}`);

@@ -44,11 +44,11 @@ export class EcoversePopulator extends AbstractPopulator {
 
     //todo - set the organisation by name
     const organisationName = ecoverse.host;
-    let hostOrgID: number | undefined = undefined;
+    let hostOrgID: string | undefined = undefined;
     if (organisationName) {
       try {
         const orgResponse = await this.client.organisation(organisationName);
-        hostOrgID = Number(orgResponse?.id) || undefined;
+        hostOrgID = orgResponse?.id;
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
@@ -73,25 +73,42 @@ export class EcoversePopulator extends AbstractPopulator {
           tagline: ecoverse.tagline,
           vision: ecoverse.vision,
           who: ecoverse.who,
-          createReferences: [
-            {
-              name: 'website',
-              uri: ecoverse.refWebsite,
-              description: 'The ecoverse website',
-            },
-            {
-              name: 'logo',
-              uri: ecoverse.refLogo,
-              description: 'The ecoverse logo',
-            },
-            {
-              name: 'repo',
-              uri: ecoverse.refRepo,
-              description: 'The ecoverse repository',
-            },
-          ],
+          // references: [
+          //   {
+          //     name: 'website',
+          //     uri: ecoverse.refWebsite,
+          //     description: 'The ecoverse website',
+          //   },
+          //   {
+          //     name: 'logo',
+          //     uri: ecoverse.refLogo,
+          //     description: 'The ecoverse logo',
+          //   },
+          //   {
+          //     name: 'repo',
+          //     uri: ecoverse.refRepo,
+          //     description: 'The ecoverse repository',
+          //   },
+          // ],
         },
       });
+      await this.client.updateEcoverseReferences([
+        {
+          name: 'website',
+          uri: ecoverse.refWebsite,
+          description: 'The ecoverse website',
+        },
+        {
+          name: 'logo',
+          uri: ecoverse.refLogo,
+          description: 'The ecoverse logo',
+        },
+        {
+          name: 'repo',
+          uri: ecoverse.refRepo,
+          description: 'The ecoverse repository',
+        },
+      ]);
 
       this.logger.info(`Ecoverse updated: ${ecoverse.name}`);
     } catch (e) {
