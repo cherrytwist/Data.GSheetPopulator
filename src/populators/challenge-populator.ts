@@ -149,7 +149,9 @@ export class ChallengePopulator extends AbstractPopulator {
     );
 
     const organisationIDs = this.organisations.filter(o =>
-      challenge.leadingOrganisations.some(lo => lo === o.name)
+      challenge.leadingOrganisations.some(
+        lo => lo.toLowerCase() === o.textID.toLowerCase()
+      )
     );
 
     for (const { id } of organisationIDs) {
