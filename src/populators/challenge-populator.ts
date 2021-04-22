@@ -64,7 +64,6 @@ export class ChallengePopulator extends AbstractPopulator {
         parentID: 1, // TODO: Change it with the ID of the Ecoverse when multi ecoverse feature is finished
         name: challenge.name,
         textID: challenge.textId,
-        state: 'Defined',
         context: {
           tagline: challenge.tagline,
           background: challenge.background,
