@@ -64,7 +64,6 @@ export class ChallengePopulator extends AbstractPopulator {
         parentID: 1, // TODO: Change it with the ID of the Ecoverse when multi ecoverse feature is finished
         name: challenge.name,
         textID: challenge.textId,
-        state: 'Defined',
         context: {
           tagline: challenge.tagline,
           background: challenge.background,
@@ -149,7 +148,9 @@ export class ChallengePopulator extends AbstractPopulator {
     );
 
     const organisationIDs = this.organisations.filter(o =>
-      challenge.leadingOrganisations.some(lo => lo === o.name)
+      challenge.leadingOrganisations.some(
+        lo => lo.toLowerCase() === o.textID.toLowerCase()
+      )
     );
 
     for (const { id } of organisationIDs) {

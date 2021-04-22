@@ -78,7 +78,6 @@ export class OpportunityPopulator extends AbstractPopulator {
       parentID: opportunityData.challenge,
       name: opportunityData.name,
       textID: opportunityData.textId,
-      state: 'Defined',
       context: {
         background: opportunityData.background,
         impact: opportunityData.impact,
