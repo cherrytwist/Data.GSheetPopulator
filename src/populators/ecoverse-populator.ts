@@ -92,7 +92,7 @@ export class EcoversePopulator extends AbstractPopulator {
           // ],
         },
       });
-      await this.client.updateEcoverseReferences([
+      await this.client.updateReferencesOnEcoverse([
         {
           name: 'website',
           uri: ecoverse.refWebsite,

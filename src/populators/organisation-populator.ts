@@ -73,7 +73,7 @@ export class OrganizationPopulator extends AbstractPopulator {
     const profileID = newOrganisation?.profile.id;
 
     if (profileID) {
-      await this.client.createTagset(
+      await this.client.createTagsetOnProfile(
         profileID,
         'Keywords',
         organisationData.keywords
