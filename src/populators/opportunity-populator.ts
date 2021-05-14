@@ -74,7 +74,7 @@ export class OpportunityPopulator extends AbstractPopulator {
   }
 
   async createOpportunity(opportunityData: Opportunity) {
-    await this.client.createOpportunity({
+    await this.client.createChildChallenge({
       parentID: opportunityData.challenge,
       name: opportunityData.name,
       textID: opportunityData.textId,
@@ -115,10 +115,9 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityData: Opportunity,
     existingOpportunity: any
   ) {
-    await this.client.updateOpportunity({
+    await this.client.updateChallenge({
       ID: existingOpportunity.id,
       name: opportunityData.name,
-      state: 'Defined',
       context: {
         background: opportunityData.background,
         impact: opportunityData.impact,

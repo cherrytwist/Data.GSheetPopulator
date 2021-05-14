@@ -1,4 +1,4 @@
-import { CherrytwistClient, Opportunity } from '@cherrytwist/client-lib';
+import { Challenge, CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
@@ -16,18 +16,17 @@ export class ActorPopulator extends AbstractPopulator {
 
   async populate() {
     let opportunities =
-      ((await this.client.opportunities()) as Opportunity[]) || [];
+      ((await this.client.opportunities()) as Challenge[]) || [];
     await this.processActorGroups(opportunities);
     // Refresh opportunites/Load actor groups
-    opportunities =
-      ((await this.client.opportunities()) as Opportunity[]) || [];
+    opportunities = ((await this.client.opportunities()) as Challenge[]) || [];
     debugger;
     await this.processActors(opportunities);
     await this.processRelations(opportunities);
     await this.processAspects(opportunities);
   }
 
-  private async processActorGroups(opportunities: Opportunity[]) {
+  private async processActorGroups(opportunities: Challenge[]) {
     this.logger.info('Processing actor groups');
 
     const actorGroups = this.data.actorGroups();
@@ -64,9 +63,17 @@ export class ActorPopulator extends AbstractPopulator {
         continue;
       }
 
+      const ecosystemModelID = opportunity.context?.ecosystemModel?.id;
+      if (!ecosystemModelID) {
+        this.logger.error(
+          `Unable to create actor group (${actorGroup.name}): ecosystemModel id not found`
+        );
+        return;
+      }
+
       try {
         await this.client.createActorGroup(
-          opportunity.id,
+          ecosystemModelID,
           actorGroup.name,
           actorGroup.description
         );
@@ -86,7 +93,7 @@ export class ActorPopulator extends AbstractPopulator {
     }
   }
 
-  private async processActors(opportunities: Opportunity[]) {
+  private async processActors(opportunities: Challenge[]) {
     this.logger.info('Processing actors');
 
     const actors = this.data.actors();
@@ -123,7 +130,7 @@ export class ActorPopulator extends AbstractPopulator {
         continue;
       }
 
-      const actorGroup = opportunity.actorGroups?.find(
+      const actorGroup = opportunity.context?.ecosystemModel?.actorGroups?.find(
         g => g.name.toLowerCase() === actor.actorGroup.toLowerCase()
       );
 
@@ -158,7 +165,7 @@ export class ActorPopulator extends AbstractPopulator {
     }
   }
 
-  private async processRelations(opportunities: Opportunity[]) {
+  private async processRelations(opportunities: Challenge[]) {
     this.logger.info('Processing relations');
 
     const relations = this.data.relations();
@@ -224,7 +231,7 @@ export class ActorPopulator extends AbstractPopulator {
     }
   }
 
-  private async processAspects(opportunities: Opportunity[]) {
+  private async processAspects(opportunities: Challenge[]) {
     this.logger.info('Processing aspects');
 
     const aspects = this.data.aspects();
@@ -261,9 +268,17 @@ export class ActorPopulator extends AbstractPopulator {
         continue;
       }
 
+      const contextID = opportunity.context?.id;
+      if (!contextID) {
+        this.logger.warn(
+          `Skipping aspect '${aspect.title}'. Missing context ID on '${aspect.opportunity}'!`
+        );
+        continue;
+      }
+
       try {
         await this.client.createAspect(
-          opportunity.id,
+          contextID,
           aspect.title,
           aspect.framing,
           aspect.explanation
