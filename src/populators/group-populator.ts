@@ -34,7 +34,7 @@ export class GroupPopulator extends AbstractPopulator {
       this.profiler.profile(organisationProfileID);
 
       try {
-        await this.client.createEcoverseGroup(group.name);
+        await this.client.createEcoverseGroup(group.name, group.description);
 
         this.logger.info(`Added group: ${group.name}`);
       } catch (e) {
