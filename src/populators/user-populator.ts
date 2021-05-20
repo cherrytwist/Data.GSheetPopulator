@@ -172,7 +172,7 @@ export class UserPopulator extends AbstractPopulator {
   ) {
     for (const opportunity of userOpportunities) {
       try {
-        await this.client.addUserToOpportunity(userID, opportunity);
+        await this.client.addUserToOpportunity(opportunity, userID);
         this.logger.info(`... added user to opportunity: ${opportunity}`);
       } catch (e) {
         if (e.response && e.response.errors) {
