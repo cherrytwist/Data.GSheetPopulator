@@ -15,29 +15,19 @@ export class ActorPopulator extends AbstractPopulator {
   }
 
   async populate() {
-    let opportunities =
-      ((await this.client.opportunities()) as Challenge[]) || [];
-    await this.processActorGroups(opportunities);
-    // Refresh opportunites/Load actor groups
-    opportunities = ((await this.client.opportunities()) as Challenge[]) || [];
-    debugger;
-    await this.processActors(opportunities);
-    await this.processRelations(opportunities);
-    await this.processAspects(opportunities);
+    await this.processActorGroups();
+    await this.processActors();
+    await this.processRelations();
+    await this.processAspects();
   }
 
-  private async processActorGroups(opportunities: Challenge[]) {
+  private async processActorGroups() {
     this.logger.info('Processing actor groups');
 
     const actorGroups = this.data.actorGroups();
 
     if (actorGroups.length === 0) {
       this.logger.warn('No actor groups to import!');
-      return;
-    }
-
-    if (!(opportunities && opportunities.length > 0)) {
-      this.logger.error('Can not process actor groups. Missing opportunities');
       return;
     }
 
@@ -52,8 +42,9 @@ export class ActorPopulator extends AbstractPopulator {
       const actorGroupProfileID = '===> actorGroupCreation - FULL';
       this.profiler.profile(actorGroupProfileID);
 
-      const opportunity = opportunities.find(
-        c => c.textID.toLowerCase() === actorGroup.opportunity.toLowerCase()
+      const opportunity = await this.client.opportunityByNameID(
+        actorGroup.ecoverseID,
+        actorGroup.opportunity
       );
 
       if (!opportunity) {
@@ -93,18 +84,13 @@ export class ActorPopulator extends AbstractPopulator {
     }
   }
 
-  private async processActors(opportunities: Challenge[]) {
+  private async processActors() {
     this.logger.info('Processing actors');
 
     const actors = this.data.actors();
 
     if (actors.length === 0) {
       this.logger.warn('No actors to import!');
-      return;
-    }
-
-    if (!(opportunities && opportunities.length > 0)) {
-      this.logger.error('Can not process actors. Missing opportunities');
       return;
     }
 
@@ -119,8 +105,9 @@ export class ActorPopulator extends AbstractPopulator {
       const actorProfileID = '===> actorCreation - FULL';
       this.profiler.profile(actorProfileID);
 
-      const opportunity = opportunities.find(
-        c => c.textID.toLowerCase() === actor.opportunity.toLowerCase()
+      const opportunity = await this.client.opportunityByNameID(
+        actor.ecoverseID,
+        actor.opportunity
       );
 
       if (!opportunity) {
@@ -165,18 +152,13 @@ export class ActorPopulator extends AbstractPopulator {
     }
   }
 
-  private async processRelations(opportunities: Challenge[]) {
+  private async processRelations() {
     this.logger.info('Processing relations');
 
     const relations = this.data.relations();
 
     if (relations.length === 0) {
       this.logger.warn('No relations to import!');
-      return;
-    }
-
-    if (!(opportunities && opportunities.length > 0)) {
-      this.logger.error('Can not process relations. Missing opportunities');
       return;
     }
 
@@ -193,8 +175,9 @@ export class ActorPopulator extends AbstractPopulator {
       const relationProfileID = '===> relationCreation - FULL';
       this.profiler.profile(relationProfileID);
 
-      const opportunity = opportunities.find(
-        c => c.textID.toLowerCase() === relation.opportunity.toLowerCase()
+      const opportunity = await this.client.opportunityByNameID(
+        relation.ecoverseID,
+        relation.opportunity
       );
 
       if (!opportunity) {
@@ -231,18 +214,13 @@ export class ActorPopulator extends AbstractPopulator {
     }
   }
 
-  private async processAspects(opportunities: Challenge[]) {
+  private async processAspects() {
     this.logger.info('Processing aspects');
 
     const aspects = this.data.aspects();
 
     if (aspects.length === 0) {
       this.logger.warn('No aspects to import!');
-      return;
-    }
-
-    if (!(opportunities && opportunities.length > 0)) {
-      this.logger.error('Can not process aspects. Missing opportunities');
       return;
     }
 
@@ -257,8 +235,9 @@ export class ActorPopulator extends AbstractPopulator {
       const aspectProfileID = '===> aspectCreation - FULL';
       this.profiler.profile(aspectProfileID);
 
-      const opportunity = opportunities.find(
-        c => c.textID.toLowerCase() === aspect.opportunity.toLowerCase()
+      const opportunity = await this.client.opportunityByNameID(
+        aspect.ecoverseID,
+        aspect.opportunity
       );
 
       if (!opportunity) {

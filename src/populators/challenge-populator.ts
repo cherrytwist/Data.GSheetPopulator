@@ -20,39 +20,47 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async populate() {
     this.logger.info('Processing challenges');
-    const challenges = this.data.challenges();
+    const challengesData = this.data.challenges();
 
-    if (challenges.length === 0) {
+    if (challengesData.length === 0) {
       this.logger.warn('No challenges to import!');
       return;
     }
 
-    const existingChallenges = await this.client.challenges();
     this.organisations = ((await this.client.organisations()) ||
       []) as Organisation[];
 
     // Iterate over the rows
-    for (const challenge of challenges) {
-      if (!challenge.name) {
+    for (const challengeData of challengesData) {
+      if (!challengeData.displayName) {
         // End of valid challenges
         break;
       }
 
       // start processing
-      this.logger.info(`Processing challenge: ${challenge.name}....`);
+      this.logger.info(`Processing challenge: ${challengeData.nameID}....`);
       const challengeProfileID = '===> challengeCreation - FULL';
       this.profiler.profile(challengeProfileID);
 
-      const existingChallenge = existingChallenges?.find(
-        x => x.name === challenge.name
+      if (!challengeData.ecoverseID) {
+        this.logger.warn(
+          `Skipping challenge (${challengeData.nameID}): no ecoverseID specified`
+        );
+        return;
+      }
+
+      const existingChallenge = await this.client.challengeByNameID(
+        challengeData.ecoverseID,
+        challengeData.nameID
       );
+
       if (existingChallenge) {
         this.logger.info(
-          `Challenge ${challenge.name} already exists! Updating`
+          `Challenge ${challengeData.displayName} already exists! Updating`
         );
-        await this.updateChallengeContext(existingChallenge.id, challenge);
+        await this.updateChallengeContext(existingChallenge.id, challengeData);
       } else {
-        await this.createChallenge(challenge);
+        await this.createChallenge(challengeData);
       }
       this.profiler.profile(challengeProfileID);
     }
@@ -61,9 +69,9 @@ export class ChallengePopulator extends AbstractPopulator {
   async createChallenge(challenge: Challenge) {
     try {
       await this.client.createChallenge({
-        parentID: '1', // TODO: Change it with the ID of the Ecoverse when multi ecoverse feature is finished
-        name: challenge.name,
-        textID: challenge.textId,
+        parentID: challenge.ecoverseID,
+        displayName: challenge.displayName,
+        nameID: challenge.nameID,
         context: {
           tagline: challenge.tagline,
           background: challenge.background,
@@ -74,16 +82,16 @@ export class ChallengePopulator extends AbstractPopulator {
         },
       });
 
-      this.logger.info(`....created: ${challenge.name}`);
+      this.logger.info(`....created: ${challenge.displayName}`);
       await this.updateLeadingOrg(challenge);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
-          `Unable to create challenge (${challenge.name}):${e.response.errors[0].message}`
+          `Unable to create challenge (${challenge.displayName}):${e.response.errors[0].message}`
         );
       } else {
         this.logger.error(
-          `Unable to create challenge (${challenge.name}): ${e.message}`
+          `Unable to create challenge (${challenge.displayName}): ${e.message}`
         );
       }
     }
@@ -102,16 +110,16 @@ export class ChallengePopulator extends AbstractPopulator {
           who: challenge.who,
         },
       });
-      this.logger.info(`....updated: ${challenge.name}`);
+      this.logger.info(`....updated: ${challenge.displayName}`);
       await this.updateLeadingOrg(challenge);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
-          `Unable to update challenge (${challenge.name}):${e.response.errors[0].message}`
+          `Unable to update challenge (${challenge.displayName}):${e.response.errors[0].message}`
         );
       } else {
         this.logger.error(
-          `Unable to update challenge (${challenge.name}): ${e.message}`
+          `Unable to update challenge (${challenge.displayName}): ${e.message}`
         );
       }
     }
@@ -142,35 +150,42 @@ export class ChallengePopulator extends AbstractPopulator {
     return references.getReferences();
   }
 
-  private async updateLeadingOrg(challenge: Challenge) {
+  private async updateLeadingOrg(challengeData: Challenge) {
     this.logger.info(
-      `Updating challenge leading organisations for : ${challenge.name}`
+      `Updating challenge leading organisations for : ${challengeData.displayName}`
     );
 
-    const organisationIDs = this.organisations.filter(o =>
-      challenge.leadingOrganisations.some(
-        lo => lo.toLowerCase() === o.textID.toLowerCase()
+    const organisationLeads = this.organisations.filter(o =>
+      challengeData.leadingOrganisations.some(
+        lo => lo.toLowerCase() === o.nameID.toLowerCase()
       )
     );
 
-    for (const { id } of organisationIDs) {
+    for (const organisationLead of organisationLeads) {
       try {
-        await this.client.addChallengeLead(challenge.textId, id);
+        const challengeByNameID = await this.client.challengeByNameID(
+          challengeData.ecoverseID,
+          challengeData.nameID
+        );
+        await this.client.addChallengeLead(
+          challengeByNameID?.id,
+          organisationLead.nameID
+        );
         this.logger.info(
-          `Added organisation (${id}) as lead to challenge: ${challenge.textId}`
+          `Added organisation (${organisationLead.nameID}) as lead to challenge: ${challengeData.nameID}`
         );
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to update leading organisation for challenge (${challenge.name}):${e.response.errors[0].message}`
+            `Unable to update leading organisation for challenge (${challengeData.displayName}):${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(
-            `Unable to update leading organisation for challenge (${challenge.name}): ${e.message}`
+            `Unable to update leading organisation for challenge (${challengeData.displayName}): ${e.message}`
           );
         }
       } finally {
-        this.logger.info(`... updated ${challenge.name}`);
+        this.logger.info(`... updated ${challengeData.displayName}`);
       }
     }
   }

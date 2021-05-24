@@ -28,24 +28,26 @@ export class OrganizationPopulator extends AbstractPopulator {
     const existingOrganisations = await this.client.organisations();
 
     for (const organisationData of organisationsData) {
-      if (!organisationData.name) {
+      if (!organisationData.displayName) {
         // End of valid organisations
         break;
       }
 
       // start processing
-      this.logger.info(`Processing organisation: ${organisationData.name}....`);
+      this.logger.info(
+        `Processing organisation: ${organisationData.displayName}....`
+      );
       const organisationProfileID = '===> organisationCreation - FULL';
       this.profiler.profile(organisationProfileID);
 
       const existingOrganisation = existingOrganisations?.find(
-        x => x.name === organisationData.name
+        x => x.nameID === organisationData.nameID
       );
 
       try {
         if (existingOrganisation) {
           this.logger.info(
-            `Organisation ${organisationData.name} already exists! Updating`
+            `Organisation ${organisationData.displayName} already exists! Updating`
           );
         } else {
           await this.createOrganisation(organisationData);
@@ -53,7 +55,7 @@ export class OrganizationPopulator extends AbstractPopulator {
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create organisation (${organisationData.name}):${e.response.errors[0].message}`
+            `Unable to create organisation (${organisationData.displayName}):${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create opportunity: ${e}`);
@@ -66,8 +68,8 @@ export class OrganizationPopulator extends AbstractPopulator {
 
   async createOrganisation(organisationData: Organization) {
     const newOrganisation = await this.client.createOrganisation(
-      organisationData.name,
-      organisationData.textId
+      organisationData.displayName,
+      organisationData.nameID
     );
 
     const profileID = newOrganisation?.profile.id;

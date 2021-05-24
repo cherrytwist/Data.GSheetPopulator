@@ -26,34 +26,42 @@ export class OpportunityPopulator extends AbstractPopulator {
       return;
     }
 
-    const existingOpportunities = await this.client.opportunities();
-
     for (const opportunityData of opportunities) {
-      if (!opportunityData.name) {
+      if (!opportunityData.displayName) {
         // End of valid opportunities
         break;
       }
 
       // start processing
-      this.logger.info(`Processing opportunity: ${opportunityData.name}....`);
+      this.logger.info(
+        `Processing opportunity: ${opportunityData.displayName}....`
+      );
       const opportunityProfileID = '===> opportunityCreation - FULL';
       this.profiler.profile(opportunityProfileID);
 
       if (!opportunityData.challenge) {
         this.logger.warn(
-          `Skipping opportunity '${opportunityData.name}'. Missing challenge '${opportunityData.challenge}'!`
+          `Skipping opportunity '${opportunityData.displayName}'. Missing challenge '${opportunityData.challenge}'!`
         );
         continue;
       }
 
-      const existingOpportunity = existingOpportunities?.find(
-        x => x.textID === opportunityData.textId
+      if (!opportunityData.ecoverseID) {
+        this.logger.warn(
+          `Skipping opportunity (${opportunityData.nameID}): no ecoverseID specified`
+        );
+        return;
+      }
+
+      const existingOpportunity = await this.client.opportunityByNameID(
+        opportunityData.ecoverseID,
+        opportunityData.nameID
       );
 
       try {
         if (existingOpportunity) {
           this.logger.info(
-            `Opportunity ${opportunityData.name} already exists! Updating`
+            `Opportunity ${opportunityData.displayName} already exists! Updating`
           );
           await this.updateOpportunity(opportunityData, existingOpportunity);
         } else {
@@ -62,7 +70,7 @@ export class OpportunityPopulator extends AbstractPopulator {
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create opportunity (${opportunityData.name}): ${e.response.errors[0].message}`
+            `Unable to create opportunity (${opportunityData.displayName}): ${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create opportunity: ${e}`);
@@ -76,8 +84,8 @@ export class OpportunityPopulator extends AbstractPopulator {
   async createOpportunity(opportunityData: Opportunity) {
     await this.client.createOpportunity({
       challengeID: opportunityData.challenge,
-      name: opportunityData.name,
-      textID: opportunityData.textId,
+      displayName: opportunityData.displayName,
+      nameID: opportunityData.nameID,
       context: {
         background: opportunityData.background,
         impact: opportunityData.impact,
@@ -88,7 +96,7 @@ export class OpportunityPopulator extends AbstractPopulator {
       },
     });
 
-    this.logger.info(`...added opportunity: ${opportunityData.name}`);
+    this.logger.info(`...added opportunity: ${opportunityData.displayName}`);
   }
 
   private getReferences(opportunityData: Opportunity) {
@@ -116,8 +124,8 @@ export class OpportunityPopulator extends AbstractPopulator {
     existingOpportunity: any
   ) {
     await this.client.updateChallenge({
-      ID: existingOpportunity.id,
-      name: opportunityData.name,
+      ID: existingOpportunity.nameID,
+      displayName: opportunityData.displayName,
       context: {
         background: opportunityData.background,
         impact: opportunityData.impact,
@@ -139,6 +147,6 @@ export class OpportunityPopulator extends AbstractPopulator {
       },
     });
 
-    this.logger.info(`...updated opportunity: ${opportunityData.name}`);
+    this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
   }
 }

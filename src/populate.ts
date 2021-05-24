@@ -11,7 +11,7 @@ const main = async () => {
 
   const ctClient = await createClientUsingEnvVars();
   logger.info(`Cherrytwist server: ${ctClient.config.graphqlEndpoint}`);
-  await ctClient.validateConnection();
+  //await ctClient.validateConnection();
 
   const data = await createDataAdapterUsingEnvVars();
   logger.info(`Cherrytwist data template: ${data.filename}`);

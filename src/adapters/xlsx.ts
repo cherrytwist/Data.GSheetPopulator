@@ -51,6 +51,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       impact: x.IMPACT,
       actorGroup: x.ACTOR_GROUP,
       value: x.VALUE,
+      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
   }
@@ -61,6 +62,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     return result.map(x => ({
       name: x.NAME,
       description: x.DESCRIPTION,
+      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
   }
@@ -72,6 +74,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       title: x.TITLE,
       explanation: x.EXPLANATION,
       framing: x.FRAMING,
+      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
   }
@@ -80,14 +83,14 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const sheet = this.workbook.Sheets[Sheets.Challenges];
     const result = XLSX.utils.sheet_to_json(sheet) as ChallengesSheet[];
     return result.map(x => ({
-      name: x.NAME,
-      textID: x.TEXT_ID,
+      nameID: x.NAME_ID,
+      ecoverseID: x.ECOVERSE,
+      displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
       image: x.IMAGE,
       imageFile: x.IMAGE_FILE,
       impact: x.IMPACT,
       tagline: x.TAGLINE,
-      textId: x.TEXT_ID,
       video: x.VIDEO,
       vision: x.VISION,
       visual: x.VISUAL,
@@ -102,7 +105,8 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const sheet = this.workbook.Sheets[Sheets.Users];
     const result = XLSX.utils.sheet_to_json(sheet) as UserSheet[];
     return result.map(x => ({
-      name: x.NAME,
+      nameID: x.NAME_ID,
+      displayName: x.DISPLAY_NAME,
       firstName: x.FIRST_NAME,
       lastName: x.LAST_NAME,
       email: x.EMAIL,
@@ -112,15 +116,17 @@ export class XLSXAdapter extends AbstractDataAdapter {
       gender: x.GENDER,
       avatar: x.AVATAR,
       bio: x.BIO,
-      challenges: toArray(x.CHALLENGES),
       color: x.COLOR,
-      groups: toArray(x.GROUPS),
       jobTitle: x.JOB_TITLE,
       keywords: toArray(x.KEYWORDS),
       linkedin: x.LINKEDIN,
       organization: x.ORGANISATION,
       skills: toArray(x.SKILLS),
       twitter: x.TWITTER,
+      // Membership
+      ecoverseID: x.ECOVERSE,
+      challenges: toArray(x.CHALLENGES),
+      groups: toArray(x.GROUPS),
       opportunities: toArray(x.OPPORTUNITIES),
     }));
   }
@@ -128,15 +134,15 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const sheet = this.workbook.Sheets[Sheets.Opportunities];
     const result = XLSX.utils.sheet_to_json(sheet) as OpportunitiesSheet[];
     return result.map(x => ({
-      id: x.ID,
-      name: x.NAME,
-      textID: x.TEXT_ID,
+      nameID: x.NAME_ID,
+      ecoverseID: x.ECOVERSE,
+      displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
       challenge: x.CHALLENGE,
       image: x.IMAGE,
       impact: x.IMPACT,
       tagline: x.TAGLINE,
-      textId: x.TEXT_ID,
+      textId: x.NAME_ID,
       video: x.VIDEO,
       vision: x.VISION,
       jitsi: x.JITSI,
@@ -149,6 +155,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const result = XLSX.utils.sheet_to_json(sheet) as GroupsSheet[];
     return result.map(x => ({
       name: x.NAME,
+      ecoverseID: x.ECOVERSE,
       description: x.DESCRIPTION,
     }));
   };
@@ -158,8 +165,8 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const result = XLSX.utils.sheet_to_json(sheet) as EcoverseSheet[];
 
     return result.map(ecoverse => ({
-      name: ecoverse.NAME,
-      textId: ecoverse.TEXT_ID,
+      displayName: ecoverse.DISPLAY_NAME,
+      nameID: ecoverse.NAME_ID,
       background: ecoverse.BACKGROUND,
       vision: ecoverse.VISION,
       impact: ecoverse.IMPACT,
@@ -176,9 +183,8 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const sheet = this.workbook.Sheets[Sheets.Organisations];
     const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
     return result.map(x => ({
-      name: x.NAME,
-      textId: x.TEXT_ID,
-      leading: toArray(x.LEADING),
+      displayName: x.DISPLAY_NAME,
+      nameID: x.NAME_ID,
       description: x.DESCRIPTION,
       keywords: toArray(x.KEYWORDS),
       logo: x.LOGO,
@@ -196,6 +202,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       actorRole: x.ACTOR_ROLE,
       actorType: x.ACTOR_TYPE,
       description: x.DESCRIPTION,
+      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
   }

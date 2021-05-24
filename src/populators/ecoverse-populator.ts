@@ -1,6 +1,7 @@
 import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { Ecoverse } from '../models/ecoverse';
 import { AbstractPopulator } from './abstract-populator';
 
 export class EcoversePopulator extends AbstractPopulator {
@@ -31,98 +32,124 @@ export class EcoversePopulator extends AbstractPopulator {
     }
 
     // Iterate over the rows
-    const ecoverse = ecoverses[0];
-    if (!ecoverse.name) {
+    const ecoverseData = ecoverses[0];
+    if (!ecoverseData.displayName) {
       // End of valid organisations
       return;
     }
 
     // start processing
-    this.logger.info(`Processing ecoverse: ${ecoverse.name}....`);
+    this.logger.info(`Processing ecoverse: ${ecoverseData.nameID}....`);
     const ecoverseProfileID = '===> ecoverseUpdate - FULL';
     this.profiler.profile(ecoverseProfileID);
 
-    //todo - set the organisation by name
-    const organisationName = ecoverse.host;
-    let hostOrgID: string | undefined = undefined;
-    if (organisationName) {
-      try {
-        const orgResponse = await this.client.organisation(organisationName);
-        hostOrgID = orgResponse?.id;
-      } catch (e) {
-        if (e.response && e.response.errors) {
-          this.logger.error(
-            `Unable to identify ecoverse host (${organisationName}):${e.response.errors[0].message}`
-          );
-        } else {
-          this.logger.error(
-            `Unable to update ecoverse (${organisationName}): ${e.message}`
-          );
-        }
-      }
-    }
-
+    const ecoverseExists = await this.client.ecoverseExists(
+      ecoverseData.nameID
+    );
     try {
-      await this.client.updateEcoverse({
-        ID: '1',
-        name: ecoverse.name,
-        hostID: hostOrgID,
-        context: {
-          background: ecoverse.background,
-          impact: ecoverse.impact,
-          tagline: ecoverse.tagline,
-          vision: ecoverse.vision,
-          who: ecoverse.who,
-          // references: [
-          //   {
-          //     name: 'website',
-          //     uri: ecoverse.refWebsite,
-          //     description: 'The ecoverse website',
-          //   },
-          //   {
-          //     name: 'logo',
-          //     uri: ecoverse.refLogo,
-          //     description: 'The ecoverse logo',
-          //   },
-          //   {
-          //     name: 'repo',
-          //     uri: ecoverse.refRepo,
-          //     description: 'The ecoverse repository',
-          //   },
-          // ],
-        },
-      });
-      await this.client.updateReferencesOnEcoverse([
+      if (ecoverseExists) {
+        await this.updateEcoverse(ecoverseData);
+      } else {
+        await this.createEcoverse(ecoverseData);
+      }
+
+      await this.client.updateReferencesOnEcoverse(ecoverseData.nameID, [
         {
           name: 'website',
-          uri: ecoverse.refWebsite,
+          uri: ecoverseData.refWebsite,
           description: 'The ecoverse website',
         },
         {
           name: 'logo',
-          uri: ecoverse.refLogo,
+          uri: ecoverseData.refLogo,
           description: 'The ecoverse logo',
         },
         {
           name: 'repo',
-          uri: ecoverse.refRepo,
+          uri: ecoverseData.refRepo,
           description: 'The ecoverse repository',
         },
       ]);
-
-      this.logger.info(`Ecoverse updated: ${ecoverse.name}`);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
-          `Unable to update ecoverse (${ecoverse.name}):${e.response.errors[0].message}`
+          `Unable to create/update ecoverse (${ecoverseData.nameID}):${e.response.errors[0].message}`
         );
       } else {
         this.logger.error(
-          `Unable to update ecoverse (${ecoverse.name}): ${e.message}`
+          `Unable to create/update ecoverse (${ecoverseData.nameID}): ${e.message}`
         );
       }
     } finally {
       this.profiler.profile(ecoverseProfileID);
     }
+  }
+
+  async updateEcoverse(ecoverseData: Ecoverse) {
+    await this.client.updateEcoverse({
+      ID: ecoverseData.nameID,
+      displayName: ecoverseData.displayName,
+      hostID: ecoverseData.host,
+      context: {
+        background: ecoverseData.background,
+        impact: ecoverseData.impact,
+        tagline: ecoverseData.tagline,
+        vision: ecoverseData.vision,
+        who: ecoverseData.who,
+        // references: [
+        //   {
+        //     name: 'website',
+        //     uri: ecoverse.refWebsite,
+        //     description: 'The ecoverse website',
+        //   },
+        //   {
+        //     name: 'logo',
+        //     uri: ecoverse.refLogo,
+        //     description: 'The ecoverse logo',
+        //   },
+        //   {
+        //     name: 'repo',
+        //     uri: ecoverse.refRepo,
+        //     description: 'The ecoverse repository',
+        //   },
+        // ],
+      },
+    });
+
+    this.logger.info(`Ecoverse updated: ${ecoverseData.displayName}`);
+  }
+
+  async createEcoverse(ecoverseData: Ecoverse) {
+    await this.client.createEcoverse({
+      nameID: ecoverseData.nameID,
+      displayName: ecoverseData.displayName,
+      hostID: ecoverseData.host,
+      context: {
+        background: ecoverseData.background,
+        impact: ecoverseData.impact,
+        tagline: ecoverseData.tagline,
+        vision: ecoverseData.vision,
+        who: ecoverseData.who,
+        // references: [
+        //   {
+        //     name: 'website',
+        //     uri: ecoverse.refWebsite,
+        //     description: 'The ecoverse website',
+        //   },
+        //   {
+        //     name: 'logo',
+        //     uri: ecoverse.refLogo,
+        //     description: 'The ecoverse logo',
+        //   },
+        //   {
+        //     name: 'repo',
+        //     uri: ecoverse.refRepo,
+        //     description: 'The ecoverse repository',
+        //   },
+        // ],
+      },
+    });
+
+    this.logger.info(`Ecoverse created: ${ecoverseData.nameID}`);
   }
 }

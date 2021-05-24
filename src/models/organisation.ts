@@ -1,7 +1,6 @@
 export type Organization = {
-  name: string;
-  textId: string;
-  leading: string[];
+  nameID: string;
+  displayName: string;
   description: string;
   keywords: string[];
   logoFile: string;
