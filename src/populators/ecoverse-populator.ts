@@ -25,12 +25,6 @@ export class EcoversePopulator extends AbstractPopulator {
       return;
     }
 
-    if (ecoverses.length > 1) {
-      this.logger.warn(
-        'More than 1 ecoverse in source. Will import only the first one!'
-      );
-    }
-
     // Iterate over the rows
     const ecoverseData = ecoverses[0];
     if (!ecoverseData.displayName) {
