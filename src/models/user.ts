@@ -1,9 +1,8 @@
 export type User = {
+  nameID: string;
   firstName: string;
   lastName: string;
-  name: string;
-  challenges: string[];
-  groups: string[];
+  displayName: string;
   email: string;
   phone: string;
   city: string;
@@ -11,7 +10,6 @@ export type User = {
   gender: string;
   avatar: string;
   organization: string;
-  opportunities: string[];
   jobTitle: string;
   bio: string;
   skills: string[];
@@ -19,4 +17,9 @@ export type User = {
   linkedin: string;
   twitter: string;
   color: string;
+  // membership within an ecoverse related fields
+  ecoverseID: string;
+  challenges: string[];
+  opportunities: string[];
+  groups: string[];
 };

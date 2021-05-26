@@ -23,119 +23,128 @@ export class UserPopulator extends AbstractPopulator {
   async populate() {
     this.logger.info('Processing users');
 
-    const users = this.data.users();
+    const usersData = this.data.users();
 
-    if (users.length === 0) {
+    if (usersData.length === 0) {
       this.logger.warn('No users to import!');
       return;
     }
 
     let count = 0;
-    for (const user of users) {
+    for (const userData of usersData) {
       // start processing
-      this.logger.info(`[${count}] - Processing user: ${user.name} ...`);
+      this.logger.info(`[${count}] - Processing user: ${userData.nameID} ...`);
       const userProfileID = '===> userCreation - FULL';
       this.profiler.profile(userProfileID);
 
-      try {
-        // Add the user
-        this.profiler.profile('userCreation');
-        const references: CreateReferenceInput[] = [];
-
-        if (user.linkedin) {
-          references.push({
-            name: 'LinkedIn',
-            uri: user.linkedin,
-            description: 'LinkedIn profile',
-          });
-        }
-
-        if (user.twitter) {
-          references.push({
-            name: 'Twitter',
-            uri: user.twitter,
-            description: 'Twitter profile',
-          });
-        }
-
-        const userData: CreateUserInput = {
-          name: user.name,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          gender: user.gender,
-          email: user.email,
-          city: user.city,
-          country: user.country,
-          phone: user.phone,
-          profileData: {
-            avatar: user.avatar,
-            description: user.bio,
-            referencesData: references,
-            tagsetsData: [
-              {
-                name: Tagsets.SKILLS,
-                tags: user.skills,
-              },
-              {
-                name: Tagsets.KEYWORDS,
-                tags: user.keywords,
-              },
-              {
-                name: Tagsets.ORGANISATION,
-                tags: [user.organization],
-              },
-              {
-                name: Tagsets.ORGANISATION_ROLES,
-                tags: [user.jobTitle],
-              },
-            ],
-          },
-        };
-
-        const createdUser = await this.client.createUser(userData);
-
-        if (!createdUser) {
-          this.logger.error(`Error creating user: ${userData.name}`);
-          return;
-        }
-
-        this.profiler.profile('userCreation');
-        const userProfileID = createdUser.profile?.id || '';
-
-        this.logger.info(`... created user: ${createdUser.name}`);
-
-        // add the user to the ecoverse
-        await this.client.addUserToEcoverse(createdUser.id);
-
-        // Add the user to the challenge user group if applicable
-        await this.addUserToChallenges(user);
-
-        // Add the user to groups
-        await this.addUserToGroups(
-          createdUser.id,
-          createdUser.name,
-          user.groups
-        );
-        await this.addUserToOpportunities(
-          createdUser.id,
-          createdUser.name,
-          user.opportunities
-        );
-
-        count++;
-        //if (count >20) break;
-        this.profiler.profile(userProfileID);
-      } catch (e) {
-        if (e.response && e.response.errors) {
-          this.logger.error(
-            `Could not create user: ${e.response.errors[0].message}`
-          );
-        } else {
-          this.logger.error(`Could not create user: ${e}`);
+      const existingUser = await this.client.user(userData.nameID);
+      if (existingUser) {
+        this.logger.warn(`[${count}] User already exists: ${userData.nameID}`);
+      } else {
+        this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
+        try {
+          await this.createUser(userData);
+        } catch (e) {
+          if (e.response && e.response.errors) {
+            this.logger.error(
+              `Could not create user: ${e.response.errors[0].message}`
+            );
+          } else {
+            this.logger.error(`Could not create user: ${e}`);
+          }
         }
       }
+      count++;
     }
     this.logger.info(`Iterated over ${count} user entries`);
+  }
+
+  async createUser(userData: any) {
+    // Add the user
+    this.profiler.profile('userCreation');
+    const references: CreateReferenceInput[] = [];
+
+    if (userData.linkedin) {
+      references.push({
+        name: 'LinkedIn',
+        uri: userData.linkedin,
+        description: 'LinkedIn profile',
+      });
+    }
+
+    if (userData.twitter) {
+      references.push({
+        name: 'Twitter',
+        uri: userData.twitter,
+        description: 'Twitter profile',
+      });
+    }
+
+    const userInputData: CreateUserInput = {
+      nameID: userData.nameID,
+      displayName: userData.displayName,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      gender: userData.gender,
+      email: userData.email,
+      city: userData.city,
+      country: userData.country,
+      phone: userData.phone,
+      profileData: {
+        avatar: userData.avatar,
+        description: userData.bio,
+        referencesData: references,
+        tagsetsData: [
+          {
+            name: Tagsets.SKILLS,
+            tags: userData.skills,
+          },
+          {
+            name: Tagsets.KEYWORDS,
+            tags: userData.keywords,
+          },
+          {
+            name: Tagsets.ORGANISATION,
+            tags: [userData.organization],
+          },
+          {
+            name: Tagsets.ORGANISATION_ROLES,
+            tags: [userData.jobTitle],
+          },
+        ],
+      },
+    };
+
+    const createdUser = await this.client.createUser(userInputData);
+
+    if (!createdUser) {
+      this.logger.error(`Error creating user: ${userData.nameID}`);
+      return;
+    }
+
+    this.profiler.profile('userCreation');
+    const userProfileID = createdUser.profile?.id || '';
+
+    this.logger.info(`... created user: ${createdUser.nameID}`);
+
+    // add the user to the ecoverse
+    await this.client.addUserToEcoverse(userData.ecoverseID, createdUser.id);
+
+    // Add the user to the challenge user group if applicable
+    await this.addUserToChallenges(userData);
+
+    // Add the user to groups
+    await this.addUserToGroups(
+      userData.ecoverseID,
+      createdUser.nameID,
+      userData.groups
+    );
+    await this.addUserToOpportunities(
+      userData.ecoverseID,
+      createdUser.nameID,
+      userData.opportunities
+    );
+    this.profiler.profile(userProfileID);
   }
 
   async addUserToChallenges(user: User) {
@@ -143,18 +152,22 @@ export class UserPopulator extends AbstractPopulator {
     if (!userInfo) throw new Error(`Unable to locate user: ${user.email}`);
     for (const challenge of user.challenges) {
       if (challenge) {
-        await this.client.addUserToChallenge(challenge, `${userInfo.id}`);
+        await this.client.addUserToChallenge(
+          user.ecoverseID,
+          challenge,
+          userInfo.nameID
+        );
       }
     }
   }
 
-  async addUserToGroups(userID: string, userName: string, groups: string[]) {
+  async addUserToGroups(ecoverseID: string, userID: string, groups: string[]) {
     for (const groupName of groups) {
-      const group = await this.client.groupByName(groupName);
+      const group = await this.client.groupByName(ecoverseID, groupName);
       // Add the user into the team members group
       if (!group) {
         this.logger.warn(
-          `Unable to find group (${groupName}) for user (${userName})`
+          `Unable to find group (${groupName}) for user (${userID})`
         );
         return false;
       } else {
@@ -166,22 +179,22 @@ export class UserPopulator extends AbstractPopulator {
   }
 
   async addUserToOpportunities(
+    ecoverseID: string,
     userID: string,
-    userName: string,
     userOpportunities: string[]
   ) {
     for (const opportunity of userOpportunities) {
       try {
-        await this.client.addUserToOpportunity(opportunity, userID);
+        await this.client.addUserToOpportunity(ecoverseID, opportunity, userID);
         this.logger.info(`... added user to opportunity: ${opportunity}`);
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Can not add user ${userName} to opportunity ${opportunity}: ${e.response.errors[0].message}`
+            `Can not add user ${userID} to opportunity ${opportunity}: ${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(
-            `Can not add user ${userName} to opportunity ${opportunity}: ${e}`
+            `Can not add user ${userID} to opportunity ${opportunity}: ${e}`
           );
         }
       }

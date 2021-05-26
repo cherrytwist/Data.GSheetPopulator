@@ -1,6 +1,6 @@
 export type Ecoverse = {
-  name: string;
-  textId: string;
+  nameID: string;
+  displayName: string;
   tagline: string;
   background: string;
   vision: string;

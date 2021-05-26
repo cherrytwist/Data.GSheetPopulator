@@ -4,5 +4,6 @@ export type Relation = {
   actorType: string;
   actorRole: string;
   description: string;
+  ecoverseID: string;
   opportunity: string;
 };

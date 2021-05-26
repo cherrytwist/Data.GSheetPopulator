@@ -33,8 +33,19 @@ export class GroupPopulator extends AbstractPopulator {
       const organisationProfileID = '===> groupCreation - FULL';
       this.profiler.profile(organisationProfileID);
 
+      if (!group.ecoverseID) {
+        this.logger.warn(
+          `Skipping group (${group.name}): no ecoverseID specified`
+        );
+        return;
+      }
+
       try {
-        await this.client.createEcoverseGroup(group.name, group.description);
+        await this.client.createEcoverseGroup(
+          group.ecoverseID,
+          group.name,
+          group.description
+        );
 
         this.logger.info(`Added group: ${group.name}`);
       } catch (e) {

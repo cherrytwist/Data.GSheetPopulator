@@ -1,6 +1,7 @@
 import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { Ecoverse } from '../models/ecoverse';
 import { AbstractPopulator } from './abstract-populator';
 
 export class EcoversePopulator extends AbstractPopulator {
@@ -24,105 +25,125 @@ export class EcoversePopulator extends AbstractPopulator {
       return;
     }
 
-    if (ecoverses.length > 1) {
-      this.logger.warn(
-        'More than 1 ecoverse in source. Will import only the first one!'
+    for (const ecoverseData of ecoverses) {
+      if (!ecoverseData.displayName) {
+        // End of valid organisations
+        return;
+      }
+
+      // start processing
+      this.logger.info(`Processing ecoverse: ${ecoverseData.nameID}....`);
+      const ecoverseProfileID = '===> ecoverseUpdate - FULL';
+      this.profiler.profile(ecoverseProfileID);
+
+      const ecoverseExists = await this.client.ecoverseExists(
+        ecoverseData.nameID
       );
-    }
-
-    // Iterate over the rows
-    const ecoverse = ecoverses[0];
-    if (!ecoverse.name) {
-      // End of valid organisations
-      return;
-    }
-
-    // start processing
-    this.logger.info(`Processing ecoverse: ${ecoverse.name}....`);
-    const ecoverseProfileID = '===> ecoverseUpdate - FULL';
-    this.profiler.profile(ecoverseProfileID);
-
-    //todo - set the organisation by name
-    const organisationName = ecoverse.host;
-    let hostOrgID: string | undefined = undefined;
-    if (organisationName) {
       try {
-        const orgResponse = await this.client.organisation(organisationName);
-        hostOrgID = orgResponse?.id;
+        if (ecoverseExists) {
+          await this.updateEcoverse(ecoverseData);
+        } else {
+          await this.createEcoverse(ecoverseData);
+        }
+
+        await this.client.updateReferencesOnEcoverse(ecoverseData.nameID, [
+          {
+            name: 'website',
+            uri: ecoverseData.refWebsite,
+            description: 'The ecoverse website',
+          },
+          {
+            name: 'logo',
+            uri: ecoverseData.refLogo,
+            description: 'The ecoverse logo',
+          },
+          {
+            name: 'repo',
+            uri: ecoverseData.refRepo,
+            description: 'The ecoverse repository',
+          },
+        ]);
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to identify ecoverse host (${organisationName}):${e.response.errors[0].message}`
+            `Unable to create/update ecoverse (${ecoverseData.nameID}):${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(
-            `Unable to update ecoverse (${organisationName}): ${e.message}`
+            `Unable to create/update ecoverse (${ecoverseData.nameID}): ${e.message}`
           );
         }
+      } finally {
+        this.profiler.profile(ecoverseProfileID);
       }
     }
+  }
 
-    try {
-      await this.client.updateEcoverse({
-        ID: '1',
-        name: ecoverse.name,
-        hostID: hostOrgID,
-        context: {
-          background: ecoverse.background,
-          impact: ecoverse.impact,
-          tagline: ecoverse.tagline,
-          vision: ecoverse.vision,
-          who: ecoverse.who,
-          // references: [
-          //   {
-          //     name: 'website',
-          //     uri: ecoverse.refWebsite,
-          //     description: 'The ecoverse website',
-          //   },
-          //   {
-          //     name: 'logo',
-          //     uri: ecoverse.refLogo,
-          //     description: 'The ecoverse logo',
-          //   },
-          //   {
-          //     name: 'repo',
-          //     uri: ecoverse.refRepo,
-          //     description: 'The ecoverse repository',
-          //   },
-          // ],
-        },
-      });
-      await this.client.updateReferencesOnEcoverse([
-        {
-          name: 'website',
-          uri: ecoverse.refWebsite,
-          description: 'The ecoverse website',
-        },
-        {
-          name: 'logo',
-          uri: ecoverse.refLogo,
-          description: 'The ecoverse logo',
-        },
-        {
-          name: 'repo',
-          uri: ecoverse.refRepo,
-          description: 'The ecoverse repository',
-        },
-      ]);
+  async updateEcoverse(ecoverseData: Ecoverse) {
+    await this.client.updateEcoverse({
+      ID: ecoverseData.nameID,
+      displayName: ecoverseData.displayName,
+      hostID: ecoverseData.host,
+      context: {
+        background: ecoverseData.background,
+        impact: ecoverseData.impact,
+        tagline: ecoverseData.tagline,
+        vision: ecoverseData.vision,
+        who: ecoverseData.who,
+        // references: [
+        //   {
+        //     name: 'website',
+        //     uri: ecoverse.refWebsite,
+        //     description: 'The ecoverse website',
+        //   },
+        //   {
+        //     name: 'logo',
+        //     uri: ecoverse.refLogo,
+        //     description: 'The ecoverse logo',
+        //   },
+        //   {
+        //     name: 'repo',
+        //     uri: ecoverse.refRepo,
+        //     description: 'The ecoverse repository',
+        //   },
+        // ],
+      },
+    });
 
-      this.logger.info(`Ecoverse updated: ${ecoverse.name}`);
-    } catch (e) {
-      if (e.response && e.response.errors) {
-        this.logger.error(
-          `Unable to update ecoverse (${ecoverse.name}):${e.response.errors[0].message}`
-        );
-      } else {
-        this.logger.error(
-          `Unable to update ecoverse (${ecoverse.name}): ${e.message}`
-        );
-      }
-    } finally {
-      this.profiler.profile(ecoverseProfileID);
-    }
+    this.logger.info(`Ecoverse updated: ${ecoverseData.displayName}`);
+  }
+
+  async createEcoverse(ecoverseData: Ecoverse) {
+    await this.client.createEcoverse({
+      nameID: ecoverseData.nameID,
+      displayName: ecoverseData.displayName,
+      hostID: ecoverseData.host,
+      context: {
+        background: ecoverseData.background,
+        impact: ecoverseData.impact,
+        tagline: ecoverseData.tagline,
+        vision: ecoverseData.vision,
+        who: ecoverseData.who,
+        // references: [
+        //   {
+        //     name: 'website',
+        //     uri: ecoverse.refWebsite,
+        //     description: 'The ecoverse website',
+        //   },
+        //   {
+        //     name: 'logo',
+        //     uri: ecoverse.refLogo,
+        //     description: 'The ecoverse logo',
+        //   },
+        //   {
+        //     name: 'repo',
+        //     uri: ecoverse.refRepo,
+        //     description: 'The ecoverse repository',
+        //   },
+        // ],
+      },
+    });
+
+    this.logger.info(`Ecoverse created: ${ecoverseData.nameID}`);
   }
 }

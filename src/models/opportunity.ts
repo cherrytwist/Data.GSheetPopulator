@@ -1,7 +1,7 @@
 export type Opportunity = {
-  id: string;
-  name: string;
-  textId: string;
+  nameID: string;
+  ecoverseID: string;
+  displayName: string;
   challenge: string;
   tagline: string;
   background: string;
