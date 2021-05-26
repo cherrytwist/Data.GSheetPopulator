@@ -70,10 +70,10 @@ export class OpportunityPopulator extends AbstractPopulator {
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create opportunity (${opportunityData.displayName}): ${e.response.errors[0].message}`
+            `Unable to create/update opportunity (${opportunityData.displayName}): ${e.response.errors[0].message}`
           );
         } else {
-          this.logger.error(`Could not create opportunity: ${e}`);
+          this.logger.error(`Could not create/update opportunity: ${e}`);
         }
       } finally {
         this.profiler.profile(opportunityProfileID);
@@ -123,8 +123,8 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityData: Opportunity,
     existingOpportunity: any
   ) {
-    await this.client.updateChallenge({
-      ID: existingOpportunity.nameID,
+    await this.client.updateOpportunity({
+      ID: existingOpportunity.id,
       displayName: opportunityData.displayName,
       context: {
         background: opportunityData.background,

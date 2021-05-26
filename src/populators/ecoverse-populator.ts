@@ -25,57 +25,57 @@ export class EcoversePopulator extends AbstractPopulator {
       return;
     }
 
-    // Iterate over the rows
-    const ecoverseData = ecoverses[0];
-    if (!ecoverseData.displayName) {
-      // End of valid organisations
-      return;
-    }
-
-    // start processing
-    this.logger.info(`Processing ecoverse: ${ecoverseData.nameID}....`);
-    const ecoverseProfileID = '===> ecoverseUpdate - FULL';
-    this.profiler.profile(ecoverseProfileID);
-
-    const ecoverseExists = await this.client.ecoverseExists(
-      ecoverseData.nameID
-    );
-    try {
-      if (ecoverseExists) {
-        await this.updateEcoverse(ecoverseData);
-      } else {
-        await this.createEcoverse(ecoverseData);
+    for (const ecoverseData of ecoverses) {
+      if (!ecoverseData.displayName) {
+        // End of valid organisations
+        return;
       }
 
-      await this.client.updateReferencesOnEcoverse(ecoverseData.nameID, [
-        {
-          name: 'website',
-          uri: ecoverseData.refWebsite,
-          description: 'The ecoverse website',
-        },
-        {
-          name: 'logo',
-          uri: ecoverseData.refLogo,
-          description: 'The ecoverse logo',
-        },
-        {
-          name: 'repo',
-          uri: ecoverseData.refRepo,
-          description: 'The ecoverse repository',
-        },
-      ]);
-    } catch (e) {
-      if (e.response && e.response.errors) {
-        this.logger.error(
-          `Unable to create/update ecoverse (${ecoverseData.nameID}):${e.response.errors[0].message}`
-        );
-      } else {
-        this.logger.error(
-          `Unable to create/update ecoverse (${ecoverseData.nameID}): ${e.message}`
-        );
-      }
-    } finally {
+      // start processing
+      this.logger.info(`Processing ecoverse: ${ecoverseData.nameID}....`);
+      const ecoverseProfileID = '===> ecoverseUpdate - FULL';
       this.profiler.profile(ecoverseProfileID);
+
+      const ecoverseExists = await this.client.ecoverseExists(
+        ecoverseData.nameID
+      );
+      try {
+        if (ecoverseExists) {
+          await this.updateEcoverse(ecoverseData);
+        } else {
+          await this.createEcoverse(ecoverseData);
+        }
+
+        await this.client.updateReferencesOnEcoverse(ecoverseData.nameID, [
+          {
+            name: 'website',
+            uri: ecoverseData.refWebsite,
+            description: 'The ecoverse website',
+          },
+          {
+            name: 'logo',
+            uri: ecoverseData.refLogo,
+            description: 'The ecoverse logo',
+          },
+          {
+            name: 'repo',
+            uri: ecoverseData.refRepo,
+            description: 'The ecoverse repository',
+          },
+        ]);
+      } catch (e) {
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Unable to create/update ecoverse (${ecoverseData.nameID}):${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(
+            `Unable to create/update ecoverse (${ecoverseData.nameID}): ${e.message}`
+          );
+        }
+      } finally {
+        this.profiler.profile(ecoverseProfileID);
+      }
     }
   }
 
