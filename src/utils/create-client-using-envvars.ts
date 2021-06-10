@@ -5,18 +5,20 @@ export const createClientUsingEnvVars = async () => {
   dotenv.config();
 
   const server = process.env.CT_SERVER || 'http://localhost:4455/graphql';
-  const apiEndpointConfig = () =>
-    process.env.AUTH_ORY_KRATOS_PUBLIC_BASE_URL ?? 'http://localhost:4433/';
-  const ctClient = new CherrytwistClient();
-  await ctClient.configureGraphqlClient({
+  const ctClient = new CherrytwistClient({
     graphqlEndpoint: server,
-    authInfo: {
+  });
+
+  const authenticationEnabled = await ctClient.isAuthenticationEnabled();
+  if (authenticationEnabled) {
+    ctClient.config.authInfo = {
       credentials: {
         email: process.env.AUTH_ADMIN_EMAIL ?? 'admin@cherrytwist.org',
         password: process.env.AUTH_ADMIN_PASSWORD ?? '!Rn5Ez5FuuyUNc!',
       },
-      apiEndpointFactory: apiEndpointConfig,
-    },
-  });
+    };
+
+    await ctClient.enableAuthentication();
+  }
   return ctClient;
 };
