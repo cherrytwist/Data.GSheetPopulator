@@ -87,21 +87,20 @@ export class XLSXAdapter extends AbstractDataAdapter {
       ecoverseID: x.ECOVERSE,
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
-      image: x.IMAGE,
-      imageFile: x.IMAGE_FILE,
       impact: x.IMPACT,
       tagline: x.TAGLINE,
-      video: x.VIDEO,
-      vision: x.VISION,
-      visual: x.VISUAL,
       who: x.WHO,
-      jitsi: x.JITSI,
+      vision: x.VISION,
+      visualAvatar: x.VISUAL_AVATAR,
+      visualBackground: x.VISUAL_BACKGROUND,
+      visualBanner: x.VISUAL_BANNER,
+      refVideo: x.REF_VIDEO,
+      refJitsi: x.REF_JITSI,
       leadingOrganisations: toArray(x.LEAD_ORGS),
     }));
   }
 
   public users(): User[] {
-    // TODO [ATS]: Add Challenges and Groups
     const sheet = this.workbook.Sheets[Sheets.Users];
     const result = XLSX.utils.sheet_to_json(sheet) as UserSheet[];
     return result.map(x => ({
@@ -139,14 +138,15 @@ export class XLSXAdapter extends AbstractDataAdapter {
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
       challenge: x.CHALLENGE,
-      image: x.IMAGE,
       impact: x.IMPACT,
       tagline: x.TAGLINE,
-      textId: x.NAME_ID,
-      video: x.VIDEO,
       vision: x.VISION,
-      jitsi: x.JITSI,
       who: x.WHO,
+      visualAvatar: x.VISUAL_AVATAR,
+      visualBackground: x.VISUAL_BACKGROUND,
+      visualBanner: x.VISUAL_BANNER,
+      refVideo: x.REF_VIDEO,
+      refJitsi: x.REF_JITSI,
     }));
   };
 
@@ -173,9 +173,11 @@ export class XLSXAdapter extends AbstractDataAdapter {
       tagline: ecoverse.TAGLINE,
       who: ecoverse.WHO,
       host: ecoverse.HOST,
-      refLogo: ecoverse.REF_LOGO,
-      refRepo: ecoverse.REF_REPO,
+      visualAvatar: ecoverse.VISUAL_AVATAR,
+      visualBackground: ecoverse.VISUAL_BACKGROUND,
+      visualBanner: ecoverse.VISUAL_BANNER,
       refWebsite: ecoverse.REF_WEBSITE,
+      refRepo: ecoverse.REF_REPO,
     }));
   }
 

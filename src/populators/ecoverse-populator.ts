@@ -27,7 +27,7 @@ export class EcoversePopulator extends AbstractPopulator {
 
     for (const ecoverseData of ecoverses) {
       if (!ecoverseData.displayName) {
-        // End of valid organisations
+        // End of valid ecoverses
         return;
       }
 
@@ -40,22 +40,18 @@ export class EcoversePopulator extends AbstractPopulator {
         ecoverseData.nameID
       );
       try {
-        if (ecoverseExists) {
-          await this.updateEcoverse(ecoverseData);
-        } else {
-          await this.createEcoverse(ecoverseData);
+        if (!ecoverseExists) {
+          const msg = `Specified ecoverse does not exist: ${ecoverseData.nameID}`;
+          this.logger.error(msg);
+          throw new Error(msg);
         }
+        await this.updateEcoverse(ecoverseData);
 
         await this.client.updateReferencesOnEcoverse(ecoverseData.nameID, [
           {
             name: 'website',
             uri: ecoverseData.refWebsite,
             description: 'The ecoverse website',
-          },
-          {
-            name: 'logo',
-            uri: ecoverseData.refLogo,
-            description: 'The ecoverse logo',
           },
           {
             name: 'repo',
@@ -66,13 +62,14 @@ export class EcoversePopulator extends AbstractPopulator {
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create/update ecoverse (${ecoverseData.nameID}):${e.response.errors[0].message}`
+            `Unable to update ecoverse (${ecoverseData.nameID}):${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(
-            `Unable to create/update ecoverse (${ecoverseData.nameID}): ${e.message}`
+            `Unable to update ecoverse (${ecoverseData.nameID}): ${e.message}`
           );
         }
+        throw e;
       } finally {
         this.profiler.profile(ecoverseProfileID);
       }
@@ -90,60 +87,14 @@ export class EcoversePopulator extends AbstractPopulator {
         tagline: ecoverseData.tagline,
         vision: ecoverseData.vision,
         who: ecoverseData.who,
-        // references: [
-        //   {
-        //     name: 'website',
-        //     uri: ecoverse.refWebsite,
-        //     description: 'The ecoverse website',
-        //   },
-        //   {
-        //     name: 'logo',
-        //     uri: ecoverse.refLogo,
-        //     description: 'The ecoverse logo',
-        //   },
-        //   {
-        //     name: 'repo',
-        //     uri: ecoverse.refRepo,
-        //     description: 'The ecoverse repository',
-        //   },
-        // ],
+        visual: {
+          avatar: ecoverseData.visualAvatar,
+          background: ecoverseData.visualBackground,
+          banner: ecoverseData.visualBanner,
+        },
       },
     });
 
     this.logger.info(`Ecoverse updated: ${ecoverseData.displayName}`);
-  }
-
-  async createEcoverse(ecoverseData: Ecoverse) {
-    await this.client.createEcoverse({
-      nameID: ecoverseData.nameID,
-      displayName: ecoverseData.displayName,
-      hostID: ecoverseData.host,
-      context: {
-        background: ecoverseData.background,
-        impact: ecoverseData.impact,
-        tagline: ecoverseData.tagline,
-        vision: ecoverseData.vision,
-        who: ecoverseData.who,
-        // references: [
-        //   {
-        //     name: 'website',
-        //     uri: ecoverse.refWebsite,
-        //     description: 'The ecoverse website',
-        //   },
-        //   {
-        //     name: 'logo',
-        //     uri: ecoverse.refLogo,
-        //     description: 'The ecoverse logo',
-        //   },
-        //   {
-        //     name: 'repo',
-        //     uri: ecoverse.refRepo,
-        //     description: 'The ecoverse repository',
-        //   },
-        // ],
-      },
-    });
-
-    this.logger.info(`Ecoverse created: ${ecoverseData.nameID}`);
   }
 }

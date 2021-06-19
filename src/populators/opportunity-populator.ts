@@ -92,6 +92,11 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
+        visual: {
+          avatar: opportunityData.visualAvatar,
+          background: opportunityData.visualBackground,
+          banner: opportunityData.visualBanner,
+        },
         references: this.getReferences(opportunityData),
       },
     });
@@ -103,17 +108,12 @@ export class OpportunityPopulator extends AbstractPopulator {
     const references = new ReferencesCreator();
     references.addReference(
       'video',
-      opportunityData.video,
+      opportunityData.refVideo,
       'Video explainer for the opportunity'
     );
     references.addReference(
-      'visual',
-      opportunityData.image,
-      'Banner for the opportunity'
-    );
-    references.addReference(
       'jitsi',
-      opportunityData.jitsi,
+      opportunityData.refJitsi,
       'Jitsi meeting space for the opportunity'
     );
     return references.getReferences();
@@ -132,18 +132,11 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
-        // createReferences: [
-        //   {
-        //     name: 'video',
-        //     uri: opportunityData.video,
-        //     description: 'Video explainer for the opportunity',
-        //   },
-        //   {
-        //     name: 'poster',
-        //     uri: opportunityData.image,
-        //     description: 'Banner for the opportunity',
-        //   },
-        // ],
+        visual: {
+          avatar: opportunityData.visualAvatar,
+          background: opportunityData.visualBackground,
+          banner: opportunityData.visualBanner,
+        },
       },
     });
 

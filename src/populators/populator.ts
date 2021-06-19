@@ -50,7 +50,7 @@ export class Populator extends AbstractPopulator {
     );
 
     // organisations first as they are needed for Ecoverse + Challenges
-    await organizationPopulator.populate();
+    //await organizationPopulator.populate();
     await contextPopulator.populate();
 
     // populate the specific opportunity entities. Todo: get this so it can also be updated

@@ -78,6 +78,11 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challenge.vision,
           impact: challenge.impact,
           who: challenge.who,
+          visual: {
+            avatar: challenge.visualAvatar,
+            background: challenge.visualBackground,
+            banner: challenge.visualBanner,
+          },
           references: this.getReferences(challenge),
         },
       });
@@ -108,6 +113,11 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challenge.vision,
           impact: challenge.impact,
           who: challenge.who,
+          visual: {
+            avatar: challenge.visualAvatar,
+            background: challenge.visualBackground,
+            banner: challenge.visualBanner,
+          },
         },
       });
       this.logger.info(`....updated: ${challenge.displayName}`);
@@ -129,22 +139,12 @@ export class ChallengePopulator extends AbstractPopulator {
     const references = new ReferencesCreator();
     references.addReference(
       'video',
-      challenge.video,
+      challenge.refVideo,
       'Video explainer for the challenge'
     );
     references.addReference(
-      'visual',
-      challenge.image,
-      'Banner for the challenge'
-    );
-    references.addReference(
-      'visual2',
-      challenge.visual,
-      'Visual for the challenge'
-    );
-    references.addReference(
       'jitsi',
-      challenge.jitsi,
+      challenge.refJitsi,
       'Jitsi meeting space for the challenge'
     );
     return references.getReferences();

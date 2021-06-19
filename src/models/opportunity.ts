@@ -8,7 +8,9 @@ export type Opportunity = {
   vision: string;
   impact: string;
   who: string;
-  video: string;
-  image: string;
-  jitsi: string;
+  refVideo: string;
+  refJitsi: string;
+  visualAvatar: string;
+  visualBackground: string;
+  visualBanner: string;
 };
