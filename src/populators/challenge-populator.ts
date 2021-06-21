@@ -66,70 +66,72 @@ export class ChallengePopulator extends AbstractPopulator {
     }
   }
 
-  async createChallenge(challenge: Challenge) {
+  async createChallenge(challengeData: Challenge) {
     try {
       await this.client.createChallenge({
-        parentID: challenge.ecoverseID,
-        displayName: challenge.displayName,
-        nameID: challenge.nameID,
+        parentID: challengeData.ecoverseID,
+        displayName: challengeData.displayName,
+        nameID: challengeData.nameID,
         context: {
-          tagline: challenge.tagline,
-          background: challenge.background,
-          vision: challenge.vision,
-          impact: challenge.impact,
-          who: challenge.who,
+          tagline: challengeData.tagline,
+          background: challengeData.background,
+          vision: challengeData.vision,
+          impact: challengeData.impact,
+          who: challengeData.who,
           visual: {
-            avatar: challenge.visualAvatar,
-            background: challenge.visualBackground,
-            banner: challenge.visualBanner,
+            avatar: challengeData.visualAvatar,
+            background: challengeData.visualBackground,
+            banner: challengeData.visualBanner,
           },
-          references: this.getReferences(challenge),
+          references: this.getReferences(challengeData),
         },
+        tags: challengeData.tags || [],
       });
 
-      this.logger.info(`....created: ${challenge.displayName}`);
-      await this.updateLeadingOrg(challenge);
+      this.logger.info(`....created: ${challengeData.displayName}`);
+      await this.updateLeadingOrg(challengeData);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
-          `Unable to create challenge (${challenge.displayName}):${e.response.errors[0].message}`
+          `Unable to create challenge (${challengeData.displayName}):${e.response.errors[0].message}`
         );
       } else {
         this.logger.error(
-          `Unable to create challenge (${challenge.displayName}): ${e.message}`
+          `Unable to create challenge (${challengeData.displayName}): ${e.message}`
         );
       }
     }
   }
 
   // Load users from a particular googlesheet
-  async updateChallengeContext(challengeId: string, challenge: Challenge) {
+  async updateChallengeContext(challengeId: string, challengeData: Challenge) {
     try {
       await this.client.updateChallenge({
         ID: challengeId,
         context: {
-          tagline: challenge.tagline,
-          background: challenge.background,
-          vision: challenge.vision,
-          impact: challenge.impact,
-          who: challenge.who,
+          tagline: challengeData.tagline,
+          background: challengeData.background,
+          vision: challengeData.vision,
+          impact: challengeData.impact,
+          who: challengeData.who,
           visual: {
-            avatar: challenge.visualAvatar,
-            background: challenge.visualBackground,
-            banner: challenge.visualBanner,
+            avatar: challengeData.visualAvatar,
+            background: challengeData.visualBackground,
+            banner: challengeData.visualBanner,
           },
         },
+        tags: challengeData.tags || [],
       });
-      this.logger.info(`....updated: ${challenge.displayName}`);
-      await this.updateLeadingOrg(challenge);
+      this.logger.info(`....updated: ${challengeData.displayName}`);
+      await this.updateLeadingOrg(challengeData);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
-          `Unable to update challenge (${challenge.displayName}):${e.response.errors[0].message}`
+          `Unable to update challenge (${challengeData.displayName}):${e.response.errors[0].message}`
         );
       } else {
         this.logger.error(
-          `Unable to update challenge (${challenge.displayName}): ${e.message}`
+          `Unable to update challenge (${challengeData.displayName}): ${e.message}`
         );
       }
     }

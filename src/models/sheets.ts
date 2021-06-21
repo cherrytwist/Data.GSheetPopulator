@@ -21,6 +21,7 @@ export interface EcoverseSheet {
   IMPACT: string;
   WHO: string;
   HOST: string;
+  TAGS: string;
   REF_WEBSITE: string;
   REF_REPO: string;
   VISUAL_AVATAR: string;
@@ -38,6 +39,7 @@ export interface ChallengesSheet {
   IMPACT: string;
   WHO: string;
   LEAD_ORGS: string;
+  TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
   VISUAL_AVATAR: string;
@@ -55,6 +57,7 @@ export interface OpportunitiesSheet {
   VISION: string;
   IMPACT: string;
   WHO: string;
+  TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
   VISUAL_AVATAR: string;
@@ -67,14 +70,15 @@ export interface OrganisationsSheet {
   DISPLAY_NAME: string;
   DESCRIPTION: string;
   KEYWORDS: string;
-  LOGO_FILE: string;
-  LOGO: string;
+  AVATAR: string;
 }
 
 export interface GroupsSheet {
   NAME: string;
   ECOVERSE: string;
   DESCRIPTION: string;
+  KEYWORDS: string;
+  AVATAR: string;
 }
 
 export interface UserSheet {
@@ -95,7 +99,6 @@ export interface UserSheet {
   KEYWORDS: string;
   LINKEDIN: string;
   TWITTER: string;
-  COLOR: string;
   // Ecoverse membership (one)
   ECOVERSE: string;
   CHALLENGES: string;

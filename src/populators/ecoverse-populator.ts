@@ -93,6 +93,7 @@ export class EcoversePopulator extends AbstractPopulator {
           banner: ecoverseData.visualBanner,
         },
       },
+      tags: ecoverseData.tags || [],
     });
 
     this.logger.info(`Ecoverse updated: ${ecoverseData.displayName}`);

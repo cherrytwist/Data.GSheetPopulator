@@ -12,4 +12,5 @@ export type Ecoverse = {
   visualBanner: string;
   refWebsite: string;
   refRepo: string;
+  tags: string[];
 };

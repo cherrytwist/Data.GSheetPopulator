@@ -13,4 +13,5 @@ export type Opportunity = {
   visualAvatar: string;
   visualBackground: string;
   visualBanner: string;
+  tags: string[];
 };

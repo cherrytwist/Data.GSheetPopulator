@@ -99,6 +99,7 @@ export class OpportunityPopulator extends AbstractPopulator {
         },
         references: this.getReferences(opportunityData),
       },
+      tags: opportunityData.tags || [],
     });
 
     this.logger.info(`...added opportunity: ${opportunityData.displayName}`);
@@ -138,6 +139,7 @@ export class OpportunityPopulator extends AbstractPopulator {
           banner: opportunityData.visualBanner,
         },
       },
+      tags: opportunityData.tags || [],
     });
 
     this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);

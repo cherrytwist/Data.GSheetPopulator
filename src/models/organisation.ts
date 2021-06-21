@@ -3,6 +3,5 @@ export type Organization = {
   displayName: string;
   description: string;
   keywords: string[];
-  logoFile: string;
-  logo: string;
+  avatar: string;
 };
