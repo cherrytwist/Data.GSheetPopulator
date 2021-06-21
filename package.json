@@ -45,7 +45,7 @@
     "ts-node-dev": "^1.1.6"
   },
   "dependencies": {
-    "@cherrytwist/client-lib": "^0.7.4",
+    "@cherrytwist/client-lib": "^0.7.5",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6",
     "rimraf": "^3.0.2",
