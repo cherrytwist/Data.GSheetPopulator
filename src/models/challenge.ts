@@ -7,10 +7,11 @@ export type Challenge = {
   vision: string;
   impact: string;
   who: string;
-  video: string;
-  imageFile: string;
-  image: string;
-  visual: string;
-  jitsi: string;
+  refVideo: string;
+  refJitsi: string;
+  visualAvatar: string;
+  visualBackground: string;
+  visualBanner: string;
   leadingOrganisations: string[];
+  tags: string[];
 };

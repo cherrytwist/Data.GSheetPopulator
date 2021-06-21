@@ -7,7 +7,10 @@ export type Ecoverse = {
   impact: string;
   who: string;
   host: string;
+  visualAvatar: string;
+  visualBackground: string;
+  visualBanner: string;
   refWebsite: string;
-  refLogo: string;
   refRepo: string;
+  tags: string[];
 };

@@ -49,6 +49,7 @@ export class OrganizationPopulator extends AbstractPopulator {
           this.logger.info(
             `Organisation ${organisationData.displayName} already exists! Updating`
           );
+          await this.updateOrganisation(organisationData, existingOrganisation);
         } else {
           await this.createOrganisation(organisationData);
         }
@@ -82,14 +83,8 @@ export class OrganizationPopulator extends AbstractPopulator {
       );
       await this.client.updateProfile(
         profileID,
-        organisationData.logo,
+        organisationData.avatar,
         organisationData.description
-      );
-      await this.client.addReference(
-        profileID,
-        'logo',
-        organisationData.logo,
-        'Organisation logo'
       );
     }
   }
@@ -104,7 +99,7 @@ export class OrganizationPopulator extends AbstractPopulator {
       // todo: fill this out more
       await this.client.updateProfile(
         profileID,
-        organisationData.logo,
+        organisationData.avatar,
         organisationData.description
       );
     }
