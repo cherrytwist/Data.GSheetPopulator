@@ -1,6 +1,5 @@
 export type Opportunity = {
   nameID: string;
-  ecoverseID: string;
   displayName: string;
   challenge: string;
   tagline: string;

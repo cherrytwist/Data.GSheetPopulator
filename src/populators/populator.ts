@@ -20,6 +20,7 @@ export class Populator extends AbstractPopulator {
 
   async populate() {
     if (!this.data) throw new Error('No data to populate');
+    this.ecoverseID = this.getEcoverseID();
 
     const organizationPopulator = new OrganizationPopulator(
       this.client,

@@ -10,6 +10,7 @@ export abstract class AbstractPopulator {
   protected logger: Logger;
   protected profiler: Logger;
   protected name: string;
+  protected ecoverseID: string;
 
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
@@ -23,6 +24,16 @@ export abstract class AbstractPopulator {
     this.logger = logger || createLogger();
     this.profiler = profiler || createProfiler();
     this.name = 'abstract-populator';
+    this.ecoverseID = this.getEcoverseID();
+  }
+
+  getEcoverseID(): string {
+    const ecoverses = this.data.ecoverses();
+    if (ecoverses.length != 1) {
+      throw new Error('Exactly one ecoverse must be available!');
+    }
+
+    return ecoverses[0].nameID;
   }
 
   abstract populate(): void;

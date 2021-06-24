@@ -46,15 +46,8 @@ export class OpportunityPopulator extends AbstractPopulator {
         continue;
       }
 
-      if (!opportunityData.ecoverseID) {
-        this.logger.warn(
-          `Skipping opportunity (${opportunityData.nameID}): no ecoverseID specified`
-        );
-        return;
-      }
-
       const existingOpportunity = await this.client.opportunityByNameID(
-        opportunityData.ecoverseID,
+        this.ecoverseID,
         opportunityData.nameID
       );
 

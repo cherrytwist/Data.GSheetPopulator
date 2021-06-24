@@ -17,7 +17,6 @@ export type User = {
   linkedin: string;
   twitter: string;
   // membership within an ecoverse related fields
-  ecoverseID: string;
   challenges: string[];
   opportunities: string[];
   groups: string[];

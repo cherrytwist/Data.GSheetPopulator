@@ -51,7 +51,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       impact: x.IMPACT,
       actorGroup: x.ACTOR_GROUP,
       value: x.VALUE,
-      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
   }
@@ -62,7 +61,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
     return result.map(x => ({
       name: x.NAME,
       description: x.DESCRIPTION,
-      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
   }
@@ -74,7 +72,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       title: x.TITLE,
       explanation: x.EXPLANATION,
       framing: x.FRAMING,
-      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
   }
@@ -84,7 +81,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const result = XLSX.utils.sheet_to_json(sheet) as ChallengesSheet[];
     return result.map(x => ({
       nameID: x.NAME_ID,
-      ecoverseID: x.ECOVERSE,
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
       impact: x.IMPACT,
@@ -123,7 +119,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       skills: toArray(x.SKILLS),
       twitter: x.TWITTER,
       // Membership
-      ecoverseID: x.ECOVERSE,
       challenges: toArray(x.CHALLENGES),
       groups: toArray(x.GROUPS),
       opportunities: toArray(x.OPPORTUNITIES),
@@ -134,7 +129,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const result = XLSX.utils.sheet_to_json(sheet) as OpportunitiesSheet[];
     return result.map(x => ({
       nameID: x.NAME_ID,
-      ecoverseID: x.ECOVERSE,
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
       challenge: x.CHALLENGE,
@@ -156,7 +150,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const result = XLSX.utils.sheet_to_json(sheet) as GroupsSheet[];
     return result.map(x => ({
       name: x.NAME,
-      ecoverseID: x.ECOVERSE,
       description: x.DESCRIPTION,
       avatar: x.AVATAR,
       keywords: toArray(x.KEYWORDS),
@@ -170,6 +163,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     return result.map(ecoverse => ({
       displayName: ecoverse.DISPLAY_NAME,
       nameID: ecoverse.NAME_ID,
+      anonymousReadAccess: this.stringToBoolean(ecoverse.ANONYMOUS_READ_ACCESS),
       background: ecoverse.BACKGROUND,
       vision: ecoverse.VISION,
       impact: ecoverse.IMPACT,
@@ -207,8 +201,14 @@ export class XLSXAdapter extends AbstractDataAdapter {
       actorRole: x.ACTOR_ROLE,
       actorType: x.ACTOR_TYPE,
       description: x.DESCRIPTION,
-      ecoverseID: x.ECOVERSE,
       opportunity: x.OPPORTUNITY,
     }));
+  }
+
+  private stringToBoolean(value: string): boolean {
+    if (String(value).toLowerCase() === 'false') {
+      return false;
+    }
+    return true;
   }
 }

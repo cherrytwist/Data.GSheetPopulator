@@ -42,15 +42,8 @@ export class ChallengePopulator extends AbstractPopulator {
       const challengeProfileID = '===> challengeCreation - FULL';
       this.profiler.profile(challengeProfileID);
 
-      if (!challengeData.ecoverseID) {
-        this.logger.warn(
-          `Skipping challenge (${challengeData.nameID}): no ecoverseID specified`
-        );
-        return;
-      }
-
       const existingChallenge = await this.client.challengeByNameID(
-        challengeData.ecoverseID,
+        this.ecoverseID,
         challengeData.nameID
       );
 
@@ -69,7 +62,7 @@ export class ChallengePopulator extends AbstractPopulator {
   async createChallenge(challengeData: Challenge) {
     try {
       await this.client.createChallenge({
-        parentID: challengeData.ecoverseID,
+        parentID: this.ecoverseID,
         displayName: challengeData.displayName,
         nameID: challengeData.nameID,
         context: {
@@ -86,10 +79,10 @@ export class ChallengePopulator extends AbstractPopulator {
           references: this.getReferences(challengeData),
         },
         tags: challengeData.tags || [],
+        leadOrganisations: challengeData.leadingOrganisations,
       });
 
       this.logger.info(`....created: ${challengeData.displayName}`);
-      await this.updateLeadingOrg(challengeData);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
@@ -121,9 +114,9 @@ export class ChallengePopulator extends AbstractPopulator {
           },
         },
         tags: challengeData.tags || [],
+        leadOrganisations: challengeData.leadingOrganisations,
       });
       this.logger.info(`....updated: ${challengeData.displayName}`);
-      await this.updateLeadingOrg(challengeData);
     } catch (e) {
       if (e.response && e.response.errors) {
         this.logger.error(
@@ -150,45 +143,5 @@ export class ChallengePopulator extends AbstractPopulator {
       'Jitsi meeting space for the challenge'
     );
     return references.getReferences();
-  }
-
-  private async updateLeadingOrg(challengeData: Challenge) {
-    this.logger.info(
-      `Updating challenge leading organisations for : ${challengeData.displayName}`
-    );
-
-    const organisationLeads = this.organisations.filter(o =>
-      challengeData.leadingOrganisations.some(
-        lo => lo.toLowerCase() === o.nameID.toLowerCase()
-      )
-    );
-
-    for (const organisationLead of organisationLeads) {
-      try {
-        const challengeByNameID = await this.client.challengeByNameID(
-          challengeData.ecoverseID,
-          challengeData.nameID
-        );
-        await this.client.addChallengeLead(
-          challengeByNameID?.id,
-          organisationLead.nameID
-        );
-        this.logger.info(
-          `Added organisation (${organisationLead.nameID}) as lead to challenge: ${challengeData.nameID}`
-        );
-      } catch (e) {
-        if (e.response && e.response.errors) {
-          this.logger.error(
-            `Unable to update leading organisation for challenge (${challengeData.displayName}):${e.response.errors[0].message}`
-          );
-        } else {
-          this.logger.error(
-            `Unable to update leading organisation for challenge (${challengeData.displayName}): ${e.message}`
-          );
-        }
-      } finally {
-        this.logger.info(`... updated ${challengeData.displayName}`);
-      }
-    }
   }
 }

@@ -153,7 +153,7 @@ export class UserPopulator extends AbstractPopulator {
     for (const challenge of user.challenges) {
       if (challenge) {
         await this.client.addUserToChallenge(
-          user.ecoverseID,
+          this.ecoverseID,
           challenge,
           userInfo.nameID
         );

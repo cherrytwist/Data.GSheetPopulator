@@ -1,4 +1,4 @@
-import { Challenge, CherrytwistClient } from '@cherrytwist/client-lib';
+import { CherrytwistClient } from '@cherrytwist/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
@@ -43,7 +43,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(actorGroupProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        actorGroup.ecoverseID,
+        this.ecoverseID,
         actorGroup.opportunity
       );
 
@@ -106,7 +106,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(actorProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        actor.ecoverseID,
+        this.ecoverseID,
         actor.opportunity
       );
 
@@ -176,7 +176,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(relationProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        relation.ecoverseID,
+        this.ecoverseID,
         relation.opportunity
       );
 
@@ -236,7 +236,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(aspectProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        aspect.ecoverseID,
+        this.ecoverseID,
         aspect.opportunity
       );
 
