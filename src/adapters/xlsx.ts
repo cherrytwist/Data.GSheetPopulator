@@ -206,8 +206,9 @@ export class XLSXAdapter extends AbstractDataAdapter {
   }
 
   private stringToBoolean(value: string): boolean {
-    const isFalseSet = value === 'false';
-    if (isFalseSet) return false;
+    if (String(value).toLowerCase() === 'false') {
+      return false;
+    }
     return true;
   }
 }
