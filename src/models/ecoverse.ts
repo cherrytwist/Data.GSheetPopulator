@@ -1,6 +1,7 @@
 export type Ecoverse = {
   nameID: string;
   displayName: string;
+  anonymousReadAccess: boolean;
   tagline: string;
   background: string;
   vision: string;

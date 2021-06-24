@@ -94,6 +94,9 @@ export class EcoversePopulator extends AbstractPopulator {
         },
       },
       tags: ecoverseData.tags || [],
+      authorizationDefinition: {
+        anonymousReadAccess: ecoverseData.anonymousReadAccess,
+      },
     });
 
     this.logger.info(`Ecoverse updated: ${ecoverseData.displayName}`);

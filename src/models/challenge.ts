@@ -1,6 +1,5 @@
 export type Challenge = {
   nameID: string;
-  ecoverseID: string;
   displayName: string;
   tagline: string;
   background: string;

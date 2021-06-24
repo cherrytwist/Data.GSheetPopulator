@@ -30,19 +30,12 @@ export class GroupPopulator extends AbstractPopulator {
 
       // start processing
       this.logger.info(`Processing group: ${group.name}....`);
-      const organisationProfileID = '===> groupCreation - FULL';
-      this.profiler.profile(organisationProfileID);
-
-      if (!group.ecoverseID) {
-        this.logger.warn(
-          `Skipping group (${group.name}): no ecoverseID specified`
-        );
-        return;
-      }
+      const groupProfileID = '===> groupCreation - FULL';
+      this.profiler.profile(groupProfileID);
 
       try {
         await this.client.createEcoverseGroup(
-          group.ecoverseID,
+          this.ecoverseID,
           group.name,
           group.description
         );
@@ -59,7 +52,7 @@ export class GroupPopulator extends AbstractPopulator {
           );
         }
       } finally {
-        this.profiler.profile(organisationProfileID);
+        this.profiler.profile(groupProfileID);
       }
     }
   }
