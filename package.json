@@ -1,5 +1,5 @@
 {
-  "name": "@cherrytwist/populator",
+  "name": "@alkemio/populator",
   "version": "0.2.14",
   "author": "Cherrytwist Foundation",
   "private": false,
@@ -9,7 +9,7 @@
   "keywords": [
     "data",
     "populator",
-    "cherrytwist"
+    "alkemio"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.prod.json",
@@ -28,12 +28,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cherrytwist/populator.git"
+    "url": "git+https://github.com/alkem-io/populator.git"
   },
   "bugs": {
-    "url": "https://github.com/cherrytwist/populator/issues"
+    "url": "https://github.com/alkem-io/populator/issues"
   },
-  "homepage": "https://github.com/cherrytwist/populator#readme",
+  "homepage": "https://github.com/alkem-io/populator#readme",
   "devDependencies": {
     "@types/node": "^14.6.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
@@ -45,7 +45,7 @@
     "ts-node-dev": "^1.1.6"
   },
   "dependencies": {
-    "@cherrytwist/client-lib": "^0.7.7",
+    "@alkemio/client-lib": "^0.7.8",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6",
     "rimraf": "^3.0.2",

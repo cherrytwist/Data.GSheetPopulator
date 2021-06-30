@@ -1,17 +1,17 @@
 <p align="center">
-  <a href="http://cherrytwist.org/" target="blank"><img src="https://cherrytwist.org/wp-content/uploads/2020/10/cherrytwist-2.png" width="240" alt="Cherrytwist Logo" /></a>
+  <a href="http://alkem.io/" target="blank"><img src="https://alkem.io/uploads/logos/alkemio-logo.svg" width="400" alt="Alkemio Logo" /></a>
 </p>
 <p align="center"><i>Enabling society to collaborate. Building a better future, together.</i></p>
 
-# Populate a Cherrytwist Ecoverse with data from a spreadsheet
+# Populate a Alkemio Ecoverse with data from a spreadsheet
 This repository has functionality to enable the population of an Ecoverse with data from a spreadshet. The spreadsheet is a local file, in the "OpenDocument Spreadsheet" (ODS) format.
 
 ## Spreadsheet Format
 
-The spreadsheet does have a required format. An example of such a sheet is [provided in this repo](https://github.com/cherrytwist/populator/blob/develop/ct-sdgs.ods). If you want to make a custom load of data into an Ecoverse then please make a copy of this sheet and fill as needed.
+The spreadsheet does have a required format. An example of such a sheet is [provided in this repo](https://github.com/alkem-io/populator/blob/develop/alkemio-sdgs.ods). If you want to make a custom load of data into an Ecoverse then please make a copy of this sheet and fill as needed.
 
 ## Checks steps before starting:
-* Ensure that the Cherrytwist Server is available, and that it (for now) has authentication disabled.
+* Ensure that the Alkemio Server is available, and that it (for now) has authentication disabled.
 
 ## Populating using custom locations or data file:
 * Make a copy of `.env.default` to creat a `.env` file

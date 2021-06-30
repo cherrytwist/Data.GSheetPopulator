@@ -2,10 +2,10 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { BaseDataAdapter } from '../adapters/base-adapter';
 import { createLogger, createProfiler } from '../utils/create-logger';
-import { CherrytwistClient } from '@cherrytwist/client-lib';
+import { AlkemioClient } from '@alkemio/client-lib';
 
 export abstract class AbstractPopulator {
-  protected client: CherrytwistClient;
+  protected client: AlkemioClient;
   protected data: AbstractDataAdapter;
   protected logger: Logger;
   protected profiler: Logger;
@@ -14,7 +14,7 @@ export abstract class AbstractPopulator {
 
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
-    client: CherrytwistClient,
+    client: AlkemioClient,
     data?: AbstractDataAdapter,
     logger?: Logger,
     profiler?: Logger

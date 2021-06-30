@@ -1,8 +1,8 @@
 import {
-  CherrytwistClient,
+  AlkemioClient,
   CreateReferenceInput,
   CreateUserInput,
-} from '@cherrytwist/client-lib';
+} from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Tagsets } from '../constants/enums';
@@ -12,7 +12,7 @@ import { AbstractPopulator } from './abstract-populator';
 export class UserPopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
   constructor(
-    client: CherrytwistClient,
+    client: AlkemioClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger

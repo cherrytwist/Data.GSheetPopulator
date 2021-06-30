@@ -10,11 +10,11 @@ const main = async () => {
   const profiler = createProfiler();
 
   const ctClient = await createClientUsingEnvVars();
-  logger.info(`Cherrytwist server: ${ctClient.config.graphqlEndpoint}`);
+  logger.info(`Alkemio server: ${ctClient.config.graphqlEndpoint}`);
   await ctClient.validateConnection();
 
   const data = await createDataAdapterUsingEnvVars();
-  logger.info(`Cherrytwist data template: ${data.filename}`);
+  logger.info(`Alkemio data template: ${data.filename}`);
 
   // Loading data from google sheets
   const populator = new Populator(ctClient, data, logger, profiler);

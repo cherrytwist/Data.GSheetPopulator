@@ -1,4 +1,4 @@
-import { CherrytwistClient } from '@cherrytwist/client-lib';
+import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
@@ -8,7 +8,7 @@ import { OpportunityPopulator } from './opportunity-populator';
 
 export class ContextPopulator extends AbstractPopulator {
   constructor(
-    client: CherrytwistClient,
+    client: AlkemioClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
