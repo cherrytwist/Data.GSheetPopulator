@@ -1,11 +1,11 @@
 import * as dotenv from 'dotenv';
-import { CherrytwistClient } from '@cherrytwist/client-lib';
+import { AlkemioClient } from '@alkemio/client-lib';
 
 export const createClientUsingEnvVars = async () => {
   dotenv.config();
 
   const server = process.env.CT_SERVER || 'http://localhost:4455/graphql';
-  const ctClient = new CherrytwistClient({
+  const ctClient = new AlkemioClient({
     graphqlEndpoint: server,
   });
 
@@ -13,7 +13,7 @@ export const createClientUsingEnvVars = async () => {
   if (authenticationEnabled) {
     ctClient.config.authInfo = {
       credentials: {
-        email: process.env.AUTH_ADMIN_EMAIL ?? 'admin@cherrytwist.org',
+        email: process.env.AUTH_ADMIN_EMAIL ?? 'admin@alkem.io',
         password: process.env.AUTH_ADMIN_PASSWORD ?? '!Rn5Ez5FuuyUNc!',
       },
     };

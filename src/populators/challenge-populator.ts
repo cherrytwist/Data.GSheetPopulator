@@ -1,4 +1,4 @@
-import { CherrytwistClient, Organisation } from '@cherrytwist/client-lib';
+import { AlkemioClient, Organisation } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
@@ -10,7 +10,7 @@ export class ChallengePopulator extends AbstractPopulator {
   private organisations: Organisation[] = [];
 
   constructor(
-    client: CherrytwistClient,
+    client: AlkemioClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
