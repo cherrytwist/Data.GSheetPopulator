@@ -16,8 +16,8 @@ The spreadsheet does have a required format. An example of such a sheet is [prov
 ## Populating using custom locations or data file:
 * Make a copy of `.env.default` to creat a `.env` file
 * Edit this file to specify the values for the two environment variables:
-    * CT_SERVER: The server file location. Note: the URL format to use depends on whether authentication is enabled or not. If not enabled then just use `/graphql`, if it is enabled then use `admin/graphql` after the server / port.
-    * CT_DATA_TEMPLATE: The data template to use for population
+    * ALKEMIO_SERVER: The server file location. Note: the URL format to use depends on whether authentication is enabled or not. If not enabled then just use `/graphql`, if it is enabled then use `admin/graphql` after the server / port.
+    * ALKEMIO_DATA_TEMPLATE: The data template to use for population
     * AUTH_ADMIN_EMAIL, AUTH_ADMIN_PASSWORD: for specifying the credentials to be used for accessing the server (if authentication is enabled)
 
 ## Execute the population
