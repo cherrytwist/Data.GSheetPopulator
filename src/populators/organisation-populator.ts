@@ -41,16 +41,15 @@ export class OrganizationPopulator extends AbstractPopulator {
       this.profiler.profile(organisationProfileID);
 
       const existingOrganisation = existingOrganisations?.find(
-        x => x.nameID === organisationData.nameID
+        x => x.nameID.toLowerCase() === organisationData.nameID.toLowerCase()
       );
 
       try {
         if (existingOrganisation) {
-          this.logger.info(
-            `Organisation ${organisationData.displayName} already exists! Updating`
-          );
+          this.logger.info(`...updating: ${organisationData.displayName}`);
           await this.updateOrganisation(organisationData, existingOrganisation);
         } else {
+          this.logger.info(`...creating: ${organisationData.displayName}`);
           await this.createOrganisation(organisationData);
         }
       } catch (e) {

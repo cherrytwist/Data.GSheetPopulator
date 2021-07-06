@@ -39,7 +39,7 @@ export class UserPopulator extends AbstractPopulator {
 
       const existingUser = await this.client.user(userData.nameID);
       if (existingUser) {
-        this.logger.warn(`[${count}] User already exists: ${userData.nameID}`);
+        this.logger.info(`[${count}] User already exists: ${userData.nameID}`);
       } else {
         this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
         try {
@@ -52,6 +52,7 @@ export class UserPopulator extends AbstractPopulator {
           } else {
             this.logger.error(`Could not create user: ${e}`);
           }
+          throw e;
         }
       }
       count++;
@@ -128,19 +129,14 @@ export class UserPopulator extends AbstractPopulator {
     this.logger.info(`... created user: ${createdUser.nameID}`);
 
     // add the user to the ecoverse
-    await this.client.addUserToEcoverse(userData.ecoverseID, createdUser.id);
+    await this.client.addUserToEcoverse(this.ecoverseID, createdUser.id);
 
     // Add the user to the challenge user group if applicable
     await this.addUserToChallenges(userData);
 
     // Add the user to groups
-    await this.addUserToGroups(
-      userData.ecoverseID,
-      createdUser.nameID,
-      userData.groups
-    );
+    await this.addUserToGroups(createdUser.nameID, userData.groups);
     await this.addUserToOpportunities(
-      userData.ecoverseID,
       createdUser.nameID,
       userData.opportunities
     );
@@ -161,9 +157,9 @@ export class UserPopulator extends AbstractPopulator {
     }
   }
 
-  async addUserToGroups(ecoverseID: string, userID: string, groups: string[]) {
+  async addUserToGroups(userID: string, groups: string[]) {
     for (const groupName of groups) {
-      const group = await this.client.groupByName(ecoverseID, groupName);
+      const group = await this.client.groupByName(this.ecoverseID, groupName);
       // Add the user into the team members group
       if (!group) {
         this.logger.warn(
@@ -178,14 +174,14 @@ export class UserPopulator extends AbstractPopulator {
     }
   }
 
-  async addUserToOpportunities(
-    ecoverseID: string,
-    userID: string,
-    userOpportunities: string[]
-  ) {
+  async addUserToOpportunities(userID: string, userOpportunities: string[]) {
     for (const opportunity of userOpportunities) {
       try {
-        await this.client.addUserToOpportunity(ecoverseID, opportunity, userID);
+        await this.client.addUserToOpportunity(
+          this.ecoverseID,
+          opportunity,
+          userID
+        );
         this.logger.info(`... added user to opportunity: ${opportunity}`);
       } catch (e) {
         if (e.response && e.response.errors) {
