@@ -101,6 +101,7 @@ export class ChallengePopulator extends AbstractPopulator {
     try {
       await this.client.updateChallenge({
         ID: challengeId,
+        displayName: challengeData.displayName,
         context: {
           tagline: challengeData.tagline,
           background: challengeData.background,
