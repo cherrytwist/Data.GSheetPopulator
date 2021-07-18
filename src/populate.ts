@@ -18,6 +18,15 @@ const main = async () => {
 
   // Loading data from google sheets
   const populator = new Populator(ctClient, data, logger, profiler);
+  const ecoverseID = populator.getEcoverseID();
+  const exists = await ctClient.ecoverseExists(ecoverseID);
+  if (!exists) {
+    logger.error(
+      `Ecoverse does not exist: '${ecoverseID}', please ensure it is created.`
+    );
+    return;
+  }
+
   await populator.populate();
 };
 
