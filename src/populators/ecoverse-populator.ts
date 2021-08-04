@@ -94,7 +94,7 @@ export class EcoversePopulator extends AbstractPopulator {
         },
       },
       tags: ecoverseData.tags || [],
-      authorizationDefinition: {
+      authorizationPolicy: {
         anonymousReadAccess: ecoverseData.anonymousReadAccess,
       },
     });
