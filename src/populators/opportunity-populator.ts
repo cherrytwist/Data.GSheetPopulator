@@ -75,8 +75,19 @@ export class OpportunityPopulator extends AbstractPopulator {
   }
 
   async createOpportunity(opportunityData: Opportunity) {
+    // First need to get the id for the challenge
+    const challenge = await this.client.challengeByNameID(
+      this.ecoverseID,
+      opportunityData.challenge
+    );
+    if (!challenge) {
+      this.logger.error(
+        `Could not create opportunity as could not find challenge with nameID: ${opportunityData.nameID}`
+      );
+      return;
+    }
     await this.client.createOpportunity({
-      challengeID: opportunityData.challenge,
+      challengeID: challenge.id,
       displayName: opportunityData.displayName,
       nameID: opportunityData.nameID,
       context: {
