@@ -1,7 +1,7 @@
 import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Organization } from '../models/organisation';
+import { Organization } from '../models/organization';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganizationPopulator extends AbstractPopulator {
@@ -16,90 +16,90 @@ export class OrganizationPopulator extends AbstractPopulator {
   }
 
   async populate() {
-    this.logger.info('Processing organisations');
+    this.logger.info('Processing organizations');
 
-    const organisationsData = this.data.organizations();
+    const organizationsData = this.data.organizations();
 
-    if (organisationsData.length === 0) {
-      this.logger.warn('No organisations to import!');
+    if (organizationsData.length === 0) {
+      this.logger.warn('No organizations to import!');
       return;
     }
 
-    const existingOrganisations = await this.client.organisations();
+    const existingOrganizations = await this.client.organizations();
 
-    for (const organisationData of organisationsData) {
-      if (!organisationData.displayName) {
-        // End of valid organisations
+    for (const organizationData of organizationsData) {
+      if (!organizationData.displayName) {
+        // End of valid organizations
         break;
       }
 
       // start processing
       this.logger.info(
-        `Processing organisation: ${organisationData.displayName}....`
+        `Processing organization: ${organizationData.displayName}....`
       );
-      const organisationProfileID = '===> organisationCreation - FULL';
-      this.profiler.profile(organisationProfileID);
+      const organizationProfileID = '===> organizationCreation - FULL';
+      this.profiler.profile(organizationProfileID);
 
-      const existingOrganisation = existingOrganisations?.find(
-        x => x.nameID.toLowerCase() === organisationData.nameID.toLowerCase()
+      const existingOrganization = existingOrganizations?.find(
+        x => x.nameID.toLowerCase() === organizationData.nameID.toLowerCase()
       );
 
       try {
-        if (existingOrganisation) {
-          this.logger.info(`...updating: ${organisationData.displayName}`);
-          await this.updateOrganisation(organisationData, existingOrganisation);
+        if (existingOrganization) {
+          this.logger.info(`...updating: ${organizationData.displayName}`);
+          await this.updateOrganization(organizationData, existingOrganization);
         } else {
-          this.logger.info(`...creating: ${organisationData.displayName}`);
-          await this.createOrganisation(organisationData);
+          this.logger.info(`...creating: ${organizationData.displayName}`);
+          await this.createOrganization(organizationData);
         }
       } catch (e) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create organisation (${organisationData.displayName}):${e.response.errors[0].message}`
+            `Unable to create organization (${organizationData.displayName}):${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create opportunity: ${e}`);
         }
       } finally {
-        this.profiler.profile(organisationProfileID);
+        this.profiler.profile(organizationProfileID);
       }
     }
   }
 
-  async createOrganisation(organisationData: Organization) {
-    const newOrganisation = await this.client.createOrganisation(
-      organisationData.displayName,
-      organisationData.nameID
+  async createOrganization(organizationData: Organization) {
+    const newOrganization = await this.client.createOrganization(
+      organizationData.displayName,
+      organizationData.nameID
     );
 
-    const profileID = newOrganisation?.profile.id;
+    const profileID = newOrganization?.profile.id;
 
     if (profileID) {
       await this.client.createTagsetOnProfile(
         profileID,
         'Keywords',
-        organisationData.keywords
+        organizationData.keywords
       );
       await this.client.updateProfile(
         profileID,
-        organisationData.avatar,
-        organisationData.description
+        organizationData.avatar,
+        organizationData.description
       );
     }
   }
 
-  async updateOrganisation(
-    organisationData: Organization,
-    existingOrganisation: any
+  async updateOrganization(
+    organizationData: Organization,
+    existingOrganization: any
   ) {
-    const profileID = existingOrganisation?.profile.id;
+    const profileID = existingOrganization?.profile.id;
 
     if (profileID) {
       // todo: fill this out more
       await this.client.updateProfile(
         profileID,
-        organisationData.avatar,
-        organisationData.description
+        organizationData.avatar,
+        organizationData.description
       );
     }
   }

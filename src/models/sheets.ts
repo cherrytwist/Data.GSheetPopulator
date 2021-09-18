@@ -6,7 +6,7 @@ export enum Sheets {
   Information = 'Information',
   Challenges = 'Challenges',
   Opportunities = 'Opportunities',
-  Organisations = 'Organisations',
+  Organizations = 'Organizations',
   Groups = 'Groups',
   Users = 'Users',
   Relations = 'Relations',
@@ -64,7 +64,7 @@ export interface OpportunitiesSheet {
   VISUAL_BANNER: string;
 }
 
-export interface OrganisationsSheet {
+export interface OrganizationsSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
   DESCRIPTION: string;

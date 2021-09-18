@@ -1,6 +1,6 @@
 export enum Tagsets {
   SKILLS = 'Skills',
   KEYWORDS = 'Keywords',
-  ORGANISATION = 'Organisations',
-  ORGANISATION_ROLES = 'OrganisationRoles',
+  ORGANISATION = 'Organizations',
+  ORGANISATION_ROLES = 'OrganizationRoles',
 }
