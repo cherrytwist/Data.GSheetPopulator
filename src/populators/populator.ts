@@ -5,7 +5,7 @@ import { AbstractPopulator } from './abstract-populator';
 import { ActorPopulator } from './actor-populator';
 import { CommunityPopulator } from './community-populator';
 import { ContextPopulator } from './context-populator';
-import { OrganizationPopulator } from './organisation-populator';
+import { OrganizationPopulator } from './organization-populator';
 
 export class Populator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
@@ -50,7 +50,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    // organisations first as they are needed for Ecoverse + Challenges
+    // organizations first as they are needed for Ecoverse + Challenges
     await organizationPopulator.populate();
     await contextPopulator.populate();
 

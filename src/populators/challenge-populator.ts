@@ -1,4 +1,4 @@
-import { AlkemioClient, Organisation } from '@alkemio/client-lib';
+import { AlkemioClient, Organization } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
@@ -7,7 +7,7 @@ import { AbstractPopulator } from './abstract-populator';
 
 export class ChallengePopulator extends AbstractPopulator {
   // Create the ecoverse with enough defaults set/ members populated
-  private organisations: Organisation[] = [];
+  private organizations: Organization[] = [];
 
   constructor(
     client: AlkemioClient,
@@ -27,8 +27,8 @@ export class ChallengePopulator extends AbstractPopulator {
       return;
     }
 
-    this.organisations = ((await this.client.organisations()) ||
-      []) as Organisation[];
+    this.organizations = ((await this.client.organizations()) ||
+      []) as Organization[];
 
     // Iterate over the rows
     for (const challengeData of challengesData) {
@@ -79,7 +79,7 @@ export class ChallengePopulator extends AbstractPopulator {
           references: this.getReferences(challengeData),
         },
         tags: challengeData.tags || [],
-        leadOrganisations: challengeData.leadingOrganisations,
+        leadOrganizations: challengeData.leadingOrganizations,
       });
 
       this.logger.info(`....created: ${challengeData.displayName}`);
@@ -115,7 +115,7 @@ export class ChallengePopulator extends AbstractPopulator {
           },
         },
         tags: challengeData.tags || [],
-        leadOrganisations: challengeData.leadingOrganisations,
+        leadOrganizations: challengeData.leadingOrganizations,
       });
       this.logger.info(`....updated: ${challengeData.displayName}`);
     } catch (e) {

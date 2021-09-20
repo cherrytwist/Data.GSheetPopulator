@@ -19,7 +19,7 @@ import {
   EcoverseSheet,
   GroupsSheet,
   OpportunitiesSheet,
-  OrganisationsSheet,
+  OrganizationsSheet,
   RelationSheet,
   Sheets,
   UserSheet,
@@ -92,7 +92,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       visualBanner: x.VISUAL_BANNER,
       refVideo: x.REF_VIDEO,
       refJitsi: x.REF_JITSI,
-      leadingOrganisations: toArray(x.LEAD_ORGS),
+      leadingOrganizations: toArray(x.LEAD_ORGS),
       tags: toArray(x.TAGS),
     }));
   }
@@ -180,8 +180,8 @@ export class XLSXAdapter extends AbstractDataAdapter {
   }
 
   public organizations = (): Organization[] => {
-    const sheet = this.workbook.Sheets[Sheets.Organisations];
-    const result = XLSX.utils.sheet_to_json(sheet) as OrganisationsSheet[];
+    const sheet = this.workbook.Sheets[Sheets.Organizations];
+    const result = XLSX.utils.sheet_to_json(sheet) as OrganizationsSheet[];
     return result.map(x => ({
       displayName: x.DISPLAY_NAME,
       nameID: x.NAME_ID,
