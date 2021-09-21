@@ -105,11 +105,11 @@ export class UserPopulator extends AbstractPopulator {
             tags: userData.keywords,
           },
           {
-            name: Tagsets.ORGANISATION,
+            name: Tagsets.ORGANIZATION,
             tags: [userData.organization],
           },
           {
-            name: Tagsets.ORGANISATION_ROLES,
+            name: Tagsets.ORGANIZATION_ROLES,
             tags: [userData.jobTitle],
           },
         ],
