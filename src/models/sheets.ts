@@ -90,7 +90,7 @@ export interface UserSheet {
   COUNTRY: string;
   GENDER: string;
   AVATAR: string;
-  ORGANISATION: string;
+  ORGANIZATION: string;
   JOB_TITLE: string;
   BIO: string;
   SKILLS: string;

@@ -115,7 +115,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       jobTitle: x.JOB_TITLE,
       keywords: toArray(x.KEYWORDS),
       linkedin: x.LINKEDIN,
-      organization: x.ORGANISATION,
+      organization: x.ORGANIZATION,
       skills: toArray(x.SKILLS),
       twitter: x.TWITTER,
       // Membership
