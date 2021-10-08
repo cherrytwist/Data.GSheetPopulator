@@ -10,9 +10,9 @@ export abstract class AbstractPopulator {
   protected logger: Logger;
   protected profiler: Logger;
   protected name: string;
-  protected ecoverseID: string;
+  protected hubID: string;
 
-  // Create the ecoverse with enough defaults set/ members populated
+  // Create the Hub with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data?: AbstractDataAdapter,
@@ -24,16 +24,16 @@ export abstract class AbstractPopulator {
     this.logger = logger || createLogger();
     this.profiler = profiler || createProfiler();
     this.name = 'abstract-populator';
-    this.ecoverseID = this.getEcoverseID();
+    this.hubID = this.getEcoverseID();
   }
 
   getEcoverseID(): string {
-    const ecoverses = this.data.ecoverses();
-    if (ecoverses.length != 1) {
-      throw new Error('Exactly one ecoverse must be available!');
+    const hubs = this.data.hubs();
+    if (hubs.length != 1) {
+      throw new Error('Exactly one Hub must be available!');
     }
 
-    return ecoverses[0].nameID;
+    return hubs[0].nameID;
   }
 
   abstract populate(): void;

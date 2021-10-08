@@ -4,7 +4,7 @@ import {
   ActorGroup,
   Aspect,
   Challenge,
-  Ecoverse,
+  Ecoverse as Hub,
   Group,
   Opportunity,
   Organization,
@@ -16,7 +16,7 @@ import {
   ActorsSheet,
   AspectSheet,
   ChallengesSheet,
-  EcoverseSheet,
+  HubSheet as HubSheet,
   GroupsSheet,
   OpportunitiesSheet,
   OrganizationsSheet,
@@ -156,26 +156,26 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   };
 
-  public ecoverses(): Ecoverse[] {
-    const sheet = this.workbook.Sheets[Sheets.Ecoverse];
-    const result = XLSX.utils.sheet_to_json(sheet) as EcoverseSheet[];
+  public hubs(): Hub[] {
+    const sheet = this.workbook.Sheets[Sheets.Hub];
+    const result = XLSX.utils.sheet_to_json(sheet) as HubSheet[];
 
-    return result.map(ecoverse => ({
-      displayName: ecoverse.DISPLAY_NAME,
-      nameID: ecoverse.NAME_ID,
-      anonymousReadAccess: this.stringToBoolean(ecoverse.ANONYMOUS_READ_ACCESS),
-      background: ecoverse.BACKGROUND,
-      vision: ecoverse.VISION,
-      impact: ecoverse.IMPACT,
-      tagline: ecoverse.TAGLINE,
-      who: ecoverse.WHO,
-      host: ecoverse.HOST,
-      visualAvatar: ecoverse.VISUAL_AVATAR,
-      visualBackground: ecoverse.VISUAL_BACKGROUND,
-      visualBanner: ecoverse.VISUAL_BANNER,
-      refWebsite: ecoverse.REF_WEBSITE,
-      refRepo: ecoverse.REF_REPO,
-      tags: toArray(ecoverse.TAGS),
+    return result.map(hub => ({
+      displayName: hub.DISPLAY_NAME,
+      nameID: hub.NAME_ID,
+      anonymousReadAccess: this.stringToBoolean(hub.ANONYMOUS_READ_ACCESS),
+      background: hub.BACKGROUND,
+      vision: hub.VISION,
+      impact: hub.IMPACT,
+      tagline: hub.TAGLINE,
+      who: hub.WHO,
+      host: hub.HOST,
+      visualAvatar: hub.VISUAL_AVATAR,
+      visualBackground: hub.VISUAL_BACKGROUND,
+      visualBanner: hub.VISUAL_BANNER,
+      refWebsite: hub.REF_WEBSITE,
+      refRepo: hub.REF_REPO,
+      tags: toArray(hub.TAGS),
     }));
   }
 

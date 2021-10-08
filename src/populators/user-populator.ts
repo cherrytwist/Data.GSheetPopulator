@@ -10,7 +10,6 @@ import { User } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
 export class UserPopulator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
@@ -128,8 +127,8 @@ export class UserPopulator extends AbstractPopulator {
 
     this.logger.info(`... created user: ${createdUser.nameID}`);
 
-    // add the user to the ecoverse
-    await this.client.addUserToEcoverse(this.ecoverseID, createdUser.id);
+    // add the user to the Hub
+    await this.client.addUserToEcoverse(this.hubID, createdUser.id);
 
     // Add the user to the challenge user group if applicable
     await this.addUserToChallenges(userData);
@@ -149,7 +148,7 @@ export class UserPopulator extends AbstractPopulator {
     for (const challenge of user.challenges) {
       if (challenge) {
         await this.client.addUserToChallenge(
-          this.ecoverseID,
+          this.hubID,
           challenge,
           userInfo.nameID
         );
@@ -159,7 +158,7 @@ export class UserPopulator extends AbstractPopulator {
 
   async addUserToGroups(userID: string, groups: string[]) {
     for (const groupName of groups) {
-      const group = await this.client.groupByName(this.ecoverseID, groupName);
+      const group = await this.client.groupByName(this.hubID, groupName);
       // Add the user into the team members group
       if (!group) {
         this.logger.warn(
@@ -177,11 +176,7 @@ export class UserPopulator extends AbstractPopulator {
   async addUserToOpportunities(userID: string, userOpportunities: string[]) {
     for (const opportunity of userOpportunities) {
       try {
-        await this.client.addUserToOpportunity(
-          this.ecoverseID,
-          opportunity,
-          userID
-        );
+        await this.client.addUserToOpportunity(this.hubID, opportunity, userID);
         this.logger.info(`... added user to opportunity: ${opportunity}`);
       } catch (e) {
         if (e.response && e.response.errors) {

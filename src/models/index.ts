@@ -2,7 +2,7 @@ export * from './actor';
 export * from './actor-group';
 export * from './aspect';
 export * from './challenge';
-export * from './ecoverse';
+export * from './hub';
 export * from './group';
 export * from './opportunity';
 export * from './organization';

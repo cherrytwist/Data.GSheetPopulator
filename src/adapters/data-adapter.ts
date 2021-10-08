@@ -15,7 +15,7 @@ export abstract class AbstractDataAdapter {
   abstract actors(): Actor[];
   abstract actorGroups(): ActorGroup[];
   abstract aspects(): Aspect[];
-  abstract ecoverses(): Ecoverse[];
+  abstract hubs(): Ecoverse[];
   abstract challenges(): Challenge[];
   abstract users(): User[];
   abstract opportunities(): Opportunity[];

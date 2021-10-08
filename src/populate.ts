@@ -18,11 +18,11 @@ const main = async () => {
 
   // Loading data from google sheets
   const populator = new Populator(ctClient, data, logger, profiler);
-  const ecoverseID = populator.getEcoverseID();
-  const exists = await ctClient.ecoverseExists(ecoverseID);
+  const hubID = populator.getEcoverseID();
+  const exists = await ctClient.ecoverseExists(hubID);
   if (!exists) {
     logger.error(
-      `Ecoverse does not exist: '${ecoverseID}', please ensure it is created.`
+      `Hub does not exist: '${hubID}', please ensure it is created.`
     );
     return;
   }
