@@ -8,7 +8,6 @@ import { ContextPopulator } from './context-populator';
 import { OrganizationPopulator } from './organization-populator';
 
 export class Populator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
@@ -20,7 +19,7 @@ export class Populator extends AbstractPopulator {
 
   async populate() {
     if (!this.data) throw new Error('No data to populate');
-    this.ecoverseID = this.getEcoverseID();
+    this.hubID = this.getHubID();
 
     const organizationPopulator = new OrganizationPopulator(
       this.client,
@@ -50,7 +49,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    // organizations first as they are needed for Ecoverse + Challenges
+    // organizations first as they are needed for Hub + Challenges
     await organizationPopulator.populate();
     await contextPopulator.populate();
 

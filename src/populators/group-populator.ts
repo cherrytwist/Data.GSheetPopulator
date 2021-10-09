@@ -4,7 +4,6 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
 
 export class GroupPopulator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
@@ -34,8 +33,8 @@ export class GroupPopulator extends AbstractPopulator {
       this.profiler.profile(groupProfileID);
 
       try {
-        await this.client.createEcoverseGroup(
-          this.ecoverseID,
+        await this.client.createUserGroupOnHub(
+          this.hubID,
           group.name,
           group.description
         );

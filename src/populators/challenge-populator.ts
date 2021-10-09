@@ -6,7 +6,6 @@ import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 
 export class ChallengePopulator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   private organizations: Organization[] = [];
 
   constructor(
@@ -43,7 +42,7 @@ export class ChallengePopulator extends AbstractPopulator {
       this.profiler.profile(challengeProfileID);
 
       const existingChallenge = await this.client.challengeByNameID(
-        this.ecoverseID,
+        this.hubID,
         challengeData.nameID
       );
 
@@ -62,7 +61,7 @@ export class ChallengePopulator extends AbstractPopulator {
   async createChallenge(challengeData: Challenge) {
     try {
       await this.client.createChallenge({
-        ecoverseID: this.ecoverseID,
+        ecoverseID: this.hubID,
         displayName: challengeData.displayName,
         nameID: challengeData.nameID,
         context: {

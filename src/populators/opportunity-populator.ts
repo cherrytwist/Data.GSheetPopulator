@@ -6,7 +6,6 @@ import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OpportunityPopulator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
@@ -47,7 +46,7 @@ export class OpportunityPopulator extends AbstractPopulator {
       }
 
       const existingOpportunity = await this.client.opportunityByNameID(
-        this.ecoverseID,
+        this.hubID,
         opportunityData.nameID
       );
 
@@ -77,7 +76,7 @@ export class OpportunityPopulator extends AbstractPopulator {
   async createOpportunity(opportunityData: Opportunity) {
     // First need to get the id for the challenge
     const challenge = await this.client.challengeByNameID(
-      this.ecoverseID,
+      this.hubID,
       opportunityData.challenge
     );
     if (!challenge) {

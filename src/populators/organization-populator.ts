@@ -5,7 +5,6 @@ import { Organization } from '../models/organization';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganizationPopulator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,

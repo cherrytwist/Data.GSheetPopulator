@@ -1,4 +1,4 @@
-export type Ecoverse = {
+export type Hub = {
   nameID: string;
   displayName: string;
   anonymousReadAccess: boolean;

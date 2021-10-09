@@ -2,7 +2,7 @@ export enum Sheets {
   Actors = 'Actors',
   ActorGroups = 'ActorGroups',
   Aspects = 'Aspects',
-  Ecoverse = 'Ecoverse',
+  Hub = 'Hub',
   Information = 'Information',
   Challenges = 'Challenges',
   Opportunities = 'Opportunities',
@@ -12,7 +12,7 @@ export enum Sheets {
   Relations = 'Relations',
 }
 
-export interface EcoverseSheet {
+export interface HubSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
   ANONYMOUS_READ_ACCESS: string;
@@ -97,7 +97,7 @@ export interface UserSheet {
   KEYWORDS: string;
   LINKEDIN: string;
   TWITTER: string;
-  // Ecoverse membership
+  // Hub membership
   CHALLENGES: string;
   GROUPS: string;
   OPPORTUNITIES: string;

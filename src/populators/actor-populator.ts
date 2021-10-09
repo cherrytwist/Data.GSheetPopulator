@@ -4,7 +4,6 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
 
 export class ActorPopulator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
@@ -43,7 +42,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(actorGroupProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        this.ecoverseID,
+        this.hubID,
         actorGroup.opportunity
       );
 
@@ -106,7 +105,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(actorProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        this.ecoverseID,
+        this.hubID,
         actor.opportunity
       );
 
@@ -176,7 +175,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(relationProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        this.ecoverseID,
+        this.hubID,
         relation.opportunity
       );
 
@@ -236,7 +235,7 @@ export class ActorPopulator extends AbstractPopulator {
       this.profiler.profile(aspectProfileID);
 
       const opportunity = await this.client.opportunityByNameID(
-        this.ecoverseID,
+        this.hubID,
         aspect.opportunity
       );
 

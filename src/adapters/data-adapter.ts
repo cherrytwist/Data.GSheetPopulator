@@ -3,7 +3,7 @@ import {
   ActorGroup,
   Aspect,
   Challenge,
-  Ecoverse,
+  Hub,
   Group,
   Opportunity,
   Organization,
@@ -15,7 +15,7 @@ export abstract class AbstractDataAdapter {
   abstract actors(): Actor[];
   abstract actorGroups(): ActorGroup[];
   abstract aspects(): Aspect[];
-  abstract ecoverses(): Ecoverse[];
+  abstract hubs(): Hub[];
   abstract challenges(): Challenge[];
   abstract users(): User[];
   abstract opportunities(): Opportunity[];

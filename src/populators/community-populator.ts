@@ -6,7 +6,6 @@ import { GroupPopulator } from './group-populator';
 import { UserPopulator } from './user-populator';
 
 export class CommunityPopulator extends AbstractPopulator {
-  // Create the ecoverse with enough defaults set/ members populated
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,

@@ -3,7 +3,7 @@ import {
   ActorGroup,
   Aspect,
   Challenge,
-  Ecoverse,
+  Hub,
   Group,
   Opportunity,
   Organization,
@@ -25,7 +25,7 @@ export class BaseDataAdapter extends AbstractDataAdapter {
   actorGroups(): ActorGroup[] {
     return [];
   }
-  ecoverses(): Ecoverse[] {
+  hubs(): Hub[] {
     return [];
   }
   challenges(): Challenge[] {
