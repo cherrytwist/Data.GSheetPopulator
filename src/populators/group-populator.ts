@@ -33,7 +33,7 @@ export class GroupPopulator extends AbstractPopulator {
       this.profiler.profile(groupProfileID);
 
       try {
-        await this.client.createEcoverseGroup(
+        await this.client.createUserGroupOnHub(
           this.hubID,
           group.name,
           group.description

@@ -11,15 +11,15 @@ const main = async () => {
 
   const ctClient = await createClientUsingEnvVars();
   logger.info(`Alkemio server: ${ctClient.config.graphqlEndpoint}`);
-  await ctClient.validateConnection();
+  //await ctClient.validateConnection();
 
   const data = await createDataAdapterUsingEnvVars();
   logger.info(`Alkemio data template: ${data.filename}`);
 
   // Loading data from google sheets
   const populator = new Populator(ctClient, data, logger, profiler);
-  const hubID = populator.getEcoverseID();
-  const exists = await ctClient.ecoverseExists(hubID);
+  const hubID = populator.getHubID();
+  const exists = await ctClient.hubExists(hubID);
   if (!exists) {
     logger.error(
       `Hub does not exist: '${hubID}', please ensure it is created.`

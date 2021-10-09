@@ -4,7 +4,7 @@ import {
   ActorGroup,
   Aspect,
   Challenge,
-  Ecoverse as Hub,
+  Hub as Hub,
   Group,
   Opportunity,
   Organization,

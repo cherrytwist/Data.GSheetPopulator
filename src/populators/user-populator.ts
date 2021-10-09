@@ -128,7 +128,7 @@ export class UserPopulator extends AbstractPopulator {
     this.logger.info(`... created user: ${createdUser.nameID}`);
 
     // add the user to the Hub
-    await this.client.addUserToEcoverse(this.hubID, createdUser.id);
+    await this.client.addUserToHub(this.hubID, createdUser.id);
 
     // Add the user to the challenge user group if applicable
     await this.addUserToChallenges(userData);

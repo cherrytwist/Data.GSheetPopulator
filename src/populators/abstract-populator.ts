@@ -24,10 +24,10 @@ export abstract class AbstractPopulator {
     this.logger = logger || createLogger();
     this.profiler = profiler || createProfiler();
     this.name = 'abstract-populator';
-    this.hubID = this.getEcoverseID();
+    this.hubID = this.getHubID();
   }
 
-  getEcoverseID(): string {
+  getHubID(): string {
     const hubs = this.data.hubs();
     if (hubs.length != 1) {
       throw new Error('Exactly one Hub must be available!');

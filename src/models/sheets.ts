@@ -97,7 +97,7 @@ export interface UserSheet {
   KEYWORDS: string;
   LINKEDIN: string;
   TWITTER: string;
-  // Ecoverse membership
+  // Hub membership
   CHALLENGES: string;
   GROUPS: string;
   OPPORTUNITIES: string;

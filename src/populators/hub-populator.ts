@@ -1,7 +1,7 @@
 import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Ecoverse } from '../models/hub';
+import { Hub } from '../models/hub';
 import { AbstractPopulator } from './abstract-populator';
 
 export class HubPopulator extends AbstractPopulator {
@@ -33,16 +33,16 @@ export class HubPopulator extends AbstractPopulator {
       const hubProfileID = '===> hubUpdate - FULL';
       this.profiler.profile(hubProfileID);
 
-      const hubExists = await this.client.ecoverseExists(hubData.nameID);
+      const hubExists = await this.client.hubExists(hubData.nameID);
       try {
         if (!hubExists) {
           const msg = `Specified Hub does not exist: ${hubData.nameID}`;
           this.logger.error(msg);
           throw new Error(msg);
         }
-        await this.updateEcoverse(hubData);
+        await this.updateHub(hubData);
 
-        await this.client.updateReferencesOnEcoverse(hubData.nameID, [
+        await this.client.updateReferencesOnHub(hubData.nameID, [
           {
             name: 'website',
             uri: hubData.refWebsite,
@@ -54,7 +54,7 @@ export class HubPopulator extends AbstractPopulator {
             description: 'The hub repository',
           },
         ]);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to update hub (${hubData.nameID}):${e.response.errors[0].message}`
@@ -71,8 +71,8 @@ export class HubPopulator extends AbstractPopulator {
     }
   }
 
-  async updateEcoverse(hubData: Ecoverse) {
-    await this.client.updateEcoverse({
+  async updateHub(hubData: Hub) {
+    await this.client.updateHub({
       ID: hubData.nameID,
       displayName: hubData.displayName,
       hostID: hubData.host,
@@ -94,6 +94,6 @@ export class HubPopulator extends AbstractPopulator {
       },
     });
 
-    this.logger.info(`Ecoverse updated: ${hubData.displayName}`);
+    this.logger.info(`Hub updated: ${hubData.displayName}`);
   }
 }
