@@ -8,13 +8,16 @@ import { ContextPopulator } from './context-populator';
 import { OrganizationPopulator } from './organization-populator';
 
 export class Populator extends AbstractPopulator {
+  private allowCreation: boolean;
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
     logger: Logger,
-    profiler: Logger
+    profiler: Logger,
+    allowCreation = false
   ) {
     super(client, data, logger, profiler);
+    this.allowCreation = allowCreation;
   }
 
   async populate() {
@@ -32,7 +35,8 @@ export class Populator extends AbstractPopulator {
       this.client,
       this.data,
       this.logger,
-      this.profiler
+      this.profiler,
+      this.allowCreation
     );
 
     const communityPopulator = new CommunityPopulator(

@@ -5,14 +5,18 @@ import { Hub } from '../models/hub';
 import { AbstractPopulator } from './abstract-populator';
 
 export class HubPopulator extends AbstractPopulator {
+  private allowCreation: boolean;
+
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
     logger: Logger,
-    profiler: Logger
+    profiler: Logger,
+    allowCreation = false
   ) {
     super(client, data, logger, profiler);
     this.name = 'hub-populator';
+    this.allowCreation = allowCreation;
   }
 
   async populate() {
@@ -34,11 +38,16 @@ export class HubPopulator extends AbstractPopulator {
       this.profiler.profile(hubProfileID);
 
       const hubExists = await this.client.hubExists(hubData.nameID);
+
       try {
         if (!hubExists) {
-          const msg = `Specified Hub does not exist: ${hubData.nameID}`;
-          this.logger.error(msg);
-          throw new Error(msg);
+          if (this.allowCreation) {
+            await this.createHub(hubData);
+          } else {
+            const msg = `Specified Hub does not exist: ${hubData.nameID}`;
+            this.logger.error(msg);
+            throw new Error(msg);
+          }
         }
         await this.updateHub(hubData);
 
@@ -95,5 +104,15 @@ export class HubPopulator extends AbstractPopulator {
     });
 
     this.logger.info(`Hub updated: ${hubData.displayName}`);
+  }
+
+  async createHub(hubData: Hub) {
+    await this.client.createHub({
+      nameID: hubData.nameID,
+      displayName: hubData.displayName,
+      hostID: hubData.host,
+    });
+
+    this.logger.info(`Hub created: ${hubData.displayName}`);
   }
 }
