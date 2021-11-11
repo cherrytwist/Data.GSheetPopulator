@@ -7,13 +7,16 @@ import { HubPopulator } from './hub-populator';
 import { OpportunityPopulator } from './opportunity-populator';
 
 export class ContextPopulator extends AbstractPopulator {
+  private allowCreation: boolean;
   constructor(
     client: AlkemioClient,
     data: AbstractDataAdapter,
     logger: Logger,
-    profiler: Logger
+    profiler: Logger,
+    allowCreation = false
   ) {
     super(client, data, logger, profiler);
+    this.allowCreation = allowCreation;
   }
 
   async populate() {
@@ -36,7 +39,8 @@ export class ContextPopulator extends AbstractPopulator {
       this.client,
       this.data,
       this.logger,
-      this.profiler
+      this.profiler,
+      this.allowCreation
     );
 
     await hubPopulator.populate();

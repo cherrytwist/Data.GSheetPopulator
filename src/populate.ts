@@ -6,6 +6,7 @@ import { createDataAdapterUsingEnvVars } from './utils/create-data-adapter-using
 
 const main = async () => {
   dotenv.config();
+  const allowHubCreation = process.env.ALLOW_HUB_CREATION === 'true';
   const logger = createLogger();
   const profiler = createProfiler();
 
@@ -17,10 +18,16 @@ const main = async () => {
   logger.info(`Alkemio data template: ${data.filename}`);
 
   // Loading data from google sheets
-  const populator = new Populator(ctClient, data, logger, profiler);
+  const populator = new Populator(
+    ctClient,
+    data,
+    logger,
+    profiler,
+    allowHubCreation
+  );
   const hubID = populator.getHubID();
   const exists = await ctClient.hubExists(hubID);
-  if (!exists) {
+  if (!exists && !allowHubCreation) {
     logger.error(
       `Hub does not exist: '${hubID}', please ensure it is created.`
     );
