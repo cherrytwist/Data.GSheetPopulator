@@ -104,10 +104,6 @@ export class UserPopulator extends AbstractPopulator {
             tags: userData.keywords,
           },
           {
-            name: Tagsets.ORGANIZATION,
-            tags: [userData.organization],
-          },
-          {
             name: Tagsets.ORGANIZATION_ROLES,
             tags: [userData.jobTitle],
           },
@@ -129,6 +125,11 @@ export class UserPopulator extends AbstractPopulator {
 
     // add the user to the Hub
     await this.client.addUserToHub(this.hubID, createdUser.id);
+
+    await this.client.addUserToOrganization(
+      createdUser.id,
+      userData.organization
+    );
 
     // Add the user to the challenge user group if applicable
     await this.addUserToChallenges(userData);
