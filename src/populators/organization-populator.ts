@@ -51,7 +51,7 @@ export class OrganizationPopulator extends AbstractPopulator {
           this.logger.info(`...creating: ${organizationData.displayName}`);
           await this.createOrganization(organizationData);
         }
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create organization (${organizationData.displayName}):${e.response.errors[0].message}`
@@ -72,6 +72,7 @@ export class OrganizationPopulator extends AbstractPopulator {
     );
 
     const profileID = newOrganization?.profile.id;
+    const visualID = newOrganization?.profile.avatar?.id || '';
 
     if (profileID) {
       await this.client.createTagsetOnProfile(
@@ -79,11 +80,8 @@ export class OrganizationPopulator extends AbstractPopulator {
         'Keywords',
         organizationData.keywords
       );
-      await this.client.updateProfile(
-        profileID,
-        organizationData.avatar,
-        organizationData.description
-      );
+      await this.client.updateProfile(profileID, organizationData.description);
+      await this.client.updateVisual(visualID, organizationData.avatar);
     }
   }
 
@@ -92,14 +90,12 @@ export class OrganizationPopulator extends AbstractPopulator {
     existingOrganization: any
   ) {
     const profileID = existingOrganization?.profile.id;
+    const visualID = existingOrganization?.profile.avatar?.id || '';
 
     if (profileID) {
       // todo: fill this out more
-      await this.client.updateProfile(
-        profileID,
-        organizationData.avatar,
-        organizationData.description
-      );
+      await this.client.updateProfile(profileID, organizationData.description);
+      await this.client.updateVisual(visualID, organizationData.avatar);
     }
   }
 }

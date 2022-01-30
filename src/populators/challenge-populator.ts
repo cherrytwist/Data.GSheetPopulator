@@ -60,7 +60,7 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async createChallenge(challengeData: Challenge) {
     try {
-      await this.client.createChallenge({
+      const createdChallenge = await this.client.createChallenge({
         ecoverseID: this.hubID,
         displayName: challengeData.displayName,
         nameID: challengeData.nameID,
@@ -70,11 +70,6 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challengeData.vision,
           impact: challengeData.impact,
           who: challengeData.who,
-          visual: {
-            avatar: challengeData.visualAvatar,
-            background: challengeData.visualBackground,
-            banner: challengeData.visualBanner,
-          },
           references: this.getReferences(challengeData),
         },
         tags: challengeData.tags || [],
@@ -82,7 +77,14 @@ export class ChallengePopulator extends AbstractPopulator {
       });
 
       this.logger.info(`....created: ${challengeData.displayName}`);
-    } catch (e) {
+      const visuals = createdChallenge?.context?.visuals || [];
+      await this.client.updateVisualsOnContext(
+        visuals,
+        challengeData.visualBanner,
+        challengeData.visualBackground,
+        challengeData.visualAvatar
+      );
+    } catch (e: any) {
       if (e.response && e.response.errors) {
         this.logger.error(
           `Unable to create challenge (${challengeData.displayName}):${e.response.errors[0].message}`
@@ -98,7 +100,7 @@ export class ChallengePopulator extends AbstractPopulator {
   // Load users from a particular googlesheet
   async updateChallengeContext(challengeId: string, challengeData: Challenge) {
     try {
-      await this.client.updateChallenge({
+      const updatedChallenge = await this.client.updateChallenge({
         ID: challengeId,
         displayName: challengeData.displayName,
         context: {
@@ -107,17 +109,19 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challengeData.vision,
           impact: challengeData.impact,
           who: challengeData.who,
-          visual: {
-            avatar: challengeData.visualAvatar,
-            background: challengeData.visualBackground,
-            banner: challengeData.visualBanner,
-          },
         },
         tags: challengeData.tags || [],
         leadOrganizations: challengeData.leadingOrganizations,
       });
+      const visuals = updatedChallenge?.context?.visuals || [];
+      await this.client.updateVisualsOnContext(
+        visuals,
+        challengeData.visualBanner,
+        challengeData.visualBackground,
+        challengeData.visualAvatar
+      );
       this.logger.info(`....updated: ${challengeData.displayName}`);
-    } catch (e) {
+    } catch (e: any) {
       if (e.response && e.response.errors) {
         this.logger.error(
           `Unable to update challenge (${challengeData.displayName}):${e.response.errors[0].message}`
