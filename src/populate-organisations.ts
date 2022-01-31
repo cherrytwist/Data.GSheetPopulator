@@ -9,15 +9,22 @@ const main = async () => {
   const logger = createLogger();
   const profiler = createProfiler();
 
-  const ctClient = await createClientUsingEnvVars();
-  logger.info(`Alkemio server: ${ctClient.config.graphqlEndpoint}`);
-  await ctClient.validateConnection();
+  const alkemioClient = await createClientUsingEnvVars();
+  logger.info(
+    `Alkemio server: ${alkemioClient.config.apiEndpointPrivateGraphql}`
+  );
+  await alkemioClient.validateConnection();
 
   const data = await createDataAdapterUsingEnvVars();
   logger.info(`Alkemio data template: ${data.filename}`);
 
   // Loading data from google sheets
-  const populator = new OrganizationPopulator(ctClient, data, logger, profiler);
+  const populator = new OrganizationPopulator(
+    alkemioClient,
+    data,
+    logger,
+    profiler
+  );
   await populator.populate();
 };
 

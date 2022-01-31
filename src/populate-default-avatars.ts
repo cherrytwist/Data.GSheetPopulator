@@ -6,21 +6,23 @@ const main = async () => {
   dotenv.config();
   const logger = createLogger();
 
-  const ctClient = await createClientUsingEnvVars();
-  logger.info(`Alkemio server: ${ctClient.config.graphqlEndpoint}`);
-  await ctClient.validateConnection();
+  const alkemioClient = await createClientUsingEnvVars();
+  logger.info(
+    `Alkemio server: ${alkemioClient.config.apiEndpointPrivateGraphql}`
+  );
+  await alkemioClient.validateConnection();
 
-  const users = await ctClient.users();
+  const users = await alkemioClient.users();
   logger.info(`Users count: ${users?.length}`);
   if (users) {
     for (const user of users) {
-      const avatar = user.profile?.avatar;
+      const avatar = user.profile?.avatar?.uri;
       logger.info(`user (${user.displayName}) has avatar: ${avatar}`);
       if (!avatar || avatar.length == 0) {
         const profileID = user.profile?.id;
         if (profileID) {
           const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-          await ctClient.updateProfile(
+          await alkemioClient.updateProfile(
             profileID,
             `https://eu.ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=${randomColor}&color=ffffff`
           );
