@@ -43,7 +43,7 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
         try {
           await this.createUser(userData);
-        } catch (e) {
+        } catch (e: any) {
           if (e.response && e.response.errors) {
             this.logger.error(
               `Could not create user: ${e.response.errors[0].message}`
@@ -91,7 +91,6 @@ export class UserPopulator extends AbstractPopulator {
       country: userData.country,
       phone: userData.phone,
       profileData: {
-        avatar: userData.avatar,
         description: userData.bio,
         referencesData: references,
         tagsetsData: [
@@ -120,6 +119,9 @@ export class UserPopulator extends AbstractPopulator {
 
     this.profiler.profile('userCreation');
     const userProfileID = createdUser.profile?.id || '';
+
+    const visualID = createdUser.profile?.avatar?.id || '';
+    await this.client.updateVisual(visualID, userData.avatar);
 
     this.logger.info(`... created user: ${createdUser.nameID}`);
 
@@ -179,7 +181,7 @@ export class UserPopulator extends AbstractPopulator {
       try {
         await this.client.addUserToOpportunity(this.hubID, opportunity, userID);
         this.logger.info(`... added user to opportunity: ${opportunity}`);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Can not add user ${userID} to opportunity ${opportunity}: ${e.response.errors[0].message}`

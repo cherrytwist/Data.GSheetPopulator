@@ -85,7 +85,7 @@ export class OpportunityPopulator extends AbstractPopulator {
       );
       return;
     }
-    await this.client.createOpportunity({
+    const createdOpportunity = await this.client.createOpportunity({
       challengeID: challenge.id,
       displayName: opportunityData.displayName,
       nameID: opportunityData.nameID,
@@ -95,16 +95,18 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
-        visual: {
-          avatar: opportunityData.visualAvatar,
-          background: opportunityData.visualBackground,
-          banner: opportunityData.visualBanner,
-        },
         references: this.getReferences(opportunityData),
       },
       tags: opportunityData.tags || [],
     });
 
+    const visuals = createdOpportunity?.context?.visuals || [];
+    await this.client.updateVisualsOnContext(
+      visuals,
+      opportunityData.visualBanner,
+      opportunityData.visualBackground,
+      opportunityData.visualAvatar
+    );
     this.logger.info(`...added opportunity: ${opportunityData.displayName}`);
   }
 
@@ -127,7 +129,7 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityData: Opportunity,
     existingOpportunity: any
   ) {
-    await this.client.updateOpportunity({
+    const updatedOpportunity = await this.client.updateOpportunity({
       ID: existingOpportunity.id,
       displayName: opportunityData.displayName,
       context: {
@@ -136,14 +138,17 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
-        visual: {
-          avatar: opportunityData.visualAvatar,
-          background: opportunityData.visualBackground,
-          banner: opportunityData.visualBanner,
-        },
       },
       tags: opportunityData.tags || [],
     });
+
+    const visuals = updatedOpportunity?.context?.visuals || [];
+    await this.client.updateVisualsOnContext(
+      visuals,
+      opportunityData.visualBanner,
+      opportunityData.visualBackground,
+      opportunityData.visualAvatar
+    );
 
     this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
   }

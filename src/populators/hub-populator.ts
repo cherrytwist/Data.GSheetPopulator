@@ -81,7 +81,7 @@ export class HubPopulator extends AbstractPopulator {
   }
 
   async updateHub(hubData: Hub) {
-    await this.client.updateHub({
+    const updatedHub = await this.client.updateHub({
       ID: hubData.nameID,
       displayName: hubData.displayName,
       hostID: hubData.host,
@@ -91,17 +91,20 @@ export class HubPopulator extends AbstractPopulator {
         tagline: hubData.tagline,
         vision: hubData.vision,
         who: hubData.who,
-        visual: {
-          avatar: hubData.visualAvatar,
-          background: hubData.visualBackground,
-          banner: hubData.visualBanner,
-        },
       },
       tags: hubData.tags || [],
       authorizationPolicy: {
         anonymousReadAccess: hubData.anonymousReadAccess,
       },
     });
+
+    const visuals = updatedHub?.context?.visuals || [];
+    await this.client.updateVisualsOnContext(
+      visuals,
+      hubData.visualBanner,
+      hubData.visualBackground,
+      hubData.visualAvatar
+    );
 
     this.logger.info(`Hub updated: ${hubData.displayName}`);
   }

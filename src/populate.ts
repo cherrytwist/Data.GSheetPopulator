@@ -10,8 +10,10 @@ const main = async () => {
   const logger = createLogger();
   const profiler = createProfiler();
 
-  const ctClient = await createClientUsingEnvVars();
-  logger.info(`Alkemio server: ${ctClient.config.graphqlEndpoint}`);
+  const alkemioClient = await createClientUsingEnvVars();
+  logger.info(
+    `Alkemio server: ${alkemioClient.config.apiEndpointPrivateGraphql}`
+  );
   //await ctClient.validateConnection();
 
   const data = await createDataAdapterUsingEnvVars();
@@ -19,14 +21,14 @@ const main = async () => {
 
   // Loading data from google sheets
   const populator = new Populator(
-    ctClient,
+    alkemioClient,
     data,
     logger,
     profiler,
     allowHubCreation
   );
   const hubID = populator.getHubID();
-  const exists = await ctClient.hubExists(hubID);
+  const exists = await alkemioClient.hubExists(hubID);
   if (!exists && !allowHubCreation) {
     logger.error(
       `Hub does not exist: '${hubID}', please ensure it is created.`

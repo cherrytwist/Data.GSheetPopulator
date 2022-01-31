@@ -21,7 +21,7 @@ If you want to make a custom load of data into an Challenge Hub then please make
 
 - Make a copy of `.env.default` to creat a `.env` file
 - Edit this file to specify the values for the two environment variables:
-  - **ALKEMIO_SERVER**: The server file location. Note: the URL format to use depends on whether authentication is enabled or not. If not enabled then just use `/graphql`, if it is enabled then use `admin/graphql` after the server / port.
+  - **API_ENDPOINT_PRIVATE_GRAPHQL**: The server api end point location. This should be the non-interactive private end point.
   - **ALKEMIO_DATA_TEMPLATE**: The data template to use for population
   - **AUTH_ADMIN_EMAIL**: The administrator user name for accessing the server. Defaults to `admin@alkem.io`.
   - **AUTH_ADMIN_PASSWORD**: The password for the administrator.

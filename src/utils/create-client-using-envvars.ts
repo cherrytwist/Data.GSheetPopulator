@@ -4,18 +4,19 @@ import { AlkemioClient } from '@alkemio/client-lib';
 export const createClientUsingEnvVars = async () => {
   dotenv.config();
 
-  const server = process.env.ALKEMIO_SERVER || 'http://localhost:4455/graphql';
-  const ctClient = new AlkemioClient({
-    graphqlEndpoint: server,
+  const server = (process.env.API_ENDPOINT_PRIVATE_GRAPHQL =
+    '' || 'http://localhost:3000/api/private/non-interactive/graphql');
+  const alkemioClient = new AlkemioClient({
+    apiEndpointPrivateGraphql: server,
   });
 
-  ctClient.config.authInfo = {
+  alkemioClient.config.authInfo = {
     credentials: {
       email: process.env.AUTH_ADMIN_EMAIL ?? 'admin@alkem.io',
-      password: process.env.AUTH_ADMIN_PASSWORD ?? '!Rn5Ez5FuuyUNc!',
+      password: process.env.AUTH_ADMIN_PASSWORD ?? 'Fin1.tan',
     },
   };
 
-  await ctClient.enableAuthentication();
-  return ctClient;
+  await alkemioClient.enableAuthentication();
+  return alkemioClient;
 };
