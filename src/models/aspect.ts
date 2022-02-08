@@ -1,6 +1,10 @@
 export type Aspect = {
-  title: string;
-  framing: string;
-  explanation: string;
-  opportunity: string;
+  type: string;
+  nameID: string;
+  displayName: string;
+  description: string;
+  challenge: string;
+  tags: string[];
+  bannerURI: string;
+  bannerNarrowURI: string;
 };

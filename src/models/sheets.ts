@@ -128,8 +128,12 @@ export interface RelationSheet {
 }
 
 export interface AspectSheet {
-  TITLE: string;
-  FRAMING: string;
-  EXPLANATION: string;
-  OPPORTUNITY: string;
+  TYPE: string;
+  NAMEID: string;
+  DISPLAY_NAME: string;
+  DESCRIPTION: string;
+  CHALLENGE: string;
+  TAGS: string;
+  VISUAL_BANNER: string;
+  VISUAL_BANNER_NARROW: string;
 }
