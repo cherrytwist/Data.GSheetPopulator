@@ -17,7 +17,6 @@ export class ActorPopulator extends AbstractPopulator {
     await this.processActorGroups();
     await this.processActors();
     await this.processRelations();
-    await this.processAspects();
   }
 
   private async processActorGroups() {
@@ -69,7 +68,7 @@ export class ActorPopulator extends AbstractPopulator {
         );
 
         this.logger.info(`...added actor group: ${actorGroup.name}`);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create actor group (${actorGroup.name}): ${e.response.errors[0].message}`
@@ -137,7 +136,7 @@ export class ActorPopulator extends AbstractPopulator {
         );
 
         this.logger.info(`...added actor: ${actor.name}`);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create actor (${actor.name}): ${e.response.errors[0].message}`
@@ -199,7 +198,7 @@ export class ActorPopulator extends AbstractPopulator {
         this.logger.info(
           `...added relation: ${relation.type}-${relation.actorName}`
         );
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create relation (${relation.type}-${relation.actorName}): ${e.response.errors[0].message}`
@@ -209,70 +208,6 @@ export class ActorPopulator extends AbstractPopulator {
         }
       } finally {
         this.profiler.profile(relationProfileID);
-      }
-    }
-  }
-
-  private async processAspects() {
-    this.logger.info('Processing aspects');
-
-    const aspects = this.data.aspects();
-
-    if (aspects.length === 0) {
-      this.logger.warn('No aspects to import!');
-      return;
-    }
-
-    for (const aspect of aspects) {
-      if (!aspect.title) {
-        // End of valid organizations
-        break;
-      }
-
-      // start processing
-      this.logger.info(`Processing aspect: ${aspect.title}....`);
-      const aspectProfileID = '===> aspectCreation - FULL';
-      this.profiler.profile(aspectProfileID);
-
-      const opportunity = await this.client.opportunityByNameID(
-        this.hubID,
-        aspect.opportunity
-      );
-
-      if (!opportunity) {
-        this.logger.warn(
-          `Skipping aspect '${aspect.title}'. Missing opportunity '${aspect.opportunity}'!`
-        );
-        continue;
-      }
-
-      const contextID = opportunity.context?.id;
-      if (!contextID) {
-        this.logger.warn(
-          `Skipping aspect '${aspect.title}'. Missing context ID on '${aspect.opportunity}'!`
-        );
-        continue;
-      }
-
-      try {
-        await this.client.createAspect(
-          contextID,
-          aspect.title,
-          aspect.framing,
-          aspect.explanation
-        );
-
-        this.logger.info(`...added aspect: ${aspect.title}`);
-      } catch (e) {
-        if (e.response && e.response.errors) {
-          this.logger.error(
-            `Unable to create aspect (${aspect.title}): ${e.response.errors[0].message}`
-          );
-        } else {
-          this.logger.error(`Could not create aspect: ${e}`);
-        }
-      } finally {
-        this.profiler.profile(aspectProfileID);
       }
     }
   }

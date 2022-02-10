@@ -36,7 +36,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     try {
       this.workbook = XLSX.readFile(fileName);
       this.filename = fileName;
-    } catch (ex) {
+    } catch (ex: any) {
       console.error(ex.message);
       this.workbook = XLSX.utils.book_new();
     }
@@ -69,10 +69,14 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const sheet = this.workbook.Sheets[Sheets.Aspects];
     const result = XLSX.utils.sheet_to_json(sheet) as AspectSheet[];
     return result.map(x => ({
-      title: x.TITLE,
-      explanation: x.EXPLANATION,
-      framing: x.FRAMING,
-      opportunity: x.OPPORTUNITY,
+      type: x.TYPE,
+      nameID: x.NAMEID,
+      displayName: x.DISPLAY_NAME,
+      description: x.DESCRIPTION,
+      challenge: x.CHALLENGE,
+      tags: toArray(x.TAGS),
+      bannerURI: x.VISUAL_BANNER,
+      bannerNarrowURI: x.VISUAL_BANNER_NARROW,
     }));
   }
 
