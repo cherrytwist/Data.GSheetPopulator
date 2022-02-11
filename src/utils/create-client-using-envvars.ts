@@ -4,8 +4,9 @@ import { AlkemioClient } from '@alkemio/client-lib';
 export const createClientUsingEnvVars = async () => {
   dotenv.config();
 
-  const server = (process.env.API_ENDPOINT_PRIVATE_GRAPHQL =
-    '' || 'http://localhost:3000/api/private/non-interactive/graphql');
+  const server =
+    process.env.API_ENDPOINT_PRIVATE_GRAPHQL ||
+    'http://localhost:3000/api/private/non-interactive/graphql';
   const alkemioClient = new AlkemioClient({
     apiEndpointPrivateGraphql: server,
   });
