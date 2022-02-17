@@ -61,7 +61,7 @@ export class ChallengePopulator extends AbstractPopulator {
   async createChallenge(challengeData: Challenge) {
     try {
       const createdChallenge = await this.client.createChallenge({
-        ecoverseID: this.hubID,
+        hubID: this.hubID,
         displayName: challengeData.displayName,
         nameID: challengeData.nameID,
         context: {
