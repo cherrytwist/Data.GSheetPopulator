@@ -93,9 +93,6 @@ export class HubPopulator extends AbstractPopulator {
         who: hubData.who,
       },
       tags: hubData.tags || [],
-      authorizationPolicy: {
-        anonymousReadAccess: hubData.anonymousReadAccess,
-      },
     });
 
     const visuals = updatedHub?.context?.visuals || [];
