@@ -80,7 +80,12 @@ export class OrganizationPopulator extends AbstractPopulator {
         'Keywords',
         organizationData.keywords
       );
-      await this.client.updateProfile(profileID, organizationData.description);
+      await this.client.updateProfile(
+        profileID,
+        organizationData.description,
+        organizationData.country,
+        organizationData.city
+      );
       await this.client.updateVisual(visualID, organizationData.avatar);
     }
   }
