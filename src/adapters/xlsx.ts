@@ -97,6 +97,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       refVideo: x.REF_VIDEO,
       refJitsi: x.REF_JITSI,
       leadingOrganizations: toArray(x.LEAD_ORGS),
+      memberOrganizations: toArray(x.)
       tags: toArray(x.TAGS),
     }));
   }

@@ -38,7 +38,10 @@ export interface ChallengesSheet {
   VISION: string;
   IMPACT: string;
   WHO: string;
+  COUNTRY: string;
+  CITY: string;
   LEAD_ORGS: string;
+  MEMBER_ORGS: string;
   TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
@@ -56,6 +59,9 @@ export interface OpportunitiesSheet {
   VISION: string;
   IMPACT: string;
   WHO: string;
+  LEAD_ORGS: string;
+  COUNTRY: string;
+  CITY: string;
   TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
@@ -69,6 +75,8 @@ export interface OrganizationsSheet {
   DISPLAY_NAME: string;
   DESCRIPTION: string;
   KEYWORDS: string;
+  COUNTRY: string;
+  CITY: string;
   AVATAR: string;
 }
 
