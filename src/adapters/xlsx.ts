@@ -90,6 +90,8 @@ export class XLSXAdapter extends AbstractDataAdapter {
       impact: x.IMPACT,
       tagline: x.TAGLINE,
       who: x.WHO,
+      country: x.COUNTRY,
+      city: x.CITY,
       vision: x.VISION,
       visualAvatar: x.VISUAL_AVATAR,
       visualBackground: x.VISUAL_BACKGROUND,
@@ -97,7 +99,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       refVideo: x.REF_VIDEO,
       refJitsi: x.REF_JITSI,
       leadingOrganizations: toArray(x.LEAD_ORGS),
-      memberOrganizations: toArray(x.)
+      memberOrganizations: toArray(x.MEMBER_ORGS),
       tags: toArray(x.TAGS),
     }));
   }
@@ -141,6 +143,9 @@ export class XLSXAdapter extends AbstractDataAdapter {
       tagline: x.TAGLINE,
       vision: x.VISION,
       who: x.WHO,
+      leadingOrganizations: toArray(x.LEAD_ORGS),
+      country: x.COUNTRY,
+      city: x.CITY,
       visualAvatar: x.VISUAL_AVATAR,
       visualBackground: x.VISUAL_BACKGROUND,
       visualBanner: x.VISUAL_BANNER,
@@ -193,6 +198,8 @@ export class XLSXAdapter extends AbstractDataAdapter {
       description: x.DESCRIPTION,
       keywords: toArray(x.KEYWORDS),
       avatar: x.AVATAR,
+      country: x.COUNTRY,
+      city: x.CITY,
     }));
   };
 

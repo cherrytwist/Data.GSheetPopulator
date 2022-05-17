@@ -4,6 +4,7 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
+import { assignOrgsAsLead, assignOrgsAsMember } from '../utils';
 
 export class ChallengePopulator extends AbstractPopulator {
   private organizations: Organization[] = [];
@@ -70,13 +71,32 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challengeData.vision,
           impact: challengeData.impact,
           who: challengeData.who,
+          location: {
+            country: challengeData.country,
+            city: challengeData.city,
+          },
           references: this.getReferences(challengeData),
         },
         tags: challengeData.tags || [],
-        leadOrganizations: challengeData.leadingOrganizations,
       });
-
       this.logger.info(`....created: ${challengeData.displayName}`);
+
+      if (createdChallenge?.community?.id) {
+        await assignOrgsAsLead(
+          this.client,
+          this.logger,
+          createdChallenge.community.id,
+          challengeData.leadingOrganizations
+        );
+
+        await assignOrgsAsMember(
+          this.client,
+          this.logger,
+          createdChallenge.community.id,
+          challengeData.memberOrganizations
+        );
+      }
+
       const visuals = createdChallenge?.context?.visuals || [];
       await this.client.updateVisualsOnContext(
         visuals,
@@ -109,9 +129,12 @@ export class ChallengePopulator extends AbstractPopulator {
           vision: challengeData.vision,
           impact: challengeData.impact,
           who: challengeData.who,
+          location: {
+            country: challengeData.country,
+            city: challengeData.city,
+          },
         },
         tags: challengeData.tags || [],
-        leadOrganizations: challengeData.leadingOrganizations,
       });
       const visuals = updatedChallenge?.context?.visuals || [];
       await this.client.updateVisualsOnContext(
