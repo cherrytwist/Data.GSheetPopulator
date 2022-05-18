@@ -8,3 +8,6 @@ build
 dist
 secrets/*.json
 .~*
+.idea
+.vscode
+data

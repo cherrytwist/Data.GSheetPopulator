@@ -4,6 +4,7 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Opportunity } from '../models';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
+import { assignOrgsAsLead } from '../utils';
 
 export class OpportunityPopulator extends AbstractPopulator {
   constructor(
@@ -96,9 +97,22 @@ export class OpportunityPopulator extends AbstractPopulator {
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
         references: this.getReferences(opportunityData),
+        location: {
+          country: opportunityData.country,
+          city: opportunityData.city,
+        },
       },
       tags: opportunityData.tags || [],
     });
+
+    if (createdOpportunity?.community?.id) {
+      await assignOrgsAsLead(
+        this.client,
+        this.logger,
+        createdOpportunity.community.id,
+        opportunityData.leadingOrganizations
+      );
+    }
 
     const visuals = createdOpportunity?.context?.visuals || [];
     await this.client.updateVisualsOnContext(
@@ -138,6 +152,10 @@ export class OpportunityPopulator extends AbstractPopulator {
         who: opportunityData.who,
         vision: opportunityData.vision,
         tagline: opportunityData.tagline,
+        location: {
+          country: opportunityData.country,
+          city: opportunityData.city,
+        },
       },
       tags: opportunityData.tags || [],
     });

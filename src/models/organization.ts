@@ -4,4 +4,6 @@ export type Organization = {
   description: string;
   keywords: string[];
   avatar: string;
+  country: string;
+  city: string;
 };

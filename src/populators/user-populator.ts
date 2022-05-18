@@ -38,7 +38,17 @@ export class UserPopulator extends AbstractPopulator {
 
       const existingUser = await this.client.user(userData.nameID);
       if (existingUser) {
-        this.logger.info(`[${count}] User already exists: ${userData.nameID}`);
+        if (existingUser?.profile?.id) {
+          this.logger.info(
+            `[${count}] User already exists: ${userData.nameID}; updating profile instead`
+          );
+          await this.client.updateProfile(
+            existingUser.profile.id,
+            undefined,
+            userData.country,
+            userData.city
+          );
+        }
       } else {
         this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
         try {
@@ -93,6 +103,10 @@ export class UserPopulator extends AbstractPopulator {
       profileData: {
         description: userData.bio,
         referencesData: references,
+        location: {
+          country: userData.country,
+          city: userData.city,
+        },
         tagsetsData: [
           {
             name: Tagsets.SKILLS,
