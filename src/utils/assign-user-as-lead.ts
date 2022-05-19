@@ -9,7 +9,7 @@ export const assignUserAsLead = (
   userNameIds: string[]
 ) => {
   const requests = userNameIds.map(nameId =>
-    client.assignOrganizationAsCommunityLead(communityId, nameId)
+    client.assignUserAsCommunityLead(communityId, nameId)
   );
 
   return handleRequests(
