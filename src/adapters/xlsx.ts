@@ -100,6 +100,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       refJitsi: x.REF_JITSI,
       leadingOrganizations: toArray(x.LEAD_ORGS),
       memberOrganizations: toArray(x.MEMBER_ORGS),
+      leadUsers: toArray(x.LEAD_USERS),
       tags: toArray(x.TAGS),
     }));
   }
@@ -145,6 +146,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       who: x.WHO,
       leadingOrganizations: toArray(x.LEAD_ORGS),
       memberOrganizations: toArray(x.MEMBER_ORGS),
+      leadUsers: toArray(x.LEAD_USERS),
       country: x.COUNTRY,
       city: x.CITY,
       visualAvatar: x.VISUAL_AVATAR,
@@ -187,6 +189,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       refWebsite: hub.REF_WEBSITE,
       refRepo: hub.REF_REPO,
       tags: toArray(hub.TAGS),
+      leadUsers: toArray(hub.LEAD_USERS),
     }));
   }
 

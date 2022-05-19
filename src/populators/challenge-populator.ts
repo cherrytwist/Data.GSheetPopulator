@@ -4,7 +4,7 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
-import { assignOrgsAsLead, assignOrgsAsMember } from '../utils';
+import { assignOrgsAsLead, assignOrgsAsMember, assignUserAsLead } from '../utils';
 
 export class ChallengePopulator extends AbstractPopulator {
   private organizations: Organization[] = [];
@@ -94,6 +94,13 @@ export class ChallengePopulator extends AbstractPopulator {
           this.logger,
           createdChallenge.community.id,
           challengeData.memberOrganizations
+        );
+
+        await assignUserAsLead(
+          this.client,
+          this.logger,
+          createdChallenge.community.id,
+          challengeData.leadUsers
         );
       }
 

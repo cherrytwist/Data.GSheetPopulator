@@ -22,6 +22,7 @@ export interface HubSheet {
   IMPACT: string;
   WHO: string;
   HOST: string;
+  LEAD_USERS: string;
   TAGS: string;
   REF_WEBSITE: string;
   REF_REPO: string;
@@ -42,6 +43,7 @@ export interface ChallengesSheet {
   CITY: string;
   LEAD_ORGS: string;
   MEMBER_ORGS: string;
+  LEAD_USERS: string;
   TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
@@ -61,6 +63,7 @@ export interface OpportunitiesSheet {
   WHO: string;
   LEAD_ORGS: string;
   MEMBER_ORGS: string;
+  LEAD_USERS: string;
   COUNTRY: string;
   CITY: string;
   TAGS: string;

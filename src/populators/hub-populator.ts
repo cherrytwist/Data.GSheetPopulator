@@ -1,4 +1,5 @@
 import { AlkemioClient } from '@alkemio/client-lib';
+import { assignUserAsLead } from '../utils';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Hub } from '../models/hub';
@@ -102,6 +103,15 @@ export class HubPopulator extends AbstractPopulator {
       hubData.visualBackground,
       hubData.visualAvatar
     );
+
+    if (updatedHub?.community?.id) {
+      await assignUserAsLead(
+        this.client,
+        this.logger,
+        updatedHub.community.id,
+        hubData.leadUsers
+      );
+    }
 
     this.logger.info(`Hub updated: ${hubData.displayName}`);
   }

@@ -11,6 +11,7 @@ export type Opportunity = {
   city: string;
   leadingOrganizations: string[];
   memberOrganizations: string[];
+  leadUsers: string[];
   refVideo: string;
   refJitsi: string;
   visualAvatar: string;
