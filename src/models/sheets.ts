@@ -60,6 +60,7 @@ export interface OpportunitiesSheet {
   IMPACT: string;
   WHO: string;
   LEAD_ORGS: string;
+  MEMBER_ORGS: string;
   COUNTRY: string;
   CITY: string;
   TAGS: string;

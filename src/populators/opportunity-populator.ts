@@ -4,7 +4,7 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Opportunity } from '../models';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
-import { assignOrgsAsLead } from '../utils';
+import { assignOrgsAsLead, assignOrgsAsMember } from '../utils';
 
 export class OpportunityPopulator extends AbstractPopulator {
   constructor(
@@ -111,6 +111,13 @@ export class OpportunityPopulator extends AbstractPopulator {
         this.logger,
         createdOpportunity.community.id,
         opportunityData.leadingOrganizations
+      );
+
+      await assignOrgsAsMember(
+        this.client,
+        this.logger,
+        createdOpportunity.community.id,
+        opportunityData.memberOrganizations
       );
     }
 

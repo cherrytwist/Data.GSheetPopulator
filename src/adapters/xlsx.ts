@@ -144,6 +144,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       vision: x.VISION,
       who: x.WHO,
       leadingOrganizations: toArray(x.LEAD_ORGS),
+      memberOrganizations: toArray(x.MEMBER_ORGS),
       country: x.COUNTRY,
       city: x.CITY,
       visualAvatar: x.VISUAL_AVATAR,
