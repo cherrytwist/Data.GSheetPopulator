@@ -4,7 +4,11 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Opportunity } from '../models';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
-import { assignOrgsAsLead } from '../utils';
+import {
+  assignOrgsAsLead,
+  assignOrgsAsMember,
+  assignUserAsLead,
+} from '../utils';
 
 export class OpportunityPopulator extends AbstractPopulator {
   constructor(
@@ -112,6 +116,20 @@ export class OpportunityPopulator extends AbstractPopulator {
         createdOpportunity.community.id,
         opportunityData.leadingOrganizations
       );
+
+      await assignOrgsAsMember(
+        this.client,
+        this.logger,
+        createdOpportunity.community.id,
+        opportunityData.memberOrganizations
+      );
+
+      await assignUserAsLead(
+        this.client,
+        this.logger,
+        createdOpportunity.community.id,
+        opportunityData.leadUsers
+      );
     }
 
     const visuals = createdOpportunity?.context?.visuals || [];
@@ -167,6 +185,29 @@ export class OpportunityPopulator extends AbstractPopulator {
       opportunityData.visualBackground,
       opportunityData.visualAvatar
     );
+
+    if (updatedOpportunity?.community?.id) {
+      await assignOrgsAsLead(
+        this.client,
+        this.logger,
+        updatedOpportunity.community.id,
+        opportunityData.leadingOrganizations
+      );
+
+      await assignOrgsAsMember(
+        this.client,
+        this.logger,
+        updatedOpportunity.community.id,
+        opportunityData.memberOrganizations
+      );
+
+      await assignUserAsLead(
+        this.client,
+        this.logger,
+        updatedOpportunity.community.id,
+        opportunityData.leadUsers
+      );
+    }
 
     this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
   }

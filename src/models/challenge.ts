@@ -15,5 +15,6 @@ export type Challenge = {
   visualBanner: string;
   leadingOrganizations: string[];
   memberOrganizations: string[];
+  leadUsers: string[];
   tags: string[];
 };

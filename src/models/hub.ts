@@ -13,5 +13,6 @@ export type Hub = {
   visualBanner: string;
   refWebsite: string;
   refRepo: string;
+  leadUsers: string[];
   tags: string[];
 };

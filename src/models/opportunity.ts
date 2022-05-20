@@ -10,6 +10,8 @@ export type Opportunity = {
   country: string;
   city: string;
   leadingOrganizations: string[];
+  memberOrganizations: string[];
+  leadUsers: string[];
   refVideo: string;
   refJitsi: string;
   visualAvatar: string;
