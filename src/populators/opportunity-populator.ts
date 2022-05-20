@@ -186,6 +186,29 @@ export class OpportunityPopulator extends AbstractPopulator {
       opportunityData.visualAvatar
     );
 
+    if (updatedOpportunity?.community?.id) {
+      await assignOrgsAsLead(
+        this.client,
+        this.logger,
+        updatedOpportunity.community.id,
+        opportunityData.leadingOrganizations
+      );
+
+      await assignOrgsAsMember(
+        this.client,
+        this.logger,
+        updatedOpportunity.community.id,
+        opportunityData.memberOrganizations
+      );
+
+      await assignUserAsLead(
+        this.client,
+        this.logger,
+        updatedOpportunity.community.id,
+        opportunityData.leadUsers
+      );
+    }
+
     this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
   }
 }
