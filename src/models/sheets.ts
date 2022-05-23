@@ -47,6 +47,9 @@ export interface ChallengesSheet {
   TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
+  REF_1_NAME: string;
+  REF_1_VALUE: string;
+  REF_1_DESCRIPTION: string;
   VISUAL_AVATAR: string;
   VISUAL_BACKGROUND: string;
   VISUAL_BANNER: string;
@@ -69,6 +72,9 @@ export interface OpportunitiesSheet {
   TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
+  REF_1_NAME: string;
+  REF_1_VALUE: string;
+  REF_1_DESCRIPTION: string;
   VISUAL_AVATAR: string;
   VISUAL_BACKGROUND: string;
   VISUAL_BANNER: string;

@@ -192,17 +192,22 @@ export class ChallengePopulator extends AbstractPopulator {
     }
   }
 
-  private getReferences(challenge: Challenge) {
+  private getReferences(challengeData: Challenge) {
     const references = new ReferencesCreator();
     references.addReference(
       'video',
-      challenge.refVideo,
+      challengeData.refVideo,
       'Video explainer for the challenge'
     );
     references.addReference(
       'jitsi',
-      challenge.refJitsi,
+      challengeData.refJitsi,
       'Jitsi meeting space for the challenge'
+    );
+    references.addReference(
+      challengeData.ref1Name,
+      challengeData.ref1Value,
+      challengeData.ref1Description
     );
     return references.getReferences();
   }

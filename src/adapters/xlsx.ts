@@ -98,6 +98,9 @@ export class XLSXAdapter extends AbstractDataAdapter {
       visualBanner: x.VISUAL_BANNER,
       refVideo: x.REF_VIDEO,
       refJitsi: x.REF_JITSI,
+      ref1Name: x.REF_1_NAME,
+      ref1Value: x.REF_1_VALUE,
+      ref1Description: x.REF_1_DESCRIPTION,
       leadingOrganizations: toArray(x.LEAD_ORGS),
       memberOrganizations: toArray(x.MEMBER_ORGS),
       leadUsers: toArray(x.LEAD_USERS),
@@ -154,6 +157,9 @@ export class XLSXAdapter extends AbstractDataAdapter {
       visualBanner: x.VISUAL_BANNER,
       refVideo: x.REF_VIDEO,
       refJitsi: x.REF_JITSI,
+      ref1Name: x.REF_1_NAME,
+      ref1Value: x.REF_1_VALUE,
+      ref1Description: x.REF_1_DESCRIPTION,
       tags: toArray(x.TAGS),
     }));
   };

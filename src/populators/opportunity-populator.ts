@@ -64,7 +64,7 @@ export class OpportunityPopulator extends AbstractPopulator {
         } else {
           await this.createOpportunity(opportunityData);
         }
-      } catch (e) {
+      } catch (e:any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create/update opportunity (${opportunityData.displayName}): ${e.response.errors[0].message}`
@@ -153,6 +153,11 @@ export class OpportunityPopulator extends AbstractPopulator {
       'jitsi',
       opportunityData.refJitsi,
       'Jitsi meeting space for the opportunity'
+    );
+    references.addReference(
+      opportunityData.ref1Name,
+      opportunityData.ref1Value,
+      opportunityData.ref1Description
     );
     return references.getReferences();
   }
