@@ -69,6 +69,59 @@ export class UserPopulator extends AbstractPopulator {
     this.logger.info(`Iterated over ${count} user entries`);
   }
 
+  async populateUserRoles() {
+    this.logger.info('Processing users for roles');
+
+    const usersData = this.data.users();
+
+    if (usersData.length === 0) {
+      this.logger.warn('No users to import!');
+      return;
+    }
+
+    let count = 0;
+    for (const userData of usersData) {
+      // start processing
+      this.logger.info(`[${count}] - Processing user: ${userData.nameID} ...`);
+
+      const existingUser = await this.client.user(userData.nameID);
+      if (!existingUser) {
+        this.logger.warn(
+          `User not found to populate roles: ${userData.nameID}`
+        );
+        continue;
+      }
+
+      try {
+        await this.client.addUserToHub(this.hubID, existingUser.id);
+
+        await this.client.addUserToOrganization(
+          existingUser.id,
+          userData.organization
+        );
+
+        // Add the user to the challenge user group if applicable
+        await this.addUserToChallenges(userData);
+
+        // Add the user to groups
+        await this.addUserToGroups(existingUser.nameID, userData.groups);
+        await this.addUserToOpportunities(
+          existingUser.nameID,
+          userData.opportunities
+        );
+      } catch (e: any) {
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Could not update user memberships: ${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(`Could not update user memberships: ${e}`);
+        }
+      }
+      count++;
+    }
+  }
+
   async createUser(userData: any) {
     // Add the user
     this.profiler.profile('userCreation');
@@ -139,23 +192,6 @@ export class UserPopulator extends AbstractPopulator {
 
     this.logger.info(`... created user: ${createdUser.nameID}`);
 
-    // add the user to the Hub
-    await this.client.addUserToHub(this.hubID, createdUser.id);
-
-    await this.client.addUserToOrganization(
-      createdUser.id,
-      userData.organization
-    );
-
-    // Add the user to the challenge user group if applicable
-    await this.addUserToChallenges(userData);
-
-    // Add the user to groups
-    await this.addUserToGroups(createdUser.nameID, userData.groups);
-    await this.addUserToOpportunities(
-      createdUser.nameID,
-      userData.opportunities
-    );
     this.profiler.profile(userProfileID);
   }
 

@@ -8,6 +8,7 @@ import {
   assignOrgsAsLead,
   assignOrgsAsMember,
   assignUserAsLead,
+  contributorsToAdd,
 } from '../utils';
 
 export class OpportunityPopulator extends AbstractPopulator {
@@ -64,7 +65,7 @@ export class OpportunityPopulator extends AbstractPopulator {
         } else {
           await this.createOpportunity(opportunityData);
         }
-      } catch (e:any) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create/update opportunity (${opportunityData.displayName}): ${e.response.errors[0].message}`
@@ -109,28 +110,10 @@ export class OpportunityPopulator extends AbstractPopulator {
       tags: opportunityData.tags || [],
     });
 
-    if (createdOpportunity?.community?.id) {
-      await assignOrgsAsLead(
-        this.client,
-        this.logger,
-        createdOpportunity.community.id,
-        opportunityData.leadingOrganizations
-      );
-
-      await assignOrgsAsMember(
-        this.client,
-        this.logger,
-        createdOpportunity.community.id,
-        opportunityData.memberOrganizations
-      );
-
-      await assignUserAsLead(
-        this.client,
-        this.logger,
-        createdOpportunity.community.id,
-        opportunityData.leadUsers
-      );
-    }
+    await this.populateCommunityRoles(
+      createdOpportunity?.id || '',
+      opportunityData
+    );
 
     const visuals = createdOpportunity?.context?.visuals || [];
     await this.client.updateVisualsOnContext(
@@ -191,29 +174,70 @@ export class OpportunityPopulator extends AbstractPopulator {
       opportunityData.visualAvatar
     );
 
-    if (updatedOpportunity?.community?.id) {
-      await assignOrgsAsLead(
-        this.client,
-        this.logger,
-        updatedOpportunity.community.id,
-        opportunityData.leadingOrganizations
-      );
+    await this.populateCommunityRoles(
+      updatedOpportunity?.id || '',
+      opportunityData
+    );
 
-      await assignOrgsAsMember(
-        this.client,
-        this.logger,
-        updatedOpportunity.community.id,
-        opportunityData.memberOrganizations
-      );
+    this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
+  }
 
-      await assignUserAsLead(
-        this.client,
-        this.logger,
-        updatedOpportunity.community.id,
-        opportunityData.leadUsers
+  async populateCommunityRoles(
+    opportunityID: string,
+    opportunityData: Opportunity
+  ) {
+    const challenge = await this.client.opportunityByNameID(
+      this.hubID,
+      opportunityID
+    );
+
+    const communityID = challenge?.community?.id;
+    if (!communityID) {
+      this.logger.error(
+        `Unable to locate community for challenge (${opportunityData.displayName})`
       );
     }
 
-    this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
+    const existingLeadOrgs = challenge?.community?.leadOrganizations?.map(
+      org => org.nameID
+    );
+    const leadOrgsToAdd = contributorsToAdd(
+      existingLeadOrgs,
+      opportunityData.leadingOrganizations
+    );
+    await assignOrgsAsLead(
+      this.client,
+      this.logger,
+      communityID || '',
+      leadOrgsToAdd
+    );
+
+    const existingMemberOrgs = challenge?.community?.memberOrganizations?.map(
+      org => org.nameID
+    );
+    const memberOrgsToAdd = contributorsToAdd(
+      existingMemberOrgs,
+      opportunityData.memberOrganizations
+    );
+    await assignOrgsAsMember(
+      this.client,
+      this.logger,
+      communityID || '',
+      memberOrgsToAdd
+    );
+
+    const existingLeadUsers = challenge?.community?.leadUsers?.map(
+      user => user.nameID
+    );
+    const leadUsersToAdd = contributorsToAdd(
+      existingLeadUsers,
+      opportunityData.leadUsers
+    );
+    await assignUserAsLead(
+      this.client,
+      this.logger,
+      communityID || '',
+      leadUsersToAdd
+    );
   }
 }
