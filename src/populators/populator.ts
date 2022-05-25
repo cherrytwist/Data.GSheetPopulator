@@ -6,6 +6,7 @@ import { ActorPopulator } from './actor-populator';
 import { AspectPopulator } from './aspect-populator';
 import { ContextPopulator } from './context-populator';
 import { GroupPopulator } from './group-populator';
+import { HubPopulator } from './hub-populator';
 import { OrganizationPopulator } from './organization-populator';
 import { UserPopulator } from './user-populator';
 
@@ -69,8 +70,17 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
+    const hubPopulator = new HubPopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler,
+      this.allowCreation
+    );
+
     // organizations first as they are needed for Hub + Challenges
     await organizationPopulator.populate();
+    await hubPopulator.populate();
     await userPopulator.populate();
     await groupPopulator.populate();
 

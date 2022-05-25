@@ -53,6 +53,7 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
         try {
           await this.createUser(userData);
+          await this.client.addUserToHub(this.hubID, userData.nameID);
         } catch (e: any) {
           if (e.response && e.response.errors) {
             this.logger.error(
@@ -64,6 +65,7 @@ export class UserPopulator extends AbstractPopulator {
           throw e;
         }
       }
+
       count++;
     }
     this.logger.info(`Iterated over ${count} user entries`);
@@ -93,22 +95,13 @@ export class UserPopulator extends AbstractPopulator {
       }
 
       try {
-        await this.client.addUserToHub(this.hubID, existingUser.id);
-
         await this.client.addUserToOrganization(
           existingUser.id,
           userData.organization
         );
 
-        // Add the user to the challenge user group if applicable
-        await this.addUserToChallenges(userData);
-
         // Add the user to groups
         await this.addUserToGroups(existingUser.nameID, userData.groups);
-        await this.addUserToOpportunities(
-          existingUser.nameID,
-          userData.opportunities
-        );
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
@@ -195,20 +188,6 @@ export class UserPopulator extends AbstractPopulator {
     this.profiler.profile(userProfileID);
   }
 
-  async addUserToChallenges(user: User) {
-    const userInfo = await this.client.user(user.email);
-    if (!userInfo) throw new Error(`Unable to locate user: ${user.email}`);
-    for (const challenge of user.challenges) {
-      if (challenge) {
-        await this.client.addUserToChallenge(
-          this.hubID,
-          challenge,
-          userInfo.nameID
-        );
-      }
-    }
-  }
-
   async addUserToGroups(userID: string, groups: string[]) {
     for (const groupName of groups) {
       const group = await this.client.groupByName(this.hubID, groupName);
@@ -223,25 +202,6 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`... added user to group: ${groupName}`);
       }
       return true;
-    }
-  }
-
-  async addUserToOpportunities(userID: string, userOpportunities: string[]) {
-    for (const opportunity of userOpportunities) {
-      try {
-        await this.client.addUserToOpportunity(this.hubID, opportunity, userID);
-        this.logger.info(`... added user to opportunity: ${opportunity}`);
-      } catch (e: any) {
-        if (e.response && e.response.errors) {
-          this.logger.error(
-            `Can not add user ${userID} to opportunity ${opportunity}: ${e.response.errors[0].message}`
-          );
-        } else {
-          this.logger.error(
-            `Can not add user ${userID} to opportunity ${opportunity}: ${e}`
-          );
-        }
-      }
     }
   }
 }

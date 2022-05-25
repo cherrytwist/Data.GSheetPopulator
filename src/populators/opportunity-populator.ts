@@ -110,10 +110,16 @@ export class OpportunityPopulator extends AbstractPopulator {
       tags: opportunityData.tags || [],
     });
 
-    await this.populateCommunityRoles(
-      createdOpportunity?.id || '',
-      opportunityData
-    );
+    if (!createdOpportunity) {
+      throw new Error(
+        `Opportunity ${opportunityData.nameID} was not initialized!`
+      );
+    }
+
+    for (const user of opportunityData.memberUsers) {
+      await this.addUserToOpportunity(user, opportunityData.nameID);
+    }
+    await this.populateCommunityRoles(createdOpportunity?.id, opportunityData);
 
     const visuals = createdOpportunity?.context?.visuals || [];
     await this.client.updateVisualsOnContext(
@@ -174,10 +180,16 @@ export class OpportunityPopulator extends AbstractPopulator {
       opportunityData.visualAvatar
     );
 
-    await this.populateCommunityRoles(
-      updatedOpportunity?.id || '',
-      opportunityData
-    );
+    if (!updatedOpportunity) {
+      throw new Error(
+        `Opportunity ${opportunityData.nameID} was not initialized!`
+      );
+    }
+
+    for (const user of opportunityData.memberUsers) {
+      await this.addUserToOpportunity(user, opportunityData.nameID);
+    }
+    await this.populateCommunityRoles(updatedOpportunity?.id, opportunityData);
 
     this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
   }
@@ -186,33 +198,33 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityID: string,
     opportunityData: Opportunity
   ) {
-    const challenge = await this.client.opportunityByNameID(
+    const opportunity = await this.client.opportunityByNameID(
       this.hubID,
       opportunityID
     );
 
-    const communityID = challenge?.community?.id;
+    const communityID = opportunity?.community?.id;
     if (!communityID) {
-      this.logger.error(
-        `Unable to locate community for challenge (${opportunityData.displayName})`
+      throw new Error(
+        `Opportunity ${opportunity?.displayName} doesn't have a community with ID ${communityID}`
       );
     }
 
-    const existingLeadOrgs = challenge?.community?.leadOrganizations?.map(
+    const existingLeadOrgs = opportunity?.community?.leadOrganizations?.map(
       org => org.nameID
     );
     const leadOrgsToAdd = contributorsToAdd(
       existingLeadOrgs,
-      opportunityData.leadingOrganizations
+      opportunityData.leadOrganizations
     );
     await assignOrgsAsLead(
       this.client,
       this.logger,
-      communityID || '',
+      communityID,
       leadOrgsToAdd
     );
 
-    const existingMemberOrgs = challenge?.community?.memberOrganizations?.map(
+    const existingMemberOrgs = opportunity?.community?.memberOrganizations?.map(
       org => org.nameID
     );
     const memberOrgsToAdd = contributorsToAdd(
@@ -222,11 +234,11 @@ export class OpportunityPopulator extends AbstractPopulator {
     await assignOrgsAsMember(
       this.client,
       this.logger,
-      communityID || '',
+      communityID,
       memberOrgsToAdd
     );
 
-    const existingLeadUsers = challenge?.community?.leadUsers?.map(
+    const existingLeadUsers = opportunity?.community?.leadUsers?.map(
       user => user.nameID
     );
     const leadUsersToAdd = contributorsToAdd(
@@ -236,8 +248,21 @@ export class OpportunityPopulator extends AbstractPopulator {
     await assignUserAsLead(
       this.client,
       this.logger,
-      communityID || '',
+      communityID,
       leadUsersToAdd
+    );
+  }
+
+  private async addUserToOpportunity(
+    userNameId: string,
+    opportunityNameID: string
+  ) {
+    const userInfo = await this.client.user(userNameId);
+    if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
+    await this.client.addUserToOpportunity(
+      this.hubID,
+      opportunityNameID,
+      userInfo.nameID
     );
   }
 }

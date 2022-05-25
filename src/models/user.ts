@@ -17,7 +17,5 @@ export type User = {
   linkedin: string;
   twitter: string;
   // membership within an Hub related fields
-  challenges: string[];
-  opportunities: string[];
   groups: string[];
 };

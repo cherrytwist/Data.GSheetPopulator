@@ -3,7 +3,6 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AbstractPopulator } from './abstract-populator';
 import { ChallengePopulator } from './challenge-populator';
-import { HubPopulator } from './hub-populator';
 import { OpportunityPopulator } from './opportunity-populator';
 
 export class ContextPopulator extends AbstractPopulator {
@@ -35,15 +34,6 @@ export class ContextPopulator extends AbstractPopulator {
       this.profiler
     );
 
-    const hubPopulator = new HubPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler,
-      this.allowCreation
-    );
-
-    await hubPopulator.populate();
     await challengePopulator.populate();
     await opportunityPopulator.populate();
   }

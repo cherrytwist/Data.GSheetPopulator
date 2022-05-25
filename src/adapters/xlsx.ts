@@ -101,9 +101,10 @@ export class XLSXAdapter extends AbstractDataAdapter {
       ref1Name: x.REF_1_NAME,
       ref1Value: x.REF_1_VALUE,
       ref1Description: x.REF_1_DESCRIPTION,
-      leadingOrganizations: toArray(x.LEAD_ORGS),
+      leadOrganizations: toArray(x.LEAD_ORGS),
       memberOrganizations: toArray(x.MEMBER_ORGS),
       leadUsers: toArray(x.LEAD_USERS),
+      memberUsers: toArray(x.MEMBER_USERS),
       tags: toArray(x.TAGS),
     }));
   }
@@ -130,9 +131,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       skills: toArray(x.SKILLS),
       twitter: x.TWITTER,
       // Membership
-      challenges: toArray(x.CHALLENGES),
       groups: toArray(x.GROUPS),
-      opportunities: toArray(x.OPPORTUNITIES),
     }));
   }
   public opportunities = (): Opportunity[] => {
@@ -147,9 +146,10 @@ export class XLSXAdapter extends AbstractDataAdapter {
       tagline: x.TAGLINE,
       vision: x.VISION,
       who: x.WHO,
-      leadingOrganizations: toArray(x.LEAD_ORGS),
+      leadOrganizations: toArray(x.LEAD_ORGS),
       memberOrganizations: toArray(x.MEMBER_ORGS),
       leadUsers: toArray(x.LEAD_USERS),
+      memberUsers: toArray(x.MEMBER_USERS),
       country: x.COUNTRY,
       city: x.CITY,
       visualAvatar: x.VISUAL_AVATAR,
