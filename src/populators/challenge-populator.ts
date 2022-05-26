@@ -1,13 +1,14 @@
 import { AlkemioClient, Organization } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Challenge } from '../models';
+import { Challenge, User } from '../models';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 import {
   assignOrgsAsLead,
   assignOrgsAsMember,
   assignUserAsLead,
+  contributorsToAdd,
 } from '../utils';
 
 export class ChallengePopulator extends AbstractPopulator {
@@ -85,29 +86,6 @@ export class ChallengePopulator extends AbstractPopulator {
       });
       this.logger.info(`....created: ${challengeData.displayName}`);
 
-      if (createdChallenge?.community?.id) {
-        await assignOrgsAsLead(
-          this.client,
-          this.logger,
-          createdChallenge.community.id,
-          challengeData.leadingOrganizations
-        );
-
-        await assignOrgsAsMember(
-          this.client,
-          this.logger,
-          createdChallenge.community.id,
-          challengeData.memberOrganizations
-        );
-
-        await assignUserAsLead(
-          this.client,
-          this.logger,
-          createdChallenge.community.id,
-          challengeData.leadUsers
-        );
-      }
-
       const visuals = createdChallenge?.context?.visuals || [];
       await this.client.updateVisualsOnContext(
         visuals,
@@ -115,6 +93,17 @@ export class ChallengePopulator extends AbstractPopulator {
         challengeData.visualBackground,
         challengeData.visualAvatar
       );
+
+      if (!createdChallenge) {
+        throw new Error(
+          `Challenge ${challengeData.nameID} was not initialized!`
+        );
+      }
+
+      for (const user of challengeData.memberUsers) {
+        await this.addUserToChallenge(user, challengeData.nameID);
+      }
+      await this.populateCommunityRoles(createdChallenge?.id, challengeData);
     } catch (e: any) {
       if (e.response && e.response.errors) {
         this.logger.error(
@@ -126,6 +115,62 @@ export class ChallengePopulator extends AbstractPopulator {
         );
       }
     }
+  }
+
+  async populateCommunityRoles(challengeID: string, challengeData: Challenge) {
+    const challenge = await this.client.challengeByNameID(
+      this.hubID,
+      challengeID
+    );
+
+    const communityID = challenge?.community?.id;
+    if (!communityID) {
+      throw new Error(
+        `Challenge ${challenge?.displayName} doesn't have a community with ID ${communityID}`
+      );
+    }
+
+    const existingLeadOrgs = challenge?.community?.leadOrganizations?.map(
+      org => org.nameID
+    );
+    const leadOrgsToAdd = contributorsToAdd(
+      existingLeadOrgs,
+      challengeData.leadOrganizations
+    );
+    await assignOrgsAsLead(
+      this.client,
+      this.logger,
+      communityID,
+      leadOrgsToAdd
+    );
+
+    const existingMemberOrgs = challenge?.community?.memberOrganizations?.map(
+      org => org.nameID
+    );
+    const memberOrgsToAdd = contributorsToAdd(
+      existingMemberOrgs,
+      challengeData.memberOrganizations
+    );
+    await assignOrgsAsMember(
+      this.client,
+      this.logger,
+      communityID,
+      memberOrgsToAdd
+    );
+
+    const existingLeadUsers = challenge?.community?.leadUsers?.map(
+      user => user.nameID
+    );
+    const leadUsersToAdd = contributorsToAdd(
+      existingLeadUsers,
+      challengeData.leadUsers
+    );
+    await assignUserAsLead(
+      this.client,
+      this.logger,
+      communityID,
+      leadUsersToAdd
+    );
   }
 
   // Load users from a particular googlesheet
@@ -155,28 +200,10 @@ export class ChallengePopulator extends AbstractPopulator {
         challengeData.visualAvatar
       );
 
-      if (updatedChallenge?.community?.id) {
-        await assignOrgsAsLead(
-          this.client,
-          this.logger,
-          updatedChallenge.community.id,
-          challengeData.leadingOrganizations
-        );
-
-        await assignOrgsAsMember(
-          this.client,
-          this.logger,
-          updatedChallenge.community.id,
-          challengeData.memberOrganizations
-        );
-
-        await assignUserAsLead(
-          this.client,
-          this.logger,
-          updatedChallenge.community.id,
-          challengeData.leadUsers
-        );
+      for (const user of challengeData.memberUsers) {
+        await this.addUserToChallenge(user, challengeData.nameID);
       }
+      await this.populateCommunityRoles(challengeId, challengeData);
 
       this.logger.info(`....updated: ${challengeData.displayName}`);
     } catch (e: any) {
@@ -192,18 +219,36 @@ export class ChallengePopulator extends AbstractPopulator {
     }
   }
 
-  private getReferences(challenge: Challenge) {
+  private getReferences(challengeData: Challenge) {
     const references = new ReferencesCreator();
     references.addReference(
       'video',
-      challenge.refVideo,
+      challengeData.refVideo,
       'Video explainer for the challenge'
     );
     references.addReference(
       'jitsi',
-      challenge.refJitsi,
+      challengeData.refJitsi,
       'Jitsi meeting space for the challenge'
     );
+    references.addReference(
+      challengeData.ref1Name,
+      challengeData.ref1Value,
+      challengeData.ref1Description
+    );
     return references.getReferences();
+  }
+
+  private async addUserToChallenge(
+    userNameId: string,
+    challengeNameID: string
+  ) {
+    const userInfo = await this.client.user(userNameId);
+    if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
+    await this.client.addUserToChallenge(
+      this.hubID,
+      challengeNameID,
+      userInfo.nameID
+    );
   }
 }

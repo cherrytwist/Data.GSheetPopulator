@@ -53,6 +53,7 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
         try {
           await this.createUser(userData);
+          await this.client.addUserToHub(this.hubID, userData.nameID);
         } catch (e: any) {
           if (e.response && e.response.errors) {
             this.logger.error(
@@ -64,9 +65,54 @@ export class UserPopulator extends AbstractPopulator {
           throw e;
         }
       }
+
       count++;
     }
     this.logger.info(`Iterated over ${count} user entries`);
+  }
+
+  async populateUserRoles() {
+    this.logger.info('Processing users for roles');
+
+    const usersData = this.data.users();
+
+    if (usersData.length === 0) {
+      this.logger.warn('No users to import!');
+      return;
+    }
+
+    let count = 0;
+    for (const userData of usersData) {
+      // start processing
+      this.logger.info(`[${count}] - Processing user: ${userData.nameID} ...`);
+
+      const existingUser = await this.client.user(userData.nameID);
+      if (!existingUser) {
+        this.logger.warn(
+          `User not found to populate roles: ${userData.nameID}`
+        );
+        continue;
+      }
+
+      try {
+        await this.client.addUserToOrganization(
+          existingUser.id,
+          userData.organization
+        );
+
+        // Add the user to groups
+        await this.addUserToGroups(existingUser.nameID, userData.groups);
+      } catch (e: any) {
+        if (e.response && e.response.errors) {
+          this.logger.error(
+            `Could not update user memberships: ${e.response.errors[0].message}`
+          );
+        } else {
+          this.logger.error(`Could not update user memberships: ${e}`);
+        }
+      }
+      count++;
+    }
   }
 
   async createUser(userData: any) {
@@ -139,38 +185,7 @@ export class UserPopulator extends AbstractPopulator {
 
     this.logger.info(`... created user: ${createdUser.nameID}`);
 
-    // add the user to the Hub
-    await this.client.addUserToHub(this.hubID, createdUser.id);
-
-    await this.client.addUserToOrganization(
-      createdUser.id,
-      userData.organization
-    );
-
-    // Add the user to the challenge user group if applicable
-    await this.addUserToChallenges(userData);
-
-    // Add the user to groups
-    await this.addUserToGroups(createdUser.nameID, userData.groups);
-    await this.addUserToOpportunities(
-      createdUser.nameID,
-      userData.opportunities
-    );
     this.profiler.profile(userProfileID);
-  }
-
-  async addUserToChallenges(user: User) {
-    const userInfo = await this.client.user(user.email);
-    if (!userInfo) throw new Error(`Unable to locate user: ${user.email}`);
-    for (const challenge of user.challenges) {
-      if (challenge) {
-        await this.client.addUserToChallenge(
-          this.hubID,
-          challenge,
-          userInfo.nameID
-        );
-      }
-    }
   }
 
   async addUserToGroups(userID: string, groups: string[]) {
@@ -187,25 +202,6 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`... added user to group: ${groupName}`);
       }
       return true;
-    }
-  }
-
-  async addUserToOpportunities(userID: string, userOpportunities: string[]) {
-    for (const opportunity of userOpportunities) {
-      try {
-        await this.client.addUserToOpportunity(this.hubID, opportunity, userID);
-        this.logger.info(`... added user to opportunity: ${opportunity}`);
-      } catch (e: any) {
-        if (e.response && e.response.errors) {
-          this.logger.error(
-            `Can not add user ${userID} to opportunity ${opportunity}: ${e.response.errors[0].message}`
-          );
-        } else {
-          this.logger.error(
-            `Can not add user ${userID} to opportunity ${opportunity}: ${e}`
-          );
-        }
-      }
     }
   }
 }

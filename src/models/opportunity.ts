@@ -9,11 +9,15 @@ export type Opportunity = {
   who: string;
   country: string;
   city: string;
-  leadingOrganizations: string[];
+  leadOrganizations: string[];
   memberOrganizations: string[];
   leadUsers: string[];
+  memberUsers: string[];
   refVideo: string;
   refJitsi: string;
+  ref1Name: string;
+  ref1Value: string;
+  ref1Description: string;
   visualAvatar: string;
   visualBackground: string;
   visualBanner: string;

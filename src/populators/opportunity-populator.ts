@@ -8,6 +8,7 @@ import {
   assignOrgsAsLead,
   assignOrgsAsMember,
   assignUserAsLead,
+  contributorsToAdd,
 } from '../utils';
 
 export class OpportunityPopulator extends AbstractPopulator {
@@ -64,7 +65,7 @@ export class OpportunityPopulator extends AbstractPopulator {
         } else {
           await this.createOpportunity(opportunityData);
         }
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create/update opportunity (${opportunityData.displayName}): ${e.response.errors[0].message}`
@@ -109,28 +110,16 @@ export class OpportunityPopulator extends AbstractPopulator {
       tags: opportunityData.tags || [],
     });
 
-    if (createdOpportunity?.community?.id) {
-      await assignOrgsAsLead(
-        this.client,
-        this.logger,
-        createdOpportunity.community.id,
-        opportunityData.leadingOrganizations
-      );
-
-      await assignOrgsAsMember(
-        this.client,
-        this.logger,
-        createdOpportunity.community.id,
-        opportunityData.memberOrganizations
-      );
-
-      await assignUserAsLead(
-        this.client,
-        this.logger,
-        createdOpportunity.community.id,
-        opportunityData.leadUsers
+    if (!createdOpportunity) {
+      throw new Error(
+        `Opportunity ${opportunityData.nameID} was not initialized!`
       );
     }
+
+    for (const user of opportunityData.memberUsers) {
+      await this.addUserToOpportunity(user, opportunityData.nameID);
+    }
+    await this.populateCommunityRoles(createdOpportunity?.id, opportunityData);
 
     const visuals = createdOpportunity?.context?.visuals || [];
     await this.client.updateVisualsOnContext(
@@ -153,6 +142,11 @@ export class OpportunityPopulator extends AbstractPopulator {
       'jitsi',
       opportunityData.refJitsi,
       'Jitsi meeting space for the opportunity'
+    );
+    references.addReference(
+      opportunityData.ref1Name,
+      opportunityData.ref1Value,
+      opportunityData.ref1Description
     );
     return references.getReferences();
   }
@@ -186,29 +180,89 @@ export class OpportunityPopulator extends AbstractPopulator {
       opportunityData.visualAvatar
     );
 
-    if (updatedOpportunity?.community?.id) {
-      await assignOrgsAsLead(
-        this.client,
-        this.logger,
-        updatedOpportunity.community.id,
-        opportunityData.leadingOrganizations
-      );
-
-      await assignOrgsAsMember(
-        this.client,
-        this.logger,
-        updatedOpportunity.community.id,
-        opportunityData.memberOrganizations
-      );
-
-      await assignUserAsLead(
-        this.client,
-        this.logger,
-        updatedOpportunity.community.id,
-        opportunityData.leadUsers
+    if (!updatedOpportunity) {
+      throw new Error(
+        `Opportunity ${opportunityData.nameID} was not initialized!`
       );
     }
 
+    for (const user of opportunityData.memberUsers) {
+      await this.addUserToOpportunity(user, opportunityData.nameID);
+    }
+    await this.populateCommunityRoles(updatedOpportunity?.id, opportunityData);
+
     this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
+  }
+
+  async populateCommunityRoles(
+    opportunityID: string,
+    opportunityData: Opportunity
+  ) {
+    const opportunity = await this.client.opportunityByNameID(
+      this.hubID,
+      opportunityID
+    );
+
+    const communityID = opportunity?.community?.id;
+    if (!communityID) {
+      throw new Error(
+        `Opportunity ${opportunity?.displayName} doesn't have a community with ID ${communityID}`
+      );
+    }
+
+    const existingLeadOrgs = opportunity?.community?.leadOrganizations?.map(
+      org => org.nameID
+    );
+    const leadOrgsToAdd = contributorsToAdd(
+      existingLeadOrgs,
+      opportunityData.leadOrganizations
+    );
+    await assignOrgsAsLead(
+      this.client,
+      this.logger,
+      communityID,
+      leadOrgsToAdd
+    );
+
+    const existingMemberOrgs = opportunity?.community?.memberOrganizations?.map(
+      org => org.nameID
+    );
+    const memberOrgsToAdd = contributorsToAdd(
+      existingMemberOrgs,
+      opportunityData.memberOrganizations
+    );
+    await assignOrgsAsMember(
+      this.client,
+      this.logger,
+      communityID,
+      memberOrgsToAdd
+    );
+
+    const existingLeadUsers = opportunity?.community?.leadUsers?.map(
+      user => user.nameID
+    );
+    const leadUsersToAdd = contributorsToAdd(
+      existingLeadUsers,
+      opportunityData.leadUsers
+    );
+    await assignUserAsLead(
+      this.client,
+      this.logger,
+      communityID,
+      leadUsersToAdd
+    );
+  }
+
+  private async addUserToOpportunity(
+    userNameId: string,
+    opportunityNameID: string
+  ) {
+    const userInfo = await this.client.user(userNameId);
+    if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
+    await this.client.addUserToOpportunity(
+      this.hubID,
+      opportunityNameID,
+      userInfo.nameID
+    );
   }
 }

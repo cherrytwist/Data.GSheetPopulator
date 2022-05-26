@@ -17,6 +17,10 @@ export const createLogger = () => {
         filename: 'population-warnings.log',
         level: 'warn',
       }),
+      new winston.transports.File({
+        filename: 'population-errors.log',
+        level: 'error',
+      }),
     ],
   });
 };

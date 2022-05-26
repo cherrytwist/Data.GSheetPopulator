@@ -44,9 +44,13 @@ export interface ChallengesSheet {
   LEAD_ORGS: string;
   MEMBER_ORGS: string;
   LEAD_USERS: string;
+  MEMBER_USERS: string;
   TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
+  REF_1_NAME: string;
+  REF_1_VALUE: string;
+  REF_1_DESCRIPTION: string;
   VISUAL_AVATAR: string;
   VISUAL_BACKGROUND: string;
   VISUAL_BANNER: string;
@@ -64,11 +68,15 @@ export interface OpportunitiesSheet {
   LEAD_ORGS: string;
   MEMBER_ORGS: string;
   LEAD_USERS: string;
+  MEMBER_USERS: string;
   COUNTRY: string;
   CITY: string;
   TAGS: string;
   REF_VIDEO: string;
   REF_JITSI: string;
+  REF_1_NAME: string;
+  REF_1_VALUE: string;
+  REF_1_DESCRIPTION: string;
   VISUAL_AVATAR: string;
   VISUAL_BACKGROUND: string;
   VISUAL_BANNER: string;
@@ -110,9 +118,7 @@ export interface UserSheet {
   LINKEDIN: string;
   TWITTER: string;
   // Hub membership
-  CHALLENGES: string;
   GROUPS: string;
-  OPPORTUNITIES: string;
 }
 
 export interface ActorGroupsSheet {
