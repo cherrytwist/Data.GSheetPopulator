@@ -185,9 +185,16 @@ export class ActorPopulator extends AbstractPopulator {
         continue;
       }
 
+      if (!opportunity.collaboration) {
+        this.logger.warn(
+          `Skipping relation '${relation.type}-${relation.actorName}'. Missing collaboration object on opportunity '${relation.opportunity}'!`
+        );
+        continue;
+      }
+
       try {
-        await this.client.createRelation(
-          opportunity.id,
+        await this.client.createRelationOnCollaboration(
+          opportunity.collaboration.id,
           relation.type,
           relation.description,
           relation.actorName,

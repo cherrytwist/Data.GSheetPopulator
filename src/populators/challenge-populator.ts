@@ -1,7 +1,13 @@
-import { AlkemioClient, Organization } from '@alkemio/client-lib';
+import {
+  AlkemioClient,
+  Organization,
+  CalloutType,
+  CalloutState,
+  CalloutVisibility,
+} from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Challenge, User } from '../models';
+import { Challenge } from '../models';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 import {
@@ -57,6 +63,21 @@ export class ChallengePopulator extends AbstractPopulator {
           `Challenge ${challengeData.displayName} already exists! Updating`
         );
         await this.updateChallengeContext(existingChallenge.id, challengeData);
+
+        console.log(
+          `Challenge ${challengeData.displayName} collaboration id: ${existingChallenge.collaboration?.id}`
+        );
+
+        const collaboration = existingChallenge.collaboration;
+        if (collaboration && !collaboration.callouts) {
+          this.logger.info(
+            `Creating card callout on ${challengeData.displayName} challenge`
+          );
+          await this.createCardCallout(
+            collaboration.id,
+            existingChallenge.nameID
+          );
+        }
       } else {
         await this.createChallenge(challengeData);
       }
@@ -85,6 +106,13 @@ export class ChallengePopulator extends AbstractPopulator {
         tags: challengeData.tags || [],
       });
       this.logger.info(`....created: ${challengeData.displayName}`);
+
+      if (createdChallenge?.collaboration) {
+        await this.createCardCallout(
+          createdChallenge.collaboration?.id,
+          createdChallenge.nameID
+        );
+      }
 
       const visuals = createdChallenge?.context?.visuals || [];
       await this.client.updateVisualsOnContext(
@@ -115,6 +143,27 @@ export class ChallengePopulator extends AbstractPopulator {
         );
       }
     }
+  }
+
+  async createCardCallout(collaborationID: string, challengeNameID: string) {
+    const aspectsCalloutData = {
+      collaborationID: collaborationID,
+      displayName: 'Cards callout',
+      nameId: `cards-${challengeNameID}`,
+      description: 'Cards Callout',
+      type: CalloutType.Card,
+      state: CalloutState.Open,
+      visibility: CalloutVisibility.Published,
+    };
+    await this.client.createCalloutOnCollaboration(
+      aspectsCalloutData.collaborationID,
+      aspectsCalloutData.displayName,
+      aspectsCalloutData.nameId,
+      aspectsCalloutData.description,
+      aspectsCalloutData.type,
+      aspectsCalloutData.state,
+      aspectsCalloutData.visibility
+    );
   }
 
   async populateCommunityRoles(challengeID: string, challengeData: Challenge) {

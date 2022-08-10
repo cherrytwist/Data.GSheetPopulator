@@ -49,17 +49,25 @@ export class AspectPopulator extends AbstractPopulator {
         continue;
       }
 
-      const contextID = challenge.context?.id;
-      if (!contextID) {
+      const collaborationID = challenge.collaboration?.id;
+      if (!collaborationID) {
         this.logger.warn(
-          `Skipping aspect '${aspect.nameID}'. Missing context ID on '${aspect.challenge}'!`
+          `Skipping aspect '${aspect.nameID}'. Missing collaboration ID on '${aspect.challenge}'!`
         );
         continue;
       }
 
       try {
-        const createdAspect = await this.client.createAspectOnContext(
-          contextID,
+        const callouts = challenge.collaboration?.callouts;
+        if (!callouts || callouts.length === 0) {
+          this.logger.warn(
+            `Skipping aspect '${aspect.nameID}'. Missing card callout on '${aspect.challenge}'!`
+          );
+          continue;
+        }
+
+        const createdAspect = await this.client.createAspectOnCallout(
+          callouts[0].id,
           aspect.type,
           aspect.displayName,
           aspect.nameID,
