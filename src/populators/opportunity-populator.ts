@@ -1,4 +1,4 @@
-import { AlkemioClient } from '@alkemio/client-lib';
+import { AlkemioClient, LifecycleType } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Opportunity } from '../models';
@@ -91,6 +91,16 @@ export class OpportunityPopulator extends AbstractPopulator {
       );
       return;
     }
+    const hubInfo = await this.client.hubInfo(this.hubID);
+    const innovationFlowTemplate = hubInfo?.templates?.lifecycleTemplates?.filter(
+      x => x.type === LifecycleType.Opportunity
+    )[0];
+
+    if (!innovationFlowTemplate)
+      throw new Error(
+        `No opportunity innovation flow template found in hub ${this.hubID}`
+      );
+
     const createdOpportunity = await this.client.createOpportunity({
       challengeID: challenge.id,
       displayName: opportunityData.displayName,
@@ -108,6 +118,7 @@ export class OpportunityPopulator extends AbstractPopulator {
         },
       },
       tags: opportunityData.tags || [],
+      innovationFlowTemplateID: innovationFlowTemplate.id,
     });
 
     if (!createdOpportunity) {
