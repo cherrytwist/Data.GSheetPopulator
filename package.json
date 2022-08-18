@@ -47,7 +47,7 @@
     "tsconfig-paths": "^4.0.0"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.15.1",
+    "@alkemio/client-lib": "^0.15.2",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6",
     "rimraf": "^3.0.2",
