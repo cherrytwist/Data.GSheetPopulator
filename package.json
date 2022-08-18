@@ -1,6 +1,6 @@
 {
   "name": "@alkemio/populator",
-  "version": "0.9.0",
+  "version": "0.9.2",
   "author": "Alkemio Foundation",
   "private": false,
   "license": "EUPL-1.2",
@@ -47,7 +47,7 @@
     "tsconfig-paths": "^4.0.0"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.15.0",
+    "@alkemio/client-lib": "^0.15.3",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6",
     "rimraf": "^3.0.2",

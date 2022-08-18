@@ -4,6 +4,7 @@ import {
   CalloutType,
   CalloutState,
   CalloutVisibility,
+  LifecycleType,
 } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
@@ -87,6 +88,16 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async createChallenge(challengeData: Challenge) {
     try {
+      const hubInfo = await this.client.hubInfo(this.hubID);
+      const innovationFlowTemplate = hubInfo?.templates?.lifecycleTemplates?.filter(
+        x => x.type === LifecycleType.Challenge
+      )[0];
+
+      if (!innovationFlowTemplate)
+        throw new Error(
+          `No challenge innovation flow template found in hub ${this.hubID}`
+        );
+
       const createdChallenge = await this.client.createChallenge({
         hubID: this.hubID,
         displayName: challengeData.displayName,
@@ -104,6 +115,7 @@ export class ChallengePopulator extends AbstractPopulator {
           references: this.getReferences(challengeData),
         },
         tags: challengeData.tags || [],
+        innovationFlowTemplateID: innovationFlowTemplate.id,
       });
       this.logger.info(`....created: ${challengeData.displayName}`);
 
