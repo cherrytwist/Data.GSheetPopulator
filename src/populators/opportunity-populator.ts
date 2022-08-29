@@ -1,4 +1,3 @@
-import { AlkemioClient, LifecycleType } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Opportunity } from '../models';
@@ -10,6 +9,7 @@ import {
   assignUserAsLead,
   contributorsToAdd,
 } from '../utils';
+import { AlkemioClient, LifecycleType } from '@alkemio/client-lib';
 
 export class OpportunityPopulator extends AbstractPopulator {
   constructor(
