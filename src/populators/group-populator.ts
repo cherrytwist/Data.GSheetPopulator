@@ -40,7 +40,7 @@ export class GroupPopulator extends AbstractPopulator {
         );
 
         this.logger.info(`Added group: ${group.name}`);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
             `Unable to create group (${group.name}): ${e.response.errors[0].message}`
