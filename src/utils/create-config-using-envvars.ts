@@ -1,4 +1,4 @@
-import { AlkemioClientConfig } from '@alkemio/client-lib/dist/config/alkemio-client-config';
+import { AlkemioClientConfig } from '@alkemio/client-lib';
 import dotenv from 'dotenv';
 
 export const createConfigUsingEnvVars = (): AlkemioClientConfig => {

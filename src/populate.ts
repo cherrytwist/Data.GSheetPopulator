@@ -1,18 +1,21 @@
 import { createLogger, createProfiler } from './utils/create-logger';
 import { Populator } from './populators';
 import * as dotenv from 'dotenv';
-import { createClientUsingEnvVars } from './utils/create-client-using-envvars';
 import { createDataAdapterUsingEnvVars } from './utils/create-data-adapter-using-envvars';
+import { AlkemioPopulatorClient } from './client/AlkemioPopulatorClient';
+import { createConfigUsingEnvVars } from './utils/create-config-using-envvars';
 
 const main = async () => {
   dotenv.config();
   const allowHubCreation = process.env.ALLOW_HUB_CREATION === 'true';
   const logger = createLogger();
   const profiler = createProfiler();
+  const config = createConfigUsingEnvVars();
 
-  const alkemioClient = await createClientUsingEnvVars();
+  const alkemioPopulatorClient = new AlkemioPopulatorClient(config, logger);
+
   logger.info(
-    `Alkemio server: ${alkemioClient.config.apiEndpointPrivateGraphql}`
+    `Alkemio server: ${alkemioPopulatorClient.config.apiEndpointPrivateGraphql}`
   );
   //await ctClient.validateConnection();
 
@@ -21,14 +24,14 @@ const main = async () => {
 
   // Loading data from google sheets
   const populator = new Populator(
-    alkemioClient,
+    alkemioPopulatorClient.alkemioLibClient,
     data,
     logger,
     profiler,
     allowHubCreation
   );
   const hubID = populator.getHubID();
-  const exists = await alkemioClient.hubExists(hubID);
+  const exists = await alkemioPopulatorClient.alkemioLibClient.hubExists(hubID);
   if (!exists && !allowHubCreation) {
     logger.error(
       `Hub does not exist: '${hubID}', please ensure it is created.`
