@@ -7581,6 +7581,14 @@ export type UpdateCalloutMutation = {
   updateCallout: { id: string; nameID: string };
 };
 
+export type UpdateCardMutationVariables = Exact<{
+  cardData: UpdateAspectInput;
+}>;
+
+export type UpdateCardMutation = {
+  updateAspect: { id: string; nameID: string; displayName: string };
+};
+
 export type ChallengeCalloutsQueryVariables = Exact<{
   hubID: Scalars['UUID_NAMEID'];
   challengeID: Scalars['UUID_NAMEID'];
@@ -7681,6 +7689,15 @@ export const UpdateCalloutDocument = gql`
     }
   }
 `;
+export const UpdateCardDocument = gql`
+  mutation updateCard($cardData: UpdateAspectInput!) {
+    updateAspect(aspectData: $cardData) {
+      id
+      nameID
+      displayName
+    }
+  }
+`;
 export const ChallengeCalloutsDocument = gql`
   query challengeCallouts($hubID: UUID_NAMEID!, $challengeID: UUID_NAMEID!) {
     hub(ID: $hubID) {
@@ -7765,6 +7782,7 @@ const UpdateCalloutVisibilityDocumentString = print(
   UpdateCalloutVisibilityDocument
 );
 const UpdateCalloutDocumentString = print(UpdateCalloutDocument);
+const UpdateCardDocumentString = print(UpdateCardDocument);
 const ChallengeCalloutsDocumentString = print(ChallengeCalloutsDocument);
 const HubCalloutsDocumentString = print(HubCalloutsDocument);
 const MeDocumentString = print(MeDocument);
@@ -7830,6 +7848,26 @@ export function getSdk(
             { ...requestHeaders, ...wrappedRequestHeaders }
           ),
         'updateCallout',
+        'mutation'
+      );
+    },
+    updateCard(
+      variables: UpdateCardMutationVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<{
+      data: UpdateCardMutation;
+      extensions?: any;
+      headers: Dom.Headers;
+      status: number;
+    }> {
+      return withWrapper(
+        wrappedRequestHeaders =>
+          client.rawRequest<UpdateCardMutation>(
+            UpdateCardDocumentString,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        'updateCard',
         'mutation'
       );
     },

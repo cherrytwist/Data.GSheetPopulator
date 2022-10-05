@@ -18,7 +18,7 @@ const main = async () => {
   logger.info(
     `Alkemio server: ${alkemioPopulatorClient.config.apiEndpointPrivateGraphql}`
   );
-  //await ctClient.validateConnection();
+  await alkemioPopulatorClient.validateConnection();
 
   const data = await createDataAdapterUsingEnvVars();
   logger.info(`Alkemio data template: ${data.filename}`);

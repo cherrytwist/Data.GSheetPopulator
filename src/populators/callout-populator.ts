@@ -182,6 +182,11 @@ export class CalloutPopulator extends AbstractPopulator {
 
           this.logger.info(`...added card: ${cardData.nameID}`);
         } else {
+          await this.client.updateCard(
+            existingCard.id,
+            cardData.description,
+            cardData.displayName
+          );
           this.logger.info(`...updating card: ${cardData.nameID}`);
         }
       } catch (e: any) {
