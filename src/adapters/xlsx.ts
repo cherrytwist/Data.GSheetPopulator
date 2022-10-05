@@ -2,7 +2,8 @@ import XLSX from 'xlsx';
 import {
   Actor,
   ActorGroup,
-  Aspect,
+  Callout,
+  Card,
   Challenge,
   Hub,
   Group,
@@ -14,7 +15,7 @@ import {
 import {
   ActorGroupsSheet,
   ActorsSheet,
-  AspectSheet,
+  CardSheet,
   ChallengesSheet,
   HubSheet,
   GroupsSheet,
@@ -23,6 +24,7 @@ import {
   RelationSheet,
   Sheets,
   UserSheet,
+  CalloutSheet,
 } from '../models/sheets';
 import { toArray } from '../utils/string-to-array';
 import { AbstractDataAdapter } from './data-adapter';
@@ -65,14 +67,26 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   }
 
-  aspects(): Aspect[] {
-    const sheet = this.workbook.Sheets[Sheets.Aspects];
-    const result = XLSX.utils.sheet_to_json(sheet) as AspectSheet[];
+  callouts(): Callout[] {
+    const sheet = this.workbook.Sheets[Sheets.Callouts];
+    const result = XLSX.utils.sheet_to_json(sheet) as CalloutSheet[];
+    return result.map(x => ({
+      nameID: x.NAMEID,
+      displayName: x.DISPLAY_NAME,
+      description: x.DESCRIPTION,
+      challenge: x.CHALLENGE,
+    }));
+  }
+
+  cards(): Card[] {
+    const sheet = this.workbook.Sheets[Sheets.Cards];
+    const result = XLSX.utils.sheet_to_json(sheet) as CardSheet[];
     return result.map(x => ({
       type: x.TYPE,
       nameID: x.NAMEID,
       displayName: x.DISPLAY_NAME,
       description: x.DESCRIPTION,
+      callout: x.CALLOUT,
       challenge: x.CHALLENGE,
       tags: toArray(x.TAGS),
       bannerURI: x.VISUAL_BANNER,

@@ -1,11 +1,11 @@
-import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
 
 export class GroupPopulator extends AbstractPopulator {
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
@@ -33,7 +33,7 @@ export class GroupPopulator extends AbstractPopulator {
       this.profiler.profile(groupProfileID);
 
       try {
-        await this.client.createUserGroupOnHub(
+        await this.client.alkemioLibClient.createUserGroupOnHub(
           this.hubID,
           group.name,
           group.description

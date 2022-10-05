@@ -1,11 +1,11 @@
-import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
 
 export class ActorPopulator extends AbstractPopulator {
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
@@ -40,10 +40,11 @@ export class ActorPopulator extends AbstractPopulator {
       const actorGroupProfileID = '===> actorGroupCreation - FULL';
       this.profiler.profile(actorGroupProfileID);
 
-      const opportunity = await this.client.opportunityByNameID(
-        this.hubID,
-        actorGroup.opportunity
-      );
+      const opportunity =
+        await this.client.alkemioLibClient.opportunityByNameID(
+          this.hubID,
+          actorGroup.opportunity
+        );
 
       if (!opportunity) {
         this.logger.warn(
@@ -61,7 +62,7 @@ export class ActorPopulator extends AbstractPopulator {
       }
 
       try {
-        await this.client.createActorGroup(
+        await this.client.alkemioLibClient.createActorGroup(
           ecosystemModelID,
           actorGroup.name,
           actorGroup.description
@@ -103,10 +104,11 @@ export class ActorPopulator extends AbstractPopulator {
       const actorProfileID = '===> actorCreation - FULL';
       this.profiler.profile(actorProfileID);
 
-      const opportunity = await this.client.opportunityByNameID(
-        this.hubID,
-        actor.opportunity
-      );
+      const opportunity =
+        await this.client.alkemioLibClient.opportunityByNameID(
+          this.hubID,
+          actor.opportunity
+        );
 
       if (!opportunity) {
         this.logger.warn(
@@ -127,7 +129,7 @@ export class ActorPopulator extends AbstractPopulator {
       }
 
       try {
-        await this.client.createActor(
+        await this.client.alkemioLibClient.createActor(
           actorGroup.id,
           actor.name,
           actor.value || '', // workaround data model inconsistency
@@ -173,10 +175,11 @@ export class ActorPopulator extends AbstractPopulator {
       const relationProfileID = '===> relationCreation - FULL';
       this.profiler.profile(relationProfileID);
 
-      const opportunity = await this.client.opportunityByNameID(
-        this.hubID,
-        relation.opportunity
-      );
+      const opportunity =
+        await this.client.alkemioLibClient.opportunityByNameID(
+          this.hubID,
+          relation.opportunity
+        );
 
       if (!opportunity) {
         this.logger.warn(
@@ -193,7 +196,7 @@ export class ActorPopulator extends AbstractPopulator {
       }
 
       try {
-        await this.client.createRelationOnCollaboration(
+        await this.client.alkemioLibClient.createRelationOnCollaboration(
           opportunity.collaboration.id,
           relation.type,
           relation.description,

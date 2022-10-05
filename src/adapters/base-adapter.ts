@@ -1,7 +1,7 @@
 import {
   Actor,
   ActorGroup,
-  Aspect,
+  Card,
   Challenge,
   Hub,
   Group,
@@ -9,11 +9,15 @@ import {
   Organization,
   Relation,
   User,
+  Callout,
 } from '../models';
 import { AbstractDataAdapter } from './data-adapter';
 
 export class BaseDataAdapter extends AbstractDataAdapter {
-  aspects(): Aspect[] {
+  callouts(): Callout[] {
+    return [];
+  }
+  cards(): Card[] {
     return [];
   }
   relations(): Relation[] {

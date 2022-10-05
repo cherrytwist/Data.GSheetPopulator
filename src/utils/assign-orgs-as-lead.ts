@@ -1,15 +1,18 @@
-import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { handleRequests } from './handle-requests';
 
 export const assignOrgsAsLead = (
-  client: AlkemioClient,
+  client: AlkemioPopulatorClient,
   logger: Logger,
   communityId: string,
   orgIds: string[]
 ) => {
   const requests = orgIds.map(orgId =>
-    client.assignOrganizationAsCommunityLead(communityId, orgId)
+    client.alkemioLibClient.assignOrganizationAsCommunityLead(
+      communityId,
+      orgId
+    )
   );
 
   return handleRequests(

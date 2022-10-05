@@ -1,12 +1,12 @@
-import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { Organization } from '../models/organization';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganizationPopulator extends AbstractPopulator {
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
@@ -24,7 +24,8 @@ export class OrganizationPopulator extends AbstractPopulator {
       return;
     }
 
-    const existingOrganizations = await this.client.organizations();
+    const existingOrganizations =
+      await this.client.alkemioLibClient.organizations();
 
     for (const organizationData of organizationsData) {
       if (!organizationData.displayName) {
@@ -66,27 +67,31 @@ export class OrganizationPopulator extends AbstractPopulator {
   }
 
   async createOrganization(organizationData: Organization) {
-    const newOrganization = await this.client.createOrganization(
-      organizationData.displayName,
-      organizationData.nameID
-    );
+    const newOrganization =
+      await this.client.alkemioLibClient.createOrganization(
+        organizationData.displayName,
+        organizationData.nameID
+      );
 
     const profileID = newOrganization?.profile.id;
     const visualID = newOrganization?.profile.avatar?.id || '';
 
     if (profileID) {
-      await this.client.createTagsetOnProfile(
+      await this.client.alkemioLibClient.createTagsetOnProfile(
         profileID,
         'Keywords',
         organizationData.keywords
       );
-      await this.client.updateProfile(
+      await this.client.alkemioLibClient.updateProfile(
         profileID,
         organizationData.description,
         organizationData.country,
         organizationData.city
       );
-      await this.client.updateVisual(visualID, organizationData.avatar);
+      await this.client.alkemioLibClient.updateVisual(
+        visualID,
+        organizationData.avatar
+      );
     }
   }
 
@@ -99,8 +104,14 @@ export class OrganizationPopulator extends AbstractPopulator {
 
     if (profileID) {
       // todo: fill this out more
-      await this.client.updateProfile(profileID, organizationData.description);
-      await this.client.updateVisual(visualID, organizationData.avatar);
+      await this.client.alkemioLibClient.updateProfile(
+        profileID,
+        organizationData.description
+      );
+      await this.client.alkemioLibClient.updateVisual(
+        visualID,
+        organizationData.avatar
+      );
     }
   }
 }

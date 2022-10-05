@@ -1,17 +1,13 @@
-import {
-  AlkemioClient,
-  CreateReferenceInput,
-  CreateUserInput,
-} from '@alkemio/client-lib';
+import { CreateReferenceInput, CreateUserInput } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { Tagsets } from '../constants/enums';
-import { User } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
 export class UserPopulator extends AbstractPopulator {
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
@@ -36,13 +32,15 @@ export class UserPopulator extends AbstractPopulator {
       const userProfileID = '===> userCreation - FULL';
       this.profiler.profile(userProfileID);
 
-      const existingUser = await this.client.user(userData.nameID);
+      const existingUser = await this.client.alkemioLibClient.user(
+        userData.nameID
+      );
       if (existingUser) {
         if (existingUser?.profile?.id) {
           this.logger.info(
             `[${count}] User already exists: ${userData.nameID}; updating profile instead`
           );
-          await this.client.updateProfile(
+          await this.client.alkemioLibClient.updateProfile(
             existingUser.profile.id,
             undefined,
             userData.country,
@@ -53,7 +51,10 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
         try {
           await this.createUser(userData);
-          await this.client.addUserToHub(this.hubID, userData.nameID);
+          await this.client.alkemioLibClient.addUserToHub(
+            this.hubID,
+            userData.nameID
+          );
         } catch (e: any) {
           if (e.response && e.response.errors) {
             this.logger.error(
@@ -86,7 +87,9 @@ export class UserPopulator extends AbstractPopulator {
       // start processing
       this.logger.info(`[${count}] - Processing user: ${userData.nameID} ...`);
 
-      const existingUser = await this.client.user(userData.nameID);
+      const existingUser = await this.client.alkemioLibClient.user(
+        userData.nameID
+      );
       if (!existingUser) {
         this.logger.warn(
           `User not found to populate roles: ${userData.nameID}`
@@ -95,7 +98,7 @@ export class UserPopulator extends AbstractPopulator {
       }
 
       try {
-        await this.client.addUserToOrganization(
+        await this.client.alkemioLibClient.addUserToOrganization(
           existingUser.id,
           userData.organization
         );
@@ -168,7 +171,9 @@ export class UserPopulator extends AbstractPopulator {
       },
     };
 
-    const createdUser = await this.client.createUser(userInputData);
+    const createdUser = await this.client.alkemioLibClient.createUser(
+      userInputData
+    );
 
     if (!createdUser) {
       this.logger.error(`Error creating user: ${userData.nameID}`);
@@ -179,7 +184,7 @@ export class UserPopulator extends AbstractPopulator {
     const userProfileID = createdUser.profile?.id || '';
 
     const visualID = createdUser.profile?.avatar?.id || '';
-    await this.client.updateVisual(visualID, userData.avatar);
+    await this.client.alkemioLibClient.updateVisual(visualID, userData.avatar);
 
     this.logger.info(`... created user: ${createdUser.nameID}`);
 
@@ -188,7 +193,10 @@ export class UserPopulator extends AbstractPopulator {
 
   async addUserToGroups(userID: string, groups: string[]) {
     for (const groupName of groups) {
-      const group = await this.client.groupByName(this.hubID, groupName);
+      const group = await this.client.alkemioLibClient.groupByName(
+        this.hubID,
+        groupName
+      );
       // Add the user into the team members group
       if (!group) {
         this.logger.warn(
@@ -196,7 +204,7 @@ export class UserPopulator extends AbstractPopulator {
         );
         return false;
       } else {
-        await this.client.addUserToGroup(userID, group.id);
+        await this.client.alkemioLibClient.addUserToGroup(userID, group.id);
         this.logger.info(`... added user to group: ${groupName}`);
       }
       return true;

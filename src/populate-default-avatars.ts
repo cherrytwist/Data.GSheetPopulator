@@ -1,18 +1,20 @@
 import { createLogger } from './utils/create-logger';
 import * as dotenv from 'dotenv';
-import { createClientUsingEnvVars } from './utils/create-client-using-envvars';
+import { createConfigUsingEnvVars } from './utils/create-config-using-envvars';
+import { AlkemioPopulatorClient } from './client/AlkemioPopulatorClient';
 
 const main = async () => {
   dotenv.config();
   const logger = createLogger();
 
-  const alkemioClient = await createClientUsingEnvVars();
+  const config = createConfigUsingEnvVars();
+  const alkemioPopulatorClient = new AlkemioPopulatorClient(config, logger);
+  await alkemioPopulatorClient.initialise();
   logger.info(
-    `Alkemio server: ${alkemioClient.config.apiEndpointPrivateGraphql}`
+    `Alkemio server: ${alkemioPopulatorClient.config.apiEndpointPrivateGraphql}`
   );
-  await alkemioClient.validateConnection();
 
-  const users = await alkemioClient.users();
+  const users = await alkemioPopulatorClient.alkemioLibClient.users();
   logger.info(`Users count: ${users?.length}`);
   if (users) {
     for (const user of users) {
@@ -22,7 +24,7 @@ const main = async () => {
         const profileID = user.profile?.id;
         if (profileID) {
           const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-          await alkemioClient.updateProfile(
+          await alkemioPopulatorClient.alkemioLibClient.updateProfile(
             profileID,
             `https://eu.ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=${randomColor}&color=ffffff`
           );

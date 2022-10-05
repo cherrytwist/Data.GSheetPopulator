@@ -2,10 +2,10 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { BaseDataAdapter } from '../adapters/base-adapter';
 import { createLogger, createProfiler } from '../utils/create-logger';
-import { AlkemioClient } from '@alkemio/client-lib';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 
 export abstract class AbstractPopulator {
-  protected client: AlkemioClient;
+  protected client: AlkemioPopulatorClient;
   protected data: AbstractDataAdapter;
   protected logger: Logger;
   protected profiler: Logger;
@@ -14,7 +14,7 @@ export abstract class AbstractPopulator {
 
   // Create the Hub with enough defaults set/ members populated
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data?: AbstractDataAdapter,
     logger?: Logger,
     profiler?: Logger

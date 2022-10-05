@@ -13,6 +13,7 @@ const main = async () => {
   const config = createConfigUsingEnvVars();
 
   const alkemioPopulatorClient = new AlkemioPopulatorClient(config, logger);
+  await alkemioPopulatorClient.initialise();
 
   logger.info(
     `Alkemio server: ${alkemioPopulatorClient.config.apiEndpointPrivateGraphql}`
@@ -24,7 +25,7 @@ const main = async () => {
 
   // Loading data from google sheets
   const populator = new Populator(
-    alkemioPopulatorClient.alkemioLibClient,
+    alkemioPopulatorClient,
     data,
     logger,
     profiler,

@@ -1,10 +1,11 @@
-export type Aspect = {
+export type Card = {
   type: string;
   nameID: string;
   displayName: string;
   description: string;
-  challenge: string;
   tags: string[];
   bannerURI: string;
   bannerNarrowURI: string;
+  challenge: string;
+  callout: string;
 };
