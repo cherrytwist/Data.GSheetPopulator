@@ -20,7 +20,7 @@ export class CalloutPopulator extends AbstractPopulator {
 
   async populate() {
     await this.processCallouts();
-    //await this.processCards();
+    await this.processCards();
   }
 
   private async processCallouts() {
@@ -96,7 +96,7 @@ export class CalloutPopulator extends AbstractPopulator {
   ) {
     // If challenge is specified, use the collaboration from the challenge
     if (challengeNameID) {
-      const challenge = await this.client.alkemioLibClient.challengeByNameID(
+      const challenge = await this.client.challengeCallouts(
         this.hubID,
         challengeNameID
       );
@@ -117,83 +117,83 @@ export class CalloutPopulator extends AbstractPopulator {
   }
 
   private async processCards() {
-    this.logger.info('Processing aspects');
+    this.logger.info('Processing cards');
 
-    const aspects = this.data.cards();
+    const cards = this.data.cards();
 
-    if (aspects.length === 0) {
-      this.logger.warn('No aspects to import!');
+    if (cards.length === 0) {
+      this.logger.warn('No cards to import!');
       return;
     }
 
-    for (const aspect of aspects) {
-      if (!aspect.nameID) {
+    for (const cardData of cards) {
+      if (!cardData.nameID) {
         // End of valid organizations
         break;
       }
 
       // start processing
-      this.logger.info(`Processing aspect: ${aspect.nameID}....`);
-      const aspectProfileID = '===> aspectCreation - FULL';
-      this.profiler.profile(aspectProfileID);
-
-      const challenge = await this.client.alkemioLibClient.challengeByNameID(
-        this.hubID,
-        aspect.challenge
-      );
-
-      if (!challenge) {
-        this.logger.warn(
-          `Skipping aspect '${aspect.nameID}'. Missing challenge '${aspect.challenge}'!`
-        );
-        continue;
-      }
-
-      const collaborationID = challenge.collaboration?.id;
-      if (!collaborationID) {
-        this.logger.warn(
-          `Skipping aspect '${aspect.nameID}'. Missing collaboration ID on '${aspect.challenge}'!`
-        );
-        continue;
-      }
+      this.logger.info(`Processing card: ${cardData.nameID}....`);
+      const cardProfileID = '===> cardreation - FULL';
+      this.profiler.profile(cardProfileID);
 
       try {
-        const callouts = challenge.collaboration?.callouts;
-        if (!callouts || callouts.length === 0) {
-          this.logger.warn(
-            `Skipping aspect '${aspect.nameID}'. Missing card callout on '${aspect.challenge}'!`
-          );
+        const collaboration = await this.getCollaborationForCallout(
+          cardData.callout,
+          cardData.challenge
+        );
+        const callout = collaboration.callouts?.find(
+          c => c.nameID === cardData.callout
+        );
+        if (!callout) {
+          if (cardData.challenge) {
+            this.logger.error(
+              `Unable to find callout with nameID: ${cardData.callout} in challenge: ${cardData.challenge}`
+            );
+          } else {
+            this.logger.error(
+              `Unable to find callout with nameID: ${cardData.callout} in hub`
+            );
+          }
           continue;
         }
 
-        const createdAspect =
-          await this.client.alkemioLibClient.createAspectOnCallout(
-            callouts[0].id,
-            aspect.type,
-            aspect.displayName,
-            aspect.nameID,
-            aspect.description,
-            aspect.tags
-          );
+        const existingCard = callout.aspects?.find(
+          c => c.nameID === cardData.nameID
+        );
 
-        const bannerNarrowVisualID = createdAspect?.bannerNarrow?.id || '';
-        if (bannerNarrowVisualID && bannerNarrowVisualID.length > 0)
-          await this.client.alkemioLibClient.updateVisual(
-            bannerNarrowVisualID,
-            aspect.bannerNarrowURI
-          );
+        if (!existingCard) {
+          const createdAspect =
+            await this.client.alkemioLibClient.createAspectOnCallout(
+              callout.id,
+              cardData.type,
+              cardData.displayName,
+              cardData.nameID,
+              cardData.description,
+              cardData.tags
+            );
 
-        this.logger.info(`...added aspect: ${aspect.nameID}`);
+          const bannerNarrowVisualID = createdAspect?.bannerNarrow?.id || '';
+          if (bannerNarrowVisualID && bannerNarrowVisualID.length > 0)
+            await this.client.alkemioLibClient.updateVisual(
+              bannerNarrowVisualID,
+              cardData.bannerNarrowURI
+            );
+
+          this.logger.info(`...added card: ${cardData.nameID}`);
+        } else {
+          this.logger.info(`...updating card: ${cardData.nameID}`);
+        }
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create aspect (${aspect.nameID}): ${e.response.errors[0].message}`
+            `Unable to create aspect (${cardData.nameID}): ${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create aspect: ${e}`);
         }
       } finally {
-        this.profiler.profile(aspectProfileID);
+        this.profiler.profile(cardProfileID);
       }
     }
   }

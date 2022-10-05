@@ -9,6 +9,10 @@ query hubCallouts($id: UUID_NAMEID!) {
         nameID
         id
         type
+        aspects {
+          id
+          nameID
+        }
       }
     }
   }

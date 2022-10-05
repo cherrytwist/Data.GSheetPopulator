@@ -7598,7 +7598,12 @@ export type ChallengeCalloutsQuery = {
         | {
             id: string;
             callouts?:
-              | Array<{ nameID: string; id: string; type: CalloutType }>
+              | Array<{
+                  nameID: string;
+                  id: string;
+                  type: CalloutType;
+                  aspects?: Array<{ id: string; nameID: string }> | undefined;
+                }>
               | undefined;
           }
         | undefined;
@@ -7619,7 +7624,12 @@ export type HubCalloutsQuery = {
       | {
           id: string;
           callouts?:
-            | Array<{ nameID: string; id: string; type: CalloutType }>
+            | Array<{
+                nameID: string;
+                id: string;
+                type: CalloutType;
+                aspects?: Array<{ id: string; nameID: string }> | undefined;
+              }>
             | undefined;
         }
       | undefined;
@@ -7686,6 +7696,10 @@ export const ChallengeCalloutsDocument = gql`
             nameID
             id
             type
+            aspects {
+              id
+              nameID
+            }
           }
         }
       }
@@ -7704,6 +7718,10 @@ export const HubCalloutsDocument = gql`
           nameID
           id
           type
+          aspects {
+            id
+            nameID
+          }
         }
       }
     }
