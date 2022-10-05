@@ -1,10 +1,4 @@
-import {
-  Organization,
-  CalloutType,
-  CalloutState,
-  CalloutVisibility,
-  LifecycleType,
-} from '@alkemio/client-lib';
+import { Organization, LifecycleType } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
@@ -66,21 +60,6 @@ export class ChallengePopulator extends AbstractPopulator {
           `Challenge ${challengeData.displayName} already exists! Updating`
         );
         await this.updateChallengeContext(existingChallenge.id, challengeData);
-
-        console.log(
-          `Challenge ${challengeData.displayName} collaboration id: ${existingChallenge.collaboration?.id}`
-        );
-
-        const collaboration = existingChallenge.collaboration;
-        if (collaboration && !collaboration.callouts) {
-          this.logger.info(
-            `Creating card callout on ${challengeData.displayName} challenge`
-          );
-          await this.createCardCallout(
-            collaboration.id,
-            existingChallenge.nameID
-          );
-        }
       } else {
         await this.createChallenge(challengeData);
       }
@@ -123,13 +102,6 @@ export class ChallengePopulator extends AbstractPopulator {
         });
       this.logger.info(`....created: ${challengeData.displayName}`);
 
-      if (createdChallenge?.collaboration) {
-        await this.createCardCallout(
-          createdChallenge.collaboration?.id,
-          createdChallenge.nameID
-        );
-      }
-
       const visuals = createdChallenge?.context?.visuals || [];
       await this.client.alkemioLibClient.updateVisualsOnContext(
         visuals,
@@ -159,27 +131,6 @@ export class ChallengePopulator extends AbstractPopulator {
         );
       }
     }
-  }
-
-  async createCardCallout(collaborationID: string, challengeNameID: string) {
-    const aspectsCalloutData = {
-      collaborationID: collaborationID,
-      displayName: 'Cards callout',
-      nameId: `cards-${challengeNameID}`,
-      description: 'Cards Callout',
-      type: CalloutType.Card,
-      state: CalloutState.Open,
-      visibility: CalloutVisibility.Published,
-    };
-    await this.client.alkemioLibClient.createCalloutOnCollaboration(
-      aspectsCalloutData.collaborationID,
-      aspectsCalloutData.displayName,
-      aspectsCalloutData.nameId,
-      aspectsCalloutData.description,
-      aspectsCalloutData.type,
-      aspectsCalloutData.state,
-      aspectsCalloutData.visibility
-    );
   }
 
   async populateCommunityRoles(challengeID: string, challengeData: Challenge) {

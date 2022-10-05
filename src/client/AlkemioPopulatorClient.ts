@@ -3,9 +3,12 @@ import { GraphQLClient } from 'graphql-request';
 import {
   Sdk,
   getSdk,
-  OrganizationAuthorizationResetInput,
-  HubAuthorizationResetInput,
-  UserAuthorizationResetInput,
+  CreateCalloutOnCollaborationInput,
+  CalloutState,
+  CalloutType,
+  CalloutVisibility,
+  UpdateCalloutVisibilityInput,
+  UpdateCalloutInput,
 } from '../generated/graphql';
 import { Logger } from 'winston';
 import { AlkemioClient, AlkemioClientConfig } from '@alkemio/client-lib';
@@ -51,33 +54,69 @@ export class AlkemioPopulatorClient {
     return await this.alkemioLibClient.validateConnection();
   }
 
-  public async authorizationResetUser(
-    authorizationResetData: UserAuthorizationResetInput
-  ) {
-    const result = await this.sdkClient.authorizationPolicyResetOnUser({
-      authorizationResetData: authorizationResetData,
-    });
-
-    return result.data;
+  async hubCallouts(hubID: string) {
+    const hubResponse = await this.sdkClient.hubCallouts({ id: hubID });
+    return hubResponse.data.hub;
   }
 
-  public async authorizationResetHub(
-    authorizationResetData: HubAuthorizationResetInput
-  ) {
-    const result = await this.sdkClient.authorizationPolicyResetOnHub({
-      authorizationResetData: authorizationResetData,
+  async challengeCallouts(hubID: string, challengeID: string) {
+    const hubResponse = await this.sdkClient.challengeCallouts({
+      hubID,
+      challengeID,
     });
-
-    return result.data;
+    return hubResponse.data.hub.challenge;
   }
 
-  public async authorizationResetOrganization(
-    authorizationResetData: OrganizationAuthorizationResetInput
+  async createCalloutOnCollaboration(
+    collaborationID: string,
+    displayName: string,
+    nameID: string,
+    description: string,
+    type: CalloutType,
+    state: CalloutState
   ) {
-    const result = await this.sdkClient.authorizationPolicyResetOnOrganization({
-      authorizationResetData: authorizationResetData,
+    const calloutData: CreateCalloutOnCollaborationInput = {
+      collaborationID,
+      type,
+      state,
+      displayName,
+      nameID,
+      description,
+    };
+    const { data } = await this.sdkClient.createCalloutOnCollaboration({
+      data: calloutData,
     });
 
-    return result.data;
+    return data?.createCalloutOnCollaboration;
+  }
+
+  async updateCalloutVisibility(
+    calloutID: string,
+    visibility: CalloutVisibility
+  ) {
+    const calloutData: UpdateCalloutVisibilityInput = {
+      calloutID,
+      visibility,
+    };
+    const { data } = await this.sdkClient.updateCalloutVisibility({
+      calloutData: calloutData,
+    });
+    return data.updateCalloutVisibility;
+  }
+
+  async updateCallout(
+    calloutID: string,
+    description: string,
+    displayName: string
+  ) {
+    const calloutData: UpdateCalloutInput = {
+      ID: calloutID,
+      description,
+      displayName,
+    };
+    const { data } = await this.sdkClient.updateCallout({
+      calloutData: calloutData,
+    });
+    return data.updateCallout;
   }
 }

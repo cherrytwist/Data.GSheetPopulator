@@ -52,7 +52,7 @@
     "tsconfig-paths": "^4.0.0"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.16.1",
+    "@alkemio/client-lib": "^0.17.0",
     "@graphql-codegen/typescript-graphql-request": "^4.5.3",
     "@graphql-codegen/typescript-operations": "^2.5.3",
     "dotenv": "^8.2.0",

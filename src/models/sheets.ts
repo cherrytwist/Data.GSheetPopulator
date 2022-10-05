@@ -148,7 +148,7 @@ export interface RelationSheet {
 
 export interface CardSheet {
   TYPE: string;
-  NAMEID: string;
+  NAME_ID: string;
   DISPLAY_NAME: string;
   DESCRIPTION: string;
   TAGS: string;
@@ -159,7 +159,7 @@ export interface CardSheet {
 }
 
 export interface CalloutSheet {
-  NAMEID: string;
+  NAME_ID: string;
   DISPLAY_NAME: string;
   DESCRIPTION: string;
   CHALLENGE: string;

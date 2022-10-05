@@ -63,7 +63,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const aspectPopulator = new CalloutPopulator(
+    const calloutPopulator = new CalloutPopulator(
       this.client,
       this.data,
       this.logger,
@@ -79,18 +79,18 @@ export class Populator extends AbstractPopulator {
     );
 
     // organizations first as they are needed for Hub + Challenges
-    await organizationPopulator.populate();
-    await hubPopulator.populate();
-    await userPopulator.populate();
-    await groupPopulator.populate();
+    // await organizationPopulator.populate();
+    // await hubPopulator.populate();
+    // await userPopulator.populate();
+    // await groupPopulator.populate();
 
-    await contextPopulator.populate();
+    // await contextPopulator.populate();
 
-    // populate the specific opportunity entities. Todo: get this so it can also be updated
-    await actorPopulator.populate();
+    // // populate the specific opportunity entities. Todo: get this so it can also be updated
+    // await actorPopulator.populate();
 
-    await aspectPopulator.populate();
+    await calloutPopulator.populate();
 
-    await userPopulator.populateUserRoles();
+    //await userPopulator.populateUserRoles();
   }
 }

@@ -71,7 +71,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const sheet = this.workbook.Sheets[Sheets.Callouts];
     const result = XLSX.utils.sheet_to_json(sheet) as CalloutSheet[];
     return result.map(x => ({
-      nameID: x.NAMEID,
+      nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       description: x.DESCRIPTION,
       challenge: x.CHALLENGE,
@@ -83,7 +83,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const result = XLSX.utils.sheet_to_json(sheet) as CardSheet[];
     return result.map(x => ({
       type: x.TYPE,
-      nameID: x.NAMEID,
+      nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       description: x.DESCRIPTION,
       callout: x.CALLOUT,

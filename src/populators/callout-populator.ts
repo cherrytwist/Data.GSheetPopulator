@@ -1,11 +1,11 @@
+import { Logger } from 'winston';
+import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import {
   CalloutState,
   CalloutType,
   CalloutVisibility,
-} from '@alkemio/client-lib';
-import { Logger } from 'winston';
-import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
+} from '../generated/graphql';
 import { AbstractPopulator } from './abstract-populator';
 
 export class CalloutPopulator extends AbstractPopulator {
@@ -20,7 +20,7 @@ export class CalloutPopulator extends AbstractPopulator {
 
   async populate() {
     await this.processCallouts();
-    await this.processCards();
+    //await this.processCards();
   }
 
   private async processCallouts() {
@@ -33,38 +33,53 @@ export class CalloutPopulator extends AbstractPopulator {
       return;
     }
 
-    for (const callout of callouts) {
-      if (!callout.nameID) {
-        // End of valid organizations
+    for (const calloutData of callouts) {
+      if (!calloutData.nameID) {
+        // End of valid callouts
         break;
       }
 
       // start processing
-      this.logger.info(`Processing callout: ${callout.nameID}....`);
+      this.logger.info(`Processing callout: ${calloutData.nameID}....`);
       const calloutProfileID = '===> callout Creation - FULL';
       this.profiler.profile(calloutProfileID);
       try {
         const collaboration = await this.getCollaborationForCallout(
-          callout.nameID,
-          callout.challenge
+          calloutData.nameID,
+          calloutData.challenge
         );
-
-        const createdCallout =
-          await this.client.alkemioLibClient.createCalloutOnCollaboration(
+        const existingCallout = collaboration.callouts?.find(
+          c => c.nameID === calloutData.nameID
+        );
+        if (!existingCallout) {
+          const createdCallout = await this.client.createCalloutOnCollaboration(
             collaboration.id,
-            callout.displayName,
-            callout.nameID,
-            callout.description,
+            calloutData.displayName,
+            calloutData.nameID,
+            calloutData.description,
             CalloutType.Card,
-            CalloutState.Open,
+            CalloutState.Open
+          );
+
+          this.logger.info(`...added callout: ${createdCallout.nameID}`);
+          await this.client.updateCalloutVisibility(
+            createdCallout.id,
             CalloutVisibility.Published
           );
 
-        this.logger.info(`...added callout: ${createdCallout.nameID}`);
+          this.logger.info(`...published callout: ${createdCallout.nameID}`);
+        } else {
+          const updatedCallout = await this.client.updateCallout(
+            existingCallout.id,
+            calloutData.description,
+            calloutData.displayName
+          );
+          this.logger.info(`...updated callout: ${updatedCallout.nameID}`);
+        }
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create callout (${callout.nameID}): ${e.response.errors[0].message}`
+            `Unable to create callout (${calloutData.nameID}): ${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create callout: ${e}`);
@@ -92,7 +107,7 @@ export class CalloutPopulator extends AbstractPopulator {
       return challenge.collaboration;
     }
 
-    const hub = await this.client.alkemioLibClient.hubInfo(this.hubID);
+    const hub = await this.client.hubCallouts(this.hubID);
     if (!hub || !hub.collaboration) {
       const errorMsg = `Skipping callout '${calloutNameID}'. Unable to get collaboration for Hub`;
       throw new Error(errorMsg);

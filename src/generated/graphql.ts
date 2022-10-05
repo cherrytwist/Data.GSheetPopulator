@@ -7553,28 +7553,77 @@ export type Resolvers<ContextType = any> = {
   Visual?: VisualResolvers<ContextType>;
 };
 
-export type AuthorizationPolicyResetOnHubMutationVariables = Exact<{
-  authorizationResetData: HubAuthorizationResetInput;
+export type CreateCalloutOnCollaborationMutationVariables = Exact<{
+  data: CreateCalloutOnCollaborationInput;
 }>;
 
-export type AuthorizationPolicyResetOnHubMutation = {
-  authorizationPolicyResetOnHub: { nameID: string };
+export type CreateCalloutOnCollaborationMutation = {
+  createCalloutOnCollaboration: {
+    id: string;
+    nameID: string;
+    type: CalloutType;
+  };
 };
 
-export type AuthorizationPolicyResetOnOrganizationMutationVariables = Exact<{
-  authorizationResetData: OrganizationAuthorizationResetInput;
+export type UpdateCalloutVisibilityMutationVariables = Exact<{
+  calloutData: UpdateCalloutVisibilityInput;
 }>;
 
-export type AuthorizationPolicyResetOnOrganizationMutation = {
-  authorizationPolicyResetOnOrganization: { nameID: string };
+export type UpdateCalloutVisibilityMutation = {
+  updateCalloutVisibility: { id: string };
 };
 
-export type AuthorizationPolicyResetOnUserMutationVariables = Exact<{
-  authorizationResetData: UserAuthorizationResetInput;
+export type UpdateCalloutMutationVariables = Exact<{
+  calloutData: UpdateCalloutInput;
 }>;
 
-export type AuthorizationPolicyResetOnUserMutation = {
-  authorizationPolicyResetOnUser: { nameID: string };
+export type UpdateCalloutMutation = {
+  updateCallout: { id: string; nameID: string };
+};
+
+export type ChallengeCalloutsQueryVariables = Exact<{
+  hubID: Scalars['UUID_NAMEID'];
+  challengeID: Scalars['UUID_NAMEID'];
+}>;
+
+export type ChallengeCalloutsQuery = {
+  hub: {
+    id: string;
+    nameID: string;
+    displayName: string;
+    challenge: {
+      id: string;
+      nameID: string;
+      collaboration?:
+        | {
+            id: string;
+            callouts?:
+              | Array<{ nameID: string; id: string; type: CalloutType }>
+              | undefined;
+          }
+        | undefined;
+    };
+  };
+};
+
+export type HubCalloutsQueryVariables = Exact<{
+  id: Scalars['UUID_NAMEID'];
+}>;
+
+export type HubCalloutsQuery = {
+  hub: {
+    id: string;
+    nameID: string;
+    displayName: string;
+    collaboration?:
+      | {
+          id: string;
+          callouts?:
+            | Array<{ nameID: string; id: string; type: CalloutType }>
+            | undefined;
+        }
+      | undefined;
+  };
 };
 
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
@@ -7594,36 +7643,69 @@ export type MeQuery = {
   };
 };
 
-export const AuthorizationPolicyResetOnHubDocument = gql`
-  mutation authorizationPolicyResetOnHub(
-    $authorizationResetData: HubAuthorizationResetInput!
+export const CreateCalloutOnCollaborationDocument = gql`
+  mutation createCalloutOnCollaboration(
+    $data: CreateCalloutOnCollaborationInput!
   ) {
-    authorizationPolicyResetOnHub(
-      authorizationResetData: $authorizationResetData
-    ) {
+    createCalloutOnCollaboration(calloutData: $data) {
+      id
+      nameID
+      type
+    }
+  }
+`;
+export const UpdateCalloutVisibilityDocument = gql`
+  mutation updateCalloutVisibility(
+    $calloutData: UpdateCalloutVisibilityInput!
+  ) {
+    updateCalloutVisibility(calloutData: $calloutData) {
+      id
+    }
+  }
+`;
+export const UpdateCalloutDocument = gql`
+  mutation updateCallout($calloutData: UpdateCalloutInput!) {
+    updateCallout(calloutData: $calloutData) {
+      id
       nameID
     }
   }
 `;
-export const AuthorizationPolicyResetOnOrganizationDocument = gql`
-  mutation authorizationPolicyResetOnOrganization(
-    $authorizationResetData: OrganizationAuthorizationResetInput!
-  ) {
-    authorizationPolicyResetOnOrganization(
-      authorizationResetData: $authorizationResetData
-    ) {
+export const ChallengeCalloutsDocument = gql`
+  query challengeCallouts($hubID: UUID_NAMEID!, $challengeID: UUID_NAMEID!) {
+    hub(ID: $hubID) {
+      id
       nameID
+      displayName
+      challenge(ID: $challengeID) {
+        id
+        nameID
+        collaboration {
+          id
+          callouts {
+            nameID
+            id
+            type
+          }
+        }
+      }
     }
   }
 `;
-export const AuthorizationPolicyResetOnUserDocument = gql`
-  mutation authorizationPolicyResetOnUser(
-    $authorizationResetData: UserAuthorizationResetInput!
-  ) {
-    authorizationPolicyResetOnUser(
-      authorizationResetData: $authorizationResetData
-    ) {
+export const HubCalloutsDocument = gql`
+  query hubCallouts($id: UUID_NAMEID!) {
+    hub(ID: $id) {
+      id
       nameID
+      displayName
+      collaboration {
+        id
+        callouts {
+          nameID
+          id
+          type
+        }
+      }
     }
   }
 `;
@@ -7658,79 +7740,119 @@ const defaultWrapper: SdkFunctionWrapper = (
   _operationName,
   _operationType
 ) => action();
-const AuthorizationPolicyResetOnHubDocumentString = print(
-  AuthorizationPolicyResetOnHubDocument
+const CreateCalloutOnCollaborationDocumentString = print(
+  CreateCalloutOnCollaborationDocument
 );
-const AuthorizationPolicyResetOnOrganizationDocumentString = print(
-  AuthorizationPolicyResetOnOrganizationDocument
+const UpdateCalloutVisibilityDocumentString = print(
+  UpdateCalloutVisibilityDocument
 );
-const AuthorizationPolicyResetOnUserDocumentString = print(
-  AuthorizationPolicyResetOnUserDocument
-);
+const UpdateCalloutDocumentString = print(UpdateCalloutDocument);
+const ChallengeCalloutsDocumentString = print(ChallengeCalloutsDocument);
+const HubCalloutsDocumentString = print(HubCalloutsDocument);
 const MeDocumentString = print(MeDocument);
 export function getSdk(
   client: GraphQLClient,
   withWrapper: SdkFunctionWrapper = defaultWrapper
 ) {
   return {
-    authorizationPolicyResetOnHub(
-      variables: AuthorizationPolicyResetOnHubMutationVariables,
+    createCalloutOnCollaboration(
+      variables: CreateCalloutOnCollaborationMutationVariables,
       requestHeaders?: Dom.RequestInit['headers']
     ): Promise<{
-      data: AuthorizationPolicyResetOnHubMutation;
+      data: CreateCalloutOnCollaborationMutation;
       extensions?: any;
       headers: Dom.Headers;
       status: number;
     }> {
       return withWrapper(
         wrappedRequestHeaders =>
-          client.rawRequest<AuthorizationPolicyResetOnHubMutation>(
-            AuthorizationPolicyResetOnHubDocumentString,
+          client.rawRequest<CreateCalloutOnCollaborationMutation>(
+            CreateCalloutOnCollaborationDocumentString,
             variables,
             { ...requestHeaders, ...wrappedRequestHeaders }
           ),
-        'authorizationPolicyResetOnHub',
+        'createCalloutOnCollaboration',
         'mutation'
       );
     },
-    authorizationPolicyResetOnOrganization(
-      variables: AuthorizationPolicyResetOnOrganizationMutationVariables,
+    updateCalloutVisibility(
+      variables: UpdateCalloutVisibilityMutationVariables,
       requestHeaders?: Dom.RequestInit['headers']
     ): Promise<{
-      data: AuthorizationPolicyResetOnOrganizationMutation;
+      data: UpdateCalloutVisibilityMutation;
       extensions?: any;
       headers: Dom.Headers;
       status: number;
     }> {
       return withWrapper(
         wrappedRequestHeaders =>
-          client.rawRequest<AuthorizationPolicyResetOnOrganizationMutation>(
-            AuthorizationPolicyResetOnOrganizationDocumentString,
+          client.rawRequest<UpdateCalloutVisibilityMutation>(
+            UpdateCalloutVisibilityDocumentString,
             variables,
             { ...requestHeaders, ...wrappedRequestHeaders }
           ),
-        'authorizationPolicyResetOnOrganization',
+        'updateCalloutVisibility',
         'mutation'
       );
     },
-    authorizationPolicyResetOnUser(
-      variables: AuthorizationPolicyResetOnUserMutationVariables,
+    updateCallout(
+      variables: UpdateCalloutMutationVariables,
       requestHeaders?: Dom.RequestInit['headers']
     ): Promise<{
-      data: AuthorizationPolicyResetOnUserMutation;
+      data: UpdateCalloutMutation;
       extensions?: any;
       headers: Dom.Headers;
       status: number;
     }> {
       return withWrapper(
         wrappedRequestHeaders =>
-          client.rawRequest<AuthorizationPolicyResetOnUserMutation>(
-            AuthorizationPolicyResetOnUserDocumentString,
+          client.rawRequest<UpdateCalloutMutation>(
+            UpdateCalloutDocumentString,
             variables,
             { ...requestHeaders, ...wrappedRequestHeaders }
           ),
-        'authorizationPolicyResetOnUser',
+        'updateCallout',
         'mutation'
+      );
+    },
+    challengeCallouts(
+      variables: ChallengeCalloutsQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<{
+      data: ChallengeCalloutsQuery;
+      extensions?: any;
+      headers: Dom.Headers;
+      status: number;
+    }> {
+      return withWrapper(
+        wrappedRequestHeaders =>
+          client.rawRequest<ChallengeCalloutsQuery>(
+            ChallengeCalloutsDocumentString,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        'challengeCallouts',
+        'query'
+      );
+    },
+    hubCallouts(
+      variables: HubCalloutsQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<{
+      data: HubCalloutsQuery;
+      extensions?: any;
+      headers: Dom.Headers;
+      status: number;
+    }> {
+      return withWrapper(
+        wrappedRequestHeaders =>
+          client.rawRequest<HubCalloutsQuery>(
+            HubCalloutsDocumentString,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        'hubCallouts',
+        'query'
       );
     },
     me(
