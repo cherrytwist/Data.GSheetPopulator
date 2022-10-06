@@ -9,11 +9,12 @@ import {
   assignUserAsLead,
   contributorsToAdd,
 } from '../utils';
-import { AlkemioClient, LifecycleType } from '@alkemio/client-lib';
+import { LifecycleType } from '@alkemio/client-lib';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 
 export class OpportunityPopulator extends AbstractPopulator {
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
@@ -51,10 +52,11 @@ export class OpportunityPopulator extends AbstractPopulator {
         continue;
       }
 
-      const existingOpportunity = await this.client.opportunityByNameID(
-        this.hubID,
-        opportunityData.nameID
-      );
+      const existingOpportunity =
+        await this.client.alkemioLibClient.opportunityByNameID(
+          this.hubID,
+          opportunityData.nameID
+        );
 
       try {
         if (existingOpportunity) {
@@ -81,7 +83,7 @@ export class OpportunityPopulator extends AbstractPopulator {
 
   async createOpportunity(opportunityData: Opportunity) {
     // First need to get the id for the challenge
-    const challenge = await this.client.challengeByNameID(
+    const challenge = await this.client.alkemioLibClient.challengeByNameID(
       this.hubID,
       opportunityData.challenge
     );
@@ -91,35 +93,37 @@ export class OpportunityPopulator extends AbstractPopulator {
       );
       return;
     }
-    const hubInfo = await this.client.hubInfo(this.hubID);
-    const innovationFlowTemplate = hubInfo?.templates?.lifecycleTemplates?.filter(
-      x => x.type === LifecycleType.Opportunity
-    )[0];
+    const hubInfo = await this.client.alkemioLibClient.hubInfo(this.hubID);
+    const innovationFlowTemplate =
+      hubInfo?.templates?.lifecycleTemplates?.filter(
+        x => x.type === LifecycleType.Opportunity
+      )[0];
 
     if (!innovationFlowTemplate)
       throw new Error(
         `No opportunity innovation flow template found in hub ${this.hubID}`
       );
 
-    const createdOpportunity = await this.client.createOpportunity({
-      challengeID: challenge.id,
-      displayName: opportunityData.displayName,
-      nameID: opportunityData.nameID,
-      context: {
-        background: opportunityData.background,
-        impact: opportunityData.impact,
-        who: opportunityData.who,
-        vision: opportunityData.vision,
-        tagline: opportunityData.tagline,
-        references: this.getReferences(opportunityData),
-        location: {
-          country: opportunityData.country,
-          city: opportunityData.city,
+    const createdOpportunity =
+      await this.client.alkemioLibClient.createOpportunity({
+        challengeID: challenge.id,
+        displayName: opportunityData.displayName,
+        nameID: opportunityData.nameID,
+        context: {
+          background: opportunityData.background,
+          impact: opportunityData.impact,
+          who: opportunityData.who,
+          vision: opportunityData.vision,
+          tagline: opportunityData.tagline,
+          references: this.getReferences(opportunityData),
+          location: {
+            country: opportunityData.country,
+            city: opportunityData.city,
+          },
         },
-      },
-      tags: opportunityData.tags || [],
-      innovationFlowTemplateID: innovationFlowTemplate.id,
-    });
+        tags: opportunityData.tags || [],
+        innovationFlowTemplateID: innovationFlowTemplate.id,
+      });
 
     if (!createdOpportunity) {
       throw new Error(
@@ -133,7 +137,7 @@ export class OpportunityPopulator extends AbstractPopulator {
     await this.populateCommunityRoles(createdOpportunity?.id, opportunityData);
 
     const visuals = createdOpportunity?.context?.visuals || [];
-    await this.client.updateVisualsOnContext(
+    await this.client.alkemioLibClient.updateVisualsOnContext(
       visuals,
       opportunityData.visualBanner,
       opportunityData.visualBackground,
@@ -166,25 +170,26 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityData: Opportunity,
     existingOpportunity: any
   ) {
-    const updatedOpportunity = await this.client.updateOpportunity({
-      ID: existingOpportunity.id,
-      displayName: opportunityData.displayName,
-      context: {
-        background: opportunityData.background,
-        impact: opportunityData.impact,
-        who: opportunityData.who,
-        vision: opportunityData.vision,
-        tagline: opportunityData.tagline,
-        location: {
-          country: opportunityData.country,
-          city: opportunityData.city,
+    const updatedOpportunity =
+      await this.client.alkemioLibClient.updateOpportunity({
+        ID: existingOpportunity.id,
+        displayName: opportunityData.displayName,
+        context: {
+          background: opportunityData.background,
+          impact: opportunityData.impact,
+          who: opportunityData.who,
+          vision: opportunityData.vision,
+          tagline: opportunityData.tagline,
+          location: {
+            country: opportunityData.country,
+            city: opportunityData.city,
+          },
         },
-      },
-      tags: opportunityData.tags || [],
-    });
+        tags: opportunityData.tags || [],
+      });
 
     const visuals = updatedOpportunity?.context?.visuals || [];
-    await this.client.updateVisualsOnContext(
+    await this.client.alkemioLibClient.updateVisualsOnContext(
       visuals,
       opportunityData.visualBanner,
       opportunityData.visualBackground,
@@ -209,7 +214,7 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityID: string,
     opportunityData: Opportunity
   ) {
-    const opportunity = await this.client.opportunityByNameID(
+    const opportunity = await this.client.alkemioLibClient.opportunityByNameID(
       this.hubID,
       opportunityID
     );
@@ -268,9 +273,9 @@ export class OpportunityPopulator extends AbstractPopulator {
     userNameId: string,
     opportunityNameID: string
   ) {
-    const userInfo = await this.client.user(userNameId);
+    const userInfo = await this.client.alkemioLibClient.user(userNameId);
     if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
-    await this.client.addUserToOpportunity(
+    await this.client.alkemioLibClient.addUserToOpportunity(
       this.hubID,
       opportunityNameID,
       userInfo.nameID

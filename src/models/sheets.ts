@@ -1,7 +1,8 @@
 export enum Sheets {
   Actors = 'Actors',
   ActorGroups = 'ActorGroups',
-  Aspects = 'Aspects',
+  Callouts = 'Callouts',
+  Cards = 'Cards',
   Hub = 'Hub',
   Information = 'Information',
   Challenges = 'Challenges',
@@ -145,13 +146,21 @@ export interface RelationSheet {
   OPPORTUNITY: string;
 }
 
-export interface AspectSheet {
+export interface CardSheet {
   TYPE: string;
-  NAMEID: string;
+  NAME_ID: string;
   DISPLAY_NAME: string;
   DESCRIPTION: string;
-  CHALLENGE: string;
   TAGS: string;
   VISUAL_BANNER: string;
   VISUAL_BANNER_NARROW: string;
+  CHALLENGE: string;
+  CALLOUT: string;
+}
+
+export interface CalloutSheet {
+  NAME_ID: string;
+  DISPLAY_NAME: string;
+  DESCRIPTION: string;
+  CHALLENGE: string;
 }

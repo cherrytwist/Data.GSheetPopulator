@@ -1,0 +1,7 @@
+mutation updateCard($cardData: UpdateAspectInput!) {
+  updateAspect(aspectData: $cardData) {
+    id
+    nameID
+    displayName
+  }
+}

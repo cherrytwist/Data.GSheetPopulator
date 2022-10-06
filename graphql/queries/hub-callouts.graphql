@@ -1,0 +1,19 @@
+query hubCallouts($id: UUID_NAMEID!) {
+  hub(ID: $id) {
+    id
+    nameID
+    displayName
+    collaboration {
+      id
+      callouts {
+        nameID
+        id
+        type
+        aspects {
+          id
+          nameID
+        }
+      }
+    }
+  }
+}

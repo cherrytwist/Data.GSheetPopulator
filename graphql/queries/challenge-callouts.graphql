@@ -1,0 +1,23 @@
+query challengeCallouts($hubID: UUID_NAMEID!, $challengeID: UUID_NAMEID!) {
+  hub(ID: $hubID) {
+    id
+    nameID
+    displayName
+    challenge(ID: $challengeID) {
+      id
+      nameID
+      collaboration {
+        id
+        callouts {
+          nameID
+          id
+          type
+          aspects {
+            id
+            nameID
+          }
+        }
+      }
+    }
+  }
+}

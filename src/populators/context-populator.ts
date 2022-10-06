@@ -1,6 +1,6 @@
-import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
 import { ChallengePopulator } from './challenge-populator';
 import { OpportunityPopulator } from './opportunity-populator';
@@ -8,7 +8,7 @@ import { OpportunityPopulator } from './opportunity-populator';
 export class ContextPopulator extends AbstractPopulator {
   private allowCreation: boolean;
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger,

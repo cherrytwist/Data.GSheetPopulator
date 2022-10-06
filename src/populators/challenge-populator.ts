@@ -1,11 +1,4 @@
-import {
-  AlkemioClient,
-  Organization,
-  CalloutType,
-  CalloutState,
-  CalloutVisibility,
-  LifecycleType,
-} from '@alkemio/client-lib';
+import { Organization, LifecycleType } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
@@ -17,12 +10,13 @@ import {
   assignUserAsLead,
   contributorsToAdd,
 } from '../utils';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 
 export class ChallengePopulator extends AbstractPopulator {
   private organizations: Organization[] = [];
 
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger
@@ -39,8 +33,9 @@ export class ChallengePopulator extends AbstractPopulator {
       return;
     }
 
-    this.organizations = ((await this.client.organizations()) ||
-      []) as Organization[];
+    this.organizations =
+      ((await this.client.alkemioLibClient.organizations()) ||
+        []) as Organization[];
 
     // Iterate over the rows
     for (const challengeData of challengesData) {
@@ -54,31 +49,17 @@ export class ChallengePopulator extends AbstractPopulator {
       const challengeProfileID = '===> challengeCreation - FULL';
       this.profiler.profile(challengeProfileID);
 
-      const existingChallenge = await this.client.challengeByNameID(
-        this.hubID,
-        challengeData.nameID
-      );
+      const existingChallenge =
+        await this.client.alkemioLibClient.challengeByNameID(
+          this.hubID,
+          challengeData.nameID
+        );
 
       if (existingChallenge) {
         this.logger.info(
           `Challenge ${challengeData.displayName} already exists! Updating`
         );
         await this.updateChallengeContext(existingChallenge.id, challengeData);
-
-        console.log(
-          `Challenge ${challengeData.displayName} collaboration id: ${existingChallenge.collaboration?.id}`
-        );
-
-        const collaboration = existingChallenge.collaboration;
-        if (collaboration && !collaboration.callouts) {
-          this.logger.info(
-            `Creating card callout on ${challengeData.displayName} challenge`
-          );
-          await this.createCardCallout(
-            collaboration.id,
-            existingChallenge.nameID
-          );
-        }
       } else {
         await this.createChallenge(challengeData);
       }
@@ -88,46 +69,41 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async createChallenge(challengeData: Challenge) {
     try {
-      const hubInfo = await this.client.hubInfo(this.hubID);
-      const innovationFlowTemplate = hubInfo?.templates?.lifecycleTemplates?.filter(
-        x => x.type === LifecycleType.Challenge
-      )[0];
+      const hubInfo = await this.client.alkemioLibClient.hubInfo(this.hubID);
+      const innovationFlowTemplate =
+        hubInfo?.templates?.lifecycleTemplates?.filter(
+          x => x.type === LifecycleType.Challenge
+        )[0];
 
       if (!innovationFlowTemplate)
         throw new Error(
           `No challenge innovation flow template found in hub ${this.hubID}`
         );
 
-      const createdChallenge = await this.client.createChallenge({
-        hubID: this.hubID,
-        displayName: challengeData.displayName,
-        nameID: challengeData.nameID,
-        context: {
-          tagline: challengeData.tagline,
-          background: challengeData.background,
-          vision: challengeData.vision,
-          impact: challengeData.impact,
-          who: challengeData.who,
-          location: {
-            country: challengeData.country,
-            city: challengeData.city,
+      const createdChallenge =
+        await this.client.alkemioLibClient.createChallenge({
+          hubID: this.hubID,
+          displayName: challengeData.displayName,
+          nameID: challengeData.nameID,
+          context: {
+            tagline: challengeData.tagline,
+            background: challengeData.background,
+            vision: challengeData.vision,
+            impact: challengeData.impact,
+            who: challengeData.who,
+            location: {
+              country: challengeData.country,
+              city: challengeData.city,
+            },
+            references: this.getReferences(challengeData),
           },
-          references: this.getReferences(challengeData),
-        },
-        tags: challengeData.tags || [],
-        innovationFlowTemplateID: innovationFlowTemplate.id,
-      });
+          tags: challengeData.tags || [],
+          innovationFlowTemplateID: innovationFlowTemplate.id,
+        });
       this.logger.info(`....created: ${challengeData.displayName}`);
 
-      if (createdChallenge?.collaboration) {
-        await this.createCardCallout(
-          createdChallenge.collaboration?.id,
-          createdChallenge.nameID
-        );
-      }
-
       const visuals = createdChallenge?.context?.visuals || [];
-      await this.client.updateVisualsOnContext(
+      await this.client.alkemioLibClient.updateVisualsOnContext(
         visuals,
         challengeData.visualBanner,
         challengeData.visualBackground,
@@ -157,29 +133,8 @@ export class ChallengePopulator extends AbstractPopulator {
     }
   }
 
-  async createCardCallout(collaborationID: string, challengeNameID: string) {
-    const aspectsCalloutData = {
-      collaborationID: collaborationID,
-      displayName: 'Cards callout',
-      nameId: `cards-${challengeNameID}`,
-      description: 'Cards Callout',
-      type: CalloutType.Card,
-      state: CalloutState.Open,
-      visibility: CalloutVisibility.Published,
-    };
-    await this.client.createCalloutOnCollaboration(
-      aspectsCalloutData.collaborationID,
-      aspectsCalloutData.displayName,
-      aspectsCalloutData.nameId,
-      aspectsCalloutData.description,
-      aspectsCalloutData.type,
-      aspectsCalloutData.state,
-      aspectsCalloutData.visibility
-    );
-  }
-
   async populateCommunityRoles(challengeID: string, challengeData: Challenge) {
-    const challenge = await this.client.challengeByNameID(
+    const challenge = await this.client.alkemioLibClient.challengeByNameID(
       this.hubID,
       challengeID
     );
@@ -237,24 +192,25 @@ export class ChallengePopulator extends AbstractPopulator {
   // Load users from a particular googlesheet
   async updateChallengeContext(challengeId: string, challengeData: Challenge) {
     try {
-      const updatedChallenge = await this.client.updateChallenge({
-        ID: challengeId,
-        displayName: challengeData.displayName,
-        context: {
-          tagline: challengeData.tagline,
-          background: challengeData.background,
-          vision: challengeData.vision,
-          impact: challengeData.impact,
-          who: challengeData.who,
-          location: {
-            country: challengeData.country,
-            city: challengeData.city,
+      const updatedChallenge =
+        await this.client.alkemioLibClient.updateChallenge({
+          ID: challengeId,
+          displayName: challengeData.displayName,
+          context: {
+            tagline: challengeData.tagline,
+            background: challengeData.background,
+            vision: challengeData.vision,
+            impact: challengeData.impact,
+            who: challengeData.who,
+            location: {
+              country: challengeData.country,
+              city: challengeData.city,
+            },
           },
-        },
-        tags: challengeData.tags || [],
-      });
+          tags: challengeData.tags || [],
+        });
       const visuals = updatedChallenge?.context?.visuals || [];
-      await this.client.updateVisualsOnContext(
+      await this.client.alkemioLibClient.updateVisualsOnContext(
         visuals,
         challengeData.visualBanner,
         challengeData.visualBackground,
@@ -304,9 +260,9 @@ export class ChallengePopulator extends AbstractPopulator {
     userNameId: string,
     challengeNameID: string
   ) {
-    const userInfo = await this.client.user(userNameId);
+    const userInfo = await this.client.alkemioLibClient.user(userNameId);
     if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
-    await this.client.addUserToChallenge(
+    await this.client.alkemioLibClient.addUserToChallenge(
       this.hubID,
       challengeNameID,
       userInfo.nameID

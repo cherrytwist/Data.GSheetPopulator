@@ -1,6 +1,6 @@
 {
   "name": "@alkemio/populator",
-  "version": "0.9.4",
+  "version": "0.10.0",
   "author": "Alkemio Foundation",
   "private": false,
   "license": "EUPL-1.2",
@@ -25,7 +25,8 @@
     "populate-organizations": "ts-node-dev src/populate-organizations.ts",
     "start": "npm run populate",
     "test-connection": "ts-node-dev src/scripts/test-connection.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "repository": {
     "type": "git",
@@ -39,6 +40,10 @@
     "@types/node": "^14.6.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
+    "@graphql-codegen/add": "^3.2.1",
+    "@graphql-codegen/cli": "2.11.8",
+    "@graphql-codegen/typescript": "2.7.3",
+    "@graphql-codegen/typescript-resolvers": "2.7.3",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
@@ -47,7 +52,9 @@
     "tsconfig-paths": "^4.0.0"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.16.1",
+    "@alkemio/client-lib": "^0.17.0",
+    "@graphql-codegen/typescript-graphql-request": "^4.5.3",
+    "@graphql-codegen/typescript-operations": "^2.5.3",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6",
     "rimraf": "^3.0.2",

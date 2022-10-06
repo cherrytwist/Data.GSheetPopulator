@@ -1,9 +1,9 @@
-import { AlkemioClient } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
 import { ActorPopulator } from './actor-populator';
-import { AspectPopulator } from './aspect-populator';
+import { CalloutPopulator } from './callout-populator';
 import { ContextPopulator } from './context-populator';
 import { GroupPopulator } from './group-populator';
 import { HubPopulator } from './hub-populator';
@@ -13,7 +13,7 @@ import { UserPopulator } from './user-populator';
 export class Populator extends AbstractPopulator {
   private allowCreation: boolean;
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger,
@@ -63,7 +63,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const aspectPopulator = new AspectPopulator(
+    const calloutPopulator = new CalloutPopulator(
       this.client,
       this.data,
       this.logger,
@@ -89,7 +89,7 @@ export class Populator extends AbstractPopulator {
     // populate the specific opportunity entities. Todo: get this so it can also be updated
     await actorPopulator.populate();
 
-    await aspectPopulator.populate();
+    await calloutPopulator.populate();
 
     await userPopulator.populateUserRoles();
   }

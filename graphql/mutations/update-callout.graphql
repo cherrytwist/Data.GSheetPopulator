@@ -1,0 +1,6 @@
+mutation updateCallout($calloutData: UpdateCalloutInput!) {
+  updateCallout(calloutData: $calloutData) {
+    id
+    nameID
+  }
+}

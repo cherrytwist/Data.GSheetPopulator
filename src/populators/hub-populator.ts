@@ -1,15 +1,15 @@
-import { AlkemioClient } from '@alkemio/client-lib';
 import { assignUserAsLead } from '../utils';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Hub } from '../models/hub';
 import { AbstractPopulator } from './abstract-populator';
+import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 
 export class HubPopulator extends AbstractPopulator {
   private allowCreation: boolean;
 
   constructor(
-    client: AlkemioClient,
+    client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
     profiler: Logger,
@@ -38,7 +38,9 @@ export class HubPopulator extends AbstractPopulator {
       const hubProfileID = '===> hubUpdate - FULL';
       this.profiler.profile(hubProfileID);
 
-      const hubExists = await this.client.hubExists(hubData.nameID);
+      const hubExists = await this.client.alkemioLibClient.hubExists(
+        hubData.nameID
+      );
 
       try {
         if (!hubExists) {
@@ -52,18 +54,21 @@ export class HubPopulator extends AbstractPopulator {
         }
         await this.updateHub(hubData);
 
-        await this.client.updateReferencesOnHub(hubData.nameID, [
-          {
-            name: 'website',
-            uri: hubData.refWebsite,
-            description: 'The hub website',
-          },
-          {
-            name: 'repo',
-            uri: hubData.refRepo,
-            description: 'The hub repository',
-          },
-        ]);
+        await this.client.alkemioLibClient.updateReferencesOnHub(
+          hubData.nameID,
+          [
+            {
+              name: 'website',
+              uri: hubData.refWebsite,
+              description: 'The hub website',
+            },
+            {
+              name: 'repo',
+              uri: hubData.refRepo,
+              description: 'The hub repository',
+            },
+          ]
+        );
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
@@ -82,7 +87,7 @@ export class HubPopulator extends AbstractPopulator {
   }
 
   async updateHub(hubData: Hub) {
-    const updatedHub = await this.client.updateHub({
+    const updatedHub = await this.client.alkemioLibClient.updateHub({
       ID: hubData.nameID,
       displayName: hubData.displayName,
       hostID: hubData.host,
@@ -97,7 +102,7 @@ export class HubPopulator extends AbstractPopulator {
     });
 
     const visuals = updatedHub?.context?.visuals || [];
-    await this.client.updateVisualsOnContext(
+    await this.client.alkemioLibClient.updateVisualsOnContext(
       visuals,
       hubData.visualBanner,
       hubData.visualBackground,
@@ -117,7 +122,7 @@ export class HubPopulator extends AbstractPopulator {
   }
 
   async createHub(hubData: Hub) {
-    await this.client.createHub({
+    await this.client.alkemioLibClient.createHub({
       nameID: hubData.nameID,
       displayName: hubData.displayName,
       hostID: hubData.host,
