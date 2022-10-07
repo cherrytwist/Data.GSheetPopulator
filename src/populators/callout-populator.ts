@@ -6,6 +6,7 @@ import {
   CalloutType,
   CalloutVisibility,
 } from '../generated/graphql';
+import { Card } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
 export class CalloutPopulator extends AbstractPopulator {
@@ -163,7 +164,7 @@ export class CalloutPopulator extends AbstractPopulator {
         );
 
         if (!existingCard) {
-          const createdAspect =
+          const createdCard =
             await this.client.alkemioLibClient.createAspectOnCallout(
               callout.id,
               cardData.type,
@@ -173,20 +174,16 @@ export class CalloutPopulator extends AbstractPopulator {
               cardData.tags
             );
 
-          const bannerNarrowVisualID = createdAspect?.bannerNarrow?.id || '';
-          if (bannerNarrowVisualID && bannerNarrowVisualID.length > 0)
-            await this.client.alkemioLibClient.updateVisual(
-              bannerNarrowVisualID,
-              cardData.bannerNarrowURI
-            );
+          await this.updateVisuals(cardData, createdCard);
 
           this.logger.info(`...added card: ${cardData.nameID}`);
         } else {
-          await this.client.updateCard(
+          const updatedCard = await this.client.updateCard(
             existingCard.id,
             cardData.description,
             cardData.displayName
           );
+          await this.updateVisuals(cardData, updatedCard);
           this.logger.info(`...updating card: ${cardData.nameID}`);
         }
       } catch (e: any) {
@@ -201,5 +198,21 @@ export class CalloutPopulator extends AbstractPopulator {
         this.profiler.profile(cardProfileID);
       }
     }
+  }
+
+  private async updateVisuals(cardData: Card, aspect: any) {
+    const bannerNarrowVisualID = aspect?.bannerNarrow?.id || '';
+    if (bannerNarrowVisualID && bannerNarrowVisualID.length > 0)
+      await this.client.alkemioLibClient.updateVisual(
+        bannerNarrowVisualID,
+        cardData.bannerNarrowURI
+      );
+
+    const bannerVisualID = aspect?.banner?.id || '';
+    if (bannerVisualID && bannerVisualID.length > 0)
+      await this.client.alkemioLibClient.updateVisual(
+        bannerVisualID,
+        cardData.bannerURI
+      );
   }
 }

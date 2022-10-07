@@ -3,5 +3,13 @@ mutation updateCard($cardData: UpdateAspectInput!) {
     id
     nameID
     displayName
+    banner {
+      id
+      uri
+    }
+    bannerNarrow {
+      id
+      uri
+    }
   }
 }
