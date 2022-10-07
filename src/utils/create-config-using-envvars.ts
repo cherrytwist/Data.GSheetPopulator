@@ -16,6 +16,7 @@ export const createConfigUsingEnvVars = (): AlkemioClientConfig => {
         password: process.env.AUTH_ADMIN_PASSWORD ?? 'test',
       },
       kratosPublicApiEndpoint:
+        process.env.AUTH_ORY_KRATOS_PUBLIC_BASE_URL ??
         'http://localhost:3000/identity/ory/kratos/public/',
     },
   };
