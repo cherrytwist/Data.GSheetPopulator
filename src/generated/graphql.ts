@@ -376,6 +376,7 @@ export enum AuthorizationPrivilege {
   CreateAspect = 'CREATE_ASPECT',
   CreateCallout = 'CREATE_CALLOUT',
   CreateCanvas = 'CREATE_CANVAS',
+  CreateChallenge = 'CREATE_CHALLENGE',
   CreateComment = 'CREATE_COMMENT',
   CreateHub = 'CREATE_HUB',
   CreateOrganization = 'CREATE_ORGANIZATION',
@@ -524,8 +525,6 @@ export type CanvasTemplate = {
 };
 
 export type Challenge = Searchable & {
-  /** The activity within this Challenge. */
-  activity?: Maybe<Array<Nvp>>;
   /** The Agent representing this Challenge. */
   agent?: Maybe<Agent>;
   /** The authorization rules for the entity */
@@ -545,6 +544,8 @@ export type Challenge = Searchable & {
   id: Scalars['UUID'];
   /** The lifeycle for the Challenge. */
   lifecycle?: Maybe<Lifecycle>;
+  /** Metrics about activity within this Challenge. */
+  metrics?: Maybe<Array<Nvp>>;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID'];
   /** The Opportunities for the challenge. */
@@ -935,11 +936,11 @@ export type CreateChallengeOnChallengeInput = {
   /** The display name for the entity. */
   displayName: Scalars['String'];
   /** The Innovation Flow template to use for the Challenge. */
-  innovationFlowTemplateID: Scalars['UUID'];
+  innovationFlowTemplateID?: InputMaybe<Scalars['UUID']>;
   /** Set lead Organizations for the Challenge. */
   leadOrganizations?: InputMaybe<Array<Scalars['UUID_NAMEID']>>;
   /** A readable identifier, unique within the containing scope. */
-  nameID: Scalars['NameID'];
+  nameID?: InputMaybe<Scalars['NameID']>;
   tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -949,11 +950,11 @@ export type CreateChallengeOnHubInput = {
   displayName: Scalars['String'];
   hubID: Scalars['UUID_NAMEID'];
   /** The Innovation Flow template to use for the Challenge. */
-  innovationFlowTemplateID: Scalars['UUID'];
+  innovationFlowTemplateID?: InputMaybe<Scalars['UUID']>;
   /** Set lead Organizations for the Challenge. */
   leadOrganizations?: InputMaybe<Array<Scalars['UUID_NAMEID']>>;
   /** A readable identifier, unique within the containing scope. */
-  nameID: Scalars['NameID'];
+  nameID?: InputMaybe<Scalars['NameID']>;
   tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -1011,9 +1012,9 @@ export type CreateOpportunityInput = {
   /** The display name for the entity. */
   displayName: Scalars['String'];
   /** The Innovation Flow template to use for the Opportunity. */
-  innovationFlowTemplateID: Scalars['UUID'];
+  innovationFlowTemplateID?: InputMaybe<Scalars['UUID']>;
   /** A readable identifier, unique within the containing scope. */
-  nameID: Scalars['NameID'];
+  nameID?: InputMaybe<Scalars['NameID']>;
   tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -1320,8 +1321,6 @@ export type Groupable = {
 };
 
 export type Hub = Searchable & {
-  /** The activity within this Hub. */
-  activity?: Maybe<Array<Nvp>>;
   /** The Agent representing this Hub. */
   agent?: Maybe<Agent>;
   /** A particular User Application within this Hub. */
@@ -1349,6 +1348,8 @@ export type Hub = Searchable & {
   /** The Hub host. */
   host?: Maybe<Organization>;
   id: Scalars['UUID'];
+  /** Metrics about activity within this Hub. */
+  metrics?: Maybe<Array<Nvp>>;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID'];
   /** All opportunities within the hub */
@@ -1378,6 +1379,7 @@ export type HubChallengeArgs = {
 };
 
 export type HubChallengesArgs = {
+  IDs?: InputMaybe<Array<Scalars['UUID']>>;
   limit?: InputMaybe<Scalars['Float']>;
   shuffle?: InputMaybe<Scalars['Boolean']>;
 };
@@ -1422,6 +1424,7 @@ export type HubFilterInput = {
 };
 
 export enum HubPreferenceType {
+  AllowMembersToCreateChallenges = 'ALLOW_MEMBERS_TO_CREATE_CHALLENGES',
   AuthorizationAnonymousReadAccess = 'AUTHORIZATION_ANONYMOUS_READ_ACCESS',
   MembershipApplicationsFromAnyone = 'MEMBERSHIP_APPLICATIONS_FROM_ANYONE',
   MembershipJoinHubFromAnyone = 'MEMBERSHIP_JOIN_HUB_FROM_ANYONE',
@@ -1488,7 +1491,7 @@ export type Message = {
 
 export type Metadata = {
   /** Metrics about the activity on the platform */
-  activity: Array<Nvp>;
+  metrics: Array<Nvp>;
   /** Collection of metadata about Alkemio services. */
   services: Array<ServiceMetadata>;
 };
@@ -2272,8 +2275,6 @@ export type Nvp = {
 };
 
 export type Opportunity = Searchable & {
-  /** The activity within this Opportunity. */
-  activity?: Maybe<Array<Nvp>>;
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
   /** The parent Challenge of the Opportunity */
@@ -2289,6 +2290,8 @@ export type Opportunity = Searchable & {
   id: Scalars['UUID'];
   /** The lifeycle for the Opportunity. */
   lifecycle?: Maybe<Lifecycle>;
+  /** Metrics about the activity within this Opportunity. */
+  metrics?: Maybe<Array<Nvp>>;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID'];
   /** The parent entity (challenge) ID. */
@@ -2319,8 +2322,6 @@ export type OpportunityTemplate = {
 
 export type Organization = Groupable &
   Searchable & {
-    /** The activity within this Organization. */
-    activity?: Maybe<Array<Nvp>>;
     /** The Agent representing this User. */
     agent?: Maybe<Agent>;
     /** The Authorization for this Organization. */
@@ -2340,6 +2341,8 @@ export type Organization = Groupable &
     legalEntityName?: Maybe<Scalars['String']>;
     /** All users that are members of this Organization. */
     members?: Maybe<Array<User>>;
+    /** Metrics about the activity within this Organization. */
+    metrics?: Maybe<Array<Nvp>>;
     /** A name identifier of the entity, unique within a given scope. */
     nameID: Scalars['NameID'];
     /** The preferences for this Organization */
@@ -2488,6 +2491,7 @@ export type PreferenceDefinition = {
 };
 
 export enum PreferenceType {
+  AllowMembersToCreateChallenges = 'ALLOW_MEMBERS_TO_CREATE_CHALLENGES',
   AuthorizationAnonymousReadAccess = 'AUTHORIZATION_ANONYMOUS_READ_ACCESS',
   AuthorizationOrganizationMatchDomain = 'AUTHORIZATION_ORGANIZATION_MATCH_DOMAIN',
   MembershipApplicationsFromAnyone = 'MEMBERSHIP_APPLICATIONS_FROM_ANYONE',
@@ -2632,6 +2636,7 @@ export type QueryHubArgs = {
 };
 
 export type QueryHubsArgs = {
+  IDs?: InputMaybe<Array<Scalars['UUID']>>;
   filter?: InputMaybe<HubFilterInput>;
 };
 
@@ -4704,11 +4709,6 @@ export type ChallengeResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Challenge'] = ResolversParentTypes['Challenge']
 > = {
-  activity?: Resolver<
-    Maybe<Array<ResolversTypes['NVP']>>,
-    ParentType,
-    ContextType
-  >;
   agent?: Resolver<Maybe<ResolversTypes['Agent']>, ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -4736,6 +4736,11 @@ export type ChallengeResolvers<
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   lifecycle?: Resolver<
     Maybe<ResolversTypes['Lifecycle']>,
+    ParentType,
+    ContextType
+  >;
+  metrics?: Resolver<
+    Maybe<Array<ResolversTypes['NVP']>>,
     ParentType,
     ContextType
   >;
@@ -5267,11 +5272,6 @@ export type HubResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Hub'] = ResolversParentTypes['Hub']
 > = {
-  activity?: Resolver<
-    Maybe<Array<ResolversTypes['NVP']>>,
-    ParentType,
-    ContextType
-  >;
   agent?: Resolver<Maybe<ResolversTypes['Agent']>, ParentType, ContextType>;
   application?: Resolver<
     ResolversTypes['Application'],
@@ -5332,6 +5332,11 @@ export type HubResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  metrics?: Resolver<
+    Maybe<Array<ResolversTypes['NVP']>>,
+    ParentType,
+    ContextType
+  >;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
   opportunities?: Resolver<
     Maybe<Array<ResolversTypes['Opportunity']>>,
@@ -5478,7 +5483,7 @@ export type MetadataResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Metadata'] = ResolversParentTypes['Metadata']
 > = {
-  activity?: Resolver<Array<ResolversTypes['NVP']>, ParentType, ContextType>;
+  metrics?: Resolver<Array<ResolversTypes['NVP']>, ParentType, ContextType>;
   services?: Resolver<
     Array<ResolversTypes['ServiceMetadata']>,
     ParentType,
@@ -6332,11 +6337,6 @@ export type OpportunityResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Opportunity'] = ResolversParentTypes['Opportunity']
 > = {
-  activity?: Resolver<
-    Maybe<Array<ResolversTypes['NVP']>>,
-    ParentType,
-    ContextType
-  >;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
     ParentType,
@@ -6362,6 +6362,11 @@ export type OpportunityResolvers<
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   lifecycle?: Resolver<
     Maybe<ResolversTypes['Lifecycle']>,
+    ParentType,
+    ContextType
+  >;
+  metrics?: Resolver<
+    Maybe<Array<ResolversTypes['NVP']>>,
     ParentType,
     ContextType
   >;
@@ -6408,11 +6413,6 @@ export type OrganizationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Organization'] = ResolversParentTypes['Organization']
 > = {
-  activity?: Resolver<
-    Maybe<Array<ResolversTypes['NVP']>>,
-    ParentType,
-    ContextType
-  >;
   agent?: Resolver<Maybe<ResolversTypes['Agent']>, ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -6445,6 +6445,11 @@ export type OrganizationResolvers<
   >;
   members?: Resolver<
     Maybe<Array<ResolversTypes['User']>>,
+    ParentType,
+    ContextType
+  >;
+  metrics?: Resolver<
+    Maybe<Array<ResolversTypes['NVP']>>,
     ParentType,
     ContextType
   >;
@@ -7586,7 +7591,13 @@ export type UpdateCardMutationVariables = Exact<{
 }>;
 
 export type UpdateCardMutation = {
-  updateAspect: { id: string; nameID: string; displayName: string };
+  updateAspect: {
+    id: string;
+    nameID: string;
+    displayName: string;
+    banner?: { id: string; uri: string } | undefined;
+    bannerNarrow?: { id: string; uri: string } | undefined;
+  };
 };
 
 export type ChallengeCalloutsQueryVariables = Exact<{
@@ -7695,6 +7706,14 @@ export const UpdateCardDocument = gql`
       id
       nameID
       displayName
+      banner {
+        id
+        uri
+      }
+      bannerNarrow {
+        id
+        uri
+      }
     }
   }
 `;
