@@ -80,11 +80,11 @@ export class Populator extends AbstractPopulator {
 
     // organizations first as they are needed for Hub + Challenges
     await organizationPopulator.populate();
-    //await hubPopulator.populate();
+    await hubPopulator.populate();
     await userPopulator.populate();
     await groupPopulator.populate();
 
-    //await contextPopulator.populate();
+    await contextPopulator.populate();
 
     // populate the specific opportunity entities. Todo: get this so it can also be updated
     await actorPopulator.populate();
