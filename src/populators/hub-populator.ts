@@ -4,6 +4,7 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Hub } from '../models/hub';
 import { AbstractPopulator } from './abstract-populator';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
+import { assignUserAsMember } from '../utils/assign-user-as-member';
 
 export class HubPopulator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -110,6 +111,12 @@ export class HubPopulator extends AbstractPopulator {
     );
 
     if (updatedHub?.community?.id) {
+      await assignUserAsMember(
+        this.client,
+        this.logger,
+        updatedHub.community.id,
+        hubData.leadUsers
+      );
       await assignUserAsLead(
         this.client,
         this.logger,

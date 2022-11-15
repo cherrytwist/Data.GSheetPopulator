@@ -12,7 +12,11 @@ import {
   UpdateAspectInput,
 } from '../generated/graphql';
 import { Logger } from 'winston';
-import { AlkemioClient, AlkemioClientConfig } from '@alkemio/client-lib';
+import {
+  AlkemioClient,
+  AlkemioClientConfig,
+  CreateAspectTemplateInput,
+} from '@alkemio/client-lib';
 
 export class AlkemioPopulatorClient {
   public config!: AlkemioClientConfig;
@@ -76,6 +80,14 @@ export class AlkemioPopulatorClient {
     type: CalloutType,
     state: CalloutState
   ) {
+    const cardTemplate: CreateAspectTemplateInput = {
+      defaultDescription: 'something',
+      type: 'test',
+      info: {
+        description: 'asdf',
+        title: 'test',
+      },
+    };
     const calloutData: CreateCalloutOnCollaborationInput = {
       collaborationID,
       type,
@@ -83,6 +95,7 @@ export class AlkemioPopulatorClient {
       displayName,
       nameID,
       description,
+      cardTemplate,
     };
     const { data } = await this.sdkClient.createCalloutOnCollaboration({
       data: calloutData,
@@ -124,7 +137,9 @@ export class AlkemioPopulatorClient {
   async updateCard(cardID: string, description: string, displayName: string) {
     const cardData: UpdateAspectInput = {
       ID: cardID,
-      description,
+      profileData: {
+        description,
+      },
       displayName,
     };
     const { data } = await this.sdkClient.updateCard({

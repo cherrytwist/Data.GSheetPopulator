@@ -108,6 +108,12 @@ export class OrganizationPopulator extends AbstractPopulator {
         profileID,
         organizationData.description
       );
+      if (!organizationData.avatar) {
+        this.logger.warn(
+          `No avatar supplied for organization: ${organizationData.nameID}`
+        );
+        return;
+      }
       await this.client.alkemioLibClient.updateVisual(
         visualID,
         organizationData.avatar
