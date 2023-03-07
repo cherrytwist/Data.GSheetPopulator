@@ -51,7 +51,7 @@ export class AlkemioPopulatorClient {
   async logUser() {
     const userResponse = await this.sdkClient.me();
     this.logger.info(
-      `Authenticated user: '${userResponse.data.me.displayName}'`
+      `Authenticated user: '${userResponse.data.me.profile.displayName}'`
     );
   }
 
@@ -93,7 +93,6 @@ export class AlkemioPopulatorClient {
       type,
       state,
       displayName,
-      nameID,
       description,
       cardTemplate,
     };
@@ -139,8 +138,8 @@ export class AlkemioPopulatorClient {
       ID: cardID,
       profileData: {
         description,
+        displayName,
       },
-      displayName,
     };
     const { data } = await this.sdkClient.updateCard({
       cardData: cardData,

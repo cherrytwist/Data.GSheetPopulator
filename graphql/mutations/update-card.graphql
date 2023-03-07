@@ -2,14 +2,13 @@ mutation updateCard($cardData: UpdateAspectInput!) {
   updateAspect(aspectData: $cardData) {
     id
     nameID
-    displayName
-    banner {
+    profile {
       id
-      uri
-    }
-    bannerNarrow {
-      id
-      uri
+      displayName
+      visual(type: BANNER) {
+        id
+        uri
+      }
     }
   }
 }

@@ -1,4 +1,9 @@
-import { CreateReferenceInput, CreateUserInput } from '@alkemio/client-lib';
+import {
+  CreateReferenceInput,
+  CreateUserInput,
+  UpdateProfileInput,
+} from '@alkemio/client-lib';
+import { UpdateProfileDirectInput } from '@alkemio/client-lib/dist/generated/graphql';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
@@ -141,39 +146,26 @@ export class UserPopulator extends AbstractPopulator {
 
     const userInputData: CreateUserInput = {
       nameID: userData.nameID,
-      displayName: userData.displayName,
       firstName: userData.firstName,
       lastName: userData.lastName,
       gender: userData.gender,
       email: userData.email,
       phone: userData.phone,
       profileData: {
+        displayName: userData.displayName,
+        tagline: userData.jobTitle,
         description: userData.bio,
         referencesData: references,
         location: {
           country: userData.country,
           city: userData.city,
         },
-        tagsetsData: [
-          {
-            name: Tagsets.SKILLS,
-            tags: userData.skills,
-          },
-          {
-            name: Tagsets.KEYWORDS,
-            tags: userData.keywords,
-          },
-          {
-            name: Tagsets.ORGANIZATION_ROLES,
-            tags: [userData.jobTitle],
-          },
-        ],
       },
     };
 
-    const createdUser = await this.client.alkemioLibClient.createUser(
-      userInputData
-    );
+    const createdUser = await this.client.sdkClient.createUser({
+      userData: userInputData,
+    });
 
     if (!createdUser) {
       this.logger.error(`Error creating user: ${userData.nameID}`);
@@ -181,14 +173,38 @@ export class UserPopulator extends AbstractPopulator {
     }
 
     this.profiler.profile('userCreation');
-    const userProfileID = createdUser.profile?.id || '';
+    const userProfile = createdUser.data.createUser.profile;
 
-    const visualID = createdUser.profile?.avatar?.id || '';
+    const visualID = userProfile.visual?.id || '';
     await this.client.alkemioLibClient.updateVisual(visualID, userData.avatar);
+    const skillsTagset = userProfile.tagsets?.find(
+      t => t.name === Tagsets.SKILLS
+    );
+    const keywordsTagset = userProfile.tagsets?.find(
+      t => t.name === Tagsets.KEYWORDS
+    );
 
-    this.logger.info(`... created user: ${createdUser.nameID}`);
+    // todo: update the tagsets data
+    const updateProfileInput: UpdateProfileDirectInput = {
+      profileID: userProfile.id,
+      tagsets: [
+        {
+          ID: skillsTagset?.id || '',
+          tags: userData.skills as string[],
+        },
+        {
+          ID: keywordsTagset?.id || '',
+          tags: userData.keywords as string[],
+        },
+      ],
+    };
+    await this.client.sdkClient.updateProfile({
+      profileData: updateProfileInput,
+    });
 
-    this.profiler.profile(userProfileID);
+    this.logger.info(`... created user: ${createdUser.data.createUser.nameID}`);
+
+    this.profiler.profile(userProfile.id);
   }
 
   async addUserToGroups(userID: string, groups: string[]) {
