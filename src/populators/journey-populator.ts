@@ -5,7 +5,7 @@ import { AbstractPopulator } from './abstract-populator';
 import { ChallengePopulator } from './challenge-populator';
 import { OpportunityPopulator } from './opportunity-populator';
 
-export class ContextPopulator extends AbstractPopulator {
+export class JourneyPopulator extends AbstractPopulator {
   private allowCreation: boolean;
   constructor(
     client: AlkemioPopulatorClient,

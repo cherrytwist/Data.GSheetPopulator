@@ -107,19 +107,21 @@ export class OpportunityPopulator extends AbstractPopulator {
     const createdOpportunity =
       await this.client.alkemioLibClient.createOpportunity({
         challengeID: challenge.id,
-        displayName: opportunityData.displayName,
         nameID: opportunityData.nameID,
-        context: {
-          background: opportunityData.background,
-          impact: opportunityData.impact,
-          who: opportunityData.who,
-          vision: opportunityData.vision,
+        profileData: {
+          displayName: opportunityData.displayName,
+          description: opportunityData.background,
           tagline: opportunityData.tagline,
-          references: this.getReferences(opportunityData),
+          referencesData: this.getReferences(opportunityData),
           location: {
             country: opportunityData.country,
             city: opportunityData.city,
           },
+        },
+        context: {
+          impact: opportunityData.impact,
+          who: opportunityData.who,
+          vision: opportunityData.vision,
         },
         tags: opportunityData.tags || [],
         innovationFlowTemplateID: innovationFlowTemplate.id,
@@ -136,8 +138,8 @@ export class OpportunityPopulator extends AbstractPopulator {
     }
     await this.populateCommunityRoles(createdOpportunity?.id, opportunityData);
 
-    const visuals = createdOpportunity?.context?.visuals || [];
-    await this.client.alkemioLibClient.updateVisualsOnContext(
+    const visuals = createdOpportunity?.profile?.visuals || [];
+    await this.client.updateVisualsOnJourneyProfile(
       visuals,
       opportunityData.visualBanner,
       opportunityData.visualBackground,
@@ -173,23 +175,30 @@ export class OpportunityPopulator extends AbstractPopulator {
     const updatedOpportunity =
       await this.client.alkemioLibClient.updateOpportunity({
         ID: existingOpportunity.id,
-        displayName: opportunityData.displayName,
-        context: {
-          background: opportunityData.background,
-          impact: opportunityData.impact,
-          who: opportunityData.who,
-          vision: opportunityData.vision,
+        profileData: {
+          displayName: opportunityData.displayName,
+          description: opportunityData.background,
           tagline: opportunityData.tagline,
           location: {
             country: opportunityData.country,
             city: opportunityData.city,
           },
+          tagsets: [
+            {
+              ID: existingOpportunity.profile.tagset.id,
+              tags: opportunityData.tags || [],
+            },
+          ],
         },
-        tags: opportunityData.tags || [],
+        context: {
+          impact: opportunityData.impact,
+          who: opportunityData.who,
+          vision: opportunityData.vision,
+        },
       });
 
-    const visuals = updatedOpportunity?.context?.visuals || [];
-    await this.client.alkemioLibClient.updateVisualsOnContext(
+    const visuals = updatedOpportunity?.profile.visuals || [];
+    await this.client.updateVisualsOnJourneyProfile(
       visuals,
       opportunityData.visualBanner,
       opportunityData.visualBackground,
@@ -222,7 +231,7 @@ export class OpportunityPopulator extends AbstractPopulator {
     const communityID = opportunity?.community?.id;
     if (!communityID) {
       throw new Error(
-        `Opportunity ${opportunity?.displayName} doesn't have a community with ID ${communityID}`
+        `Opportunity ${opportunity?.profile.displayName} doesn't have a community with ID ${communityID}`
       );
     }
 

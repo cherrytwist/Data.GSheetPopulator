@@ -83,27 +83,29 @@ export class ChallengePopulator extends AbstractPopulator {
       const createdChallenge =
         await this.client.alkemioLibClient.createChallenge({
           hubID: this.hubID,
-          displayName: challengeData.displayName,
           nameID: challengeData.nameID,
-          context: {
+          profileData: {
+            displayName: challengeData.displayName,
             tagline: challengeData.tagline,
-            background: challengeData.background,
-            vision: challengeData.vision,
-            impact: challengeData.impact,
-            who: challengeData.who,
+            description: challengeData.background,
             location: {
               country: challengeData.country,
               city: challengeData.city,
             },
-            references: this.getReferences(challengeData),
+            referencesData: this.getReferences(challengeData),
+          },
+          context: {
+            vision: challengeData.vision,
+            impact: challengeData.impact,
+            who: challengeData.who,
           },
           tags: challengeData.tags || [],
           innovationFlowTemplateID: innovationFlowTemplate.id,
         });
       this.logger.info(`....created: ${challengeData.displayName}`);
 
-      const visuals = createdChallenge?.context?.visuals || [];
-      await this.client.alkemioLibClient.updateVisualsOnContext(
+      const visuals = createdChallenge?.profile?.visuals || [];
+      await this.client.updateVisualsOnJourneyProfile(
         visuals,
         challengeData.visualBanner,
         challengeData.visualBackground,
@@ -142,7 +144,7 @@ export class ChallengePopulator extends AbstractPopulator {
     const communityID = challenge?.community?.id;
     if (!communityID) {
       throw new Error(
-        `Challenge ${challenge?.displayName} doesn't have a community with ID ${communityID}`
+        `Challenge ${challenge?.profile.displayName} doesn't have a community with ID ${communityID}`
       );
     }
 
@@ -195,22 +197,24 @@ export class ChallengePopulator extends AbstractPopulator {
       const updatedChallenge =
         await this.client.alkemioLibClient.updateChallenge({
           ID: challengeId,
-          displayName: challengeData.displayName,
-          context: {
+          profileData: {
+            displayName: challengeData.displayName,
             tagline: challengeData.tagline,
-            background: challengeData.background,
-            vision: challengeData.vision,
-            impact: challengeData.impact,
-            who: challengeData.who,
+            description: challengeData.background,
             location: {
               country: challengeData.country,
               city: challengeData.city,
             },
           },
+          context: {
+            vision: challengeData.vision,
+            impact: challengeData.impact,
+            who: challengeData.who,
+          },
           tags: challengeData.tags || [],
         });
-      const visuals = updatedChallenge?.context?.visuals || [];
-      await this.client.alkemioLibClient.updateVisualsOnContext(
+      const visuals = updatedChallenge?.profile?.visuals || [];
+      await this.client.updateVisualsOnJourneyProfile(
         visuals,
         challengeData.visualBanner,
         challengeData.visualBackground,

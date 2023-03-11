@@ -5,6 +5,7 @@ import { Hub } from '../models/hub';
 import { AbstractPopulator } from './abstract-populator';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { assignUserAsMember } from '../utils/assign-user-as-member';
+import { CreateHubInput, UpdateTagsetInput } from '@alkemio/client-lib';
 
 export class HubPopulator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -88,22 +89,35 @@ export class HubPopulator extends AbstractPopulator {
   }
 
   async updateHub(hubData: Hub) {
+    const hubProfileData = await this.client.sdkClient.hubProfile({
+      id: hubData.nameID,
+    });
+    const hubProfileTagset = hubProfileData.data.hub.profile.tagset;
+    const tagsetsData: UpdateTagsetInput[] = [];
+    if (hubProfileTagset) {
+      tagsetsData.push({
+        ID: hubProfileTagset.id,
+        tags: hubData.tags || [],
+      });
+    }
     const updatedHub = await this.client.alkemioLibClient.updateHub({
       ID: hubData.nameID,
-      displayName: hubData.displayName,
       hostID: hubData.host,
-      context: {
-        background: hubData.background,
-        impact: hubData.impact,
+      profileData: {
+        displayName: hubData.displayName,
+        description: hubData.background,
         tagline: hubData.tagline,
+        tagsets: tagsetsData,
+      },
+      context: {
+        impact: hubData.impact,
         vision: hubData.vision,
         who: hubData.who,
       },
-      tags: hubData.tags || [],
     });
 
-    const visuals = updatedHub?.context?.visuals || [];
-    await this.client.alkemioLibClient.updateVisualsOnContext(
+    const visuals = updatedHub?.profile?.visuals || [];
+    await this.client.updateVisualsOnJourneyProfile(
       visuals,
       hubData.visualBanner,
       hubData.visualBackground,
@@ -129,11 +143,14 @@ export class HubPopulator extends AbstractPopulator {
   }
 
   async createHub(hubData: Hub) {
-    await this.client.alkemioLibClient.createHub({
+    const input: CreateHubInput = {
       nameID: hubData.nameID,
-      displayName: hubData.displayName,
       hostID: hubData.host,
-    });
+      profileData: {
+        displayName: hubData.displayName,
+      },
+    };
+    await this.client.alkemioLibClient.createHub(input);
 
     this.logger.info(`Hub created: ${hubData.displayName}`);
   }
