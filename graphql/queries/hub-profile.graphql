@@ -1,0 +1,19 @@
+query hubProfile($id: UUID_NAMEID!) {
+  hub(ID: $id) {
+    id
+    nameID
+    profile {
+      displayName
+      tagset {
+        id
+        tags
+        name
+      }
+      visuals {
+        id
+        uri
+        name
+      }
+    }
+  }
+}

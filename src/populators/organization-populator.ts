@@ -74,7 +74,7 @@ export class OrganizationPopulator extends AbstractPopulator {
       );
 
     const profileID = newOrganization?.profile.id;
-    const visualID = newOrganization?.profile.avatar?.id || '';
+    const visualID = newOrganization?.profile.visual?.id || '';
 
     if (profileID) {
       await this.client.alkemioLibClient.createTagsetOnProfile(

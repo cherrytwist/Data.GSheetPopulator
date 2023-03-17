@@ -1,0 +1,16 @@
+mutation createUser($userData: CreateUserInput!) {
+  createUser(userData: $userData) {
+    nameID
+    id
+    profile {
+      id
+      visual(type: AVATAR) {
+        id
+      }
+      tagsets {
+        id
+        name
+      }
+    }
+  }
+}

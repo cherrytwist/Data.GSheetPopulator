@@ -1,6 +1,6 @@
 {
   "name": "@alkemio/populator",
-  "version": "0.10.0",
+  "version": "0.11.1",
   "author": "Alkemio Foundation",
   "private": false,
   "license": "EUPL-1.2",
@@ -52,9 +52,10 @@
     "tsconfig-paths": "^4.0.0"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.17.1",
+    "@alkemio/client-lib": "^0.18.3",
     "@graphql-codegen/typescript-graphql-request": "^4.5.3",
     "@graphql-codegen/typescript-operations": "^2.5.3",
+    "@types/graphql-upload": "^8.0.11",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6",
     "rimraf": "^3.0.2",

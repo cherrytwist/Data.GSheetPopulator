@@ -170,8 +170,7 @@ export class CalloutPopulator extends AbstractPopulator {
               cardData.type,
               cardData.displayName,
               cardData.nameID,
-              cardData.description,
-              cardData.tags
+              cardData.description
             );
 
           await this.updateVisuals(cardData, createdCard);

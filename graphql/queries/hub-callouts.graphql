@@ -2,7 +2,9 @@ query hubCallouts($id: UUID_NAMEID!) {
   hub(ID: $id) {
     id
     nameID
-    displayName
+    profile {
+      displayName
+    }
     collaboration {
       id
       callouts {

@@ -4,7 +4,7 @@ import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
 import { ActorPopulator } from './actor-populator';
 import { CalloutPopulator } from './callout-populator';
-import { ContextPopulator } from './context-populator';
+import { JourneyPopulator } from './journey-populator';
 import { GroupPopulator } from './group-populator';
 import { HubPopulator } from './hub-populator';
 import { OrganizationPopulator } from './organization-populator';
@@ -48,7 +48,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const contextPopulator = new ContextPopulator(
+    const contextPopulator = new JourneyPopulator(
       this.client,
       this.data,
       this.logger,

@@ -51,7 +51,7 @@ export class AlkemioPopulatorClient {
   async logUser() {
     const userResponse = await this.sdkClient.me();
     this.logger.info(
-      `Authenticated user: '${userResponse.data.me.displayName}'`
+      `Authenticated user: '${userResponse.data.me.profile.displayName}'`
     );
   }
 
@@ -93,7 +93,6 @@ export class AlkemioPopulatorClient {
       type,
       state,
       displayName,
-      nameID,
       description,
       cardTemplate,
     };
@@ -139,12 +138,36 @@ export class AlkemioPopulatorClient {
       ID: cardID,
       profileData: {
         description,
+        displayName,
       },
-      displayName,
     };
     const { data } = await this.sdkClient.updateCard({
       cardData: cardData,
     });
     return data.updateAspect;
+  }
+
+  private async updateVisualByName(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    visuals: any[],
+    visualName: string,
+    uri: string
+  ) {
+    const visual = visuals.find(v => v.name === visualName);
+    if (visual) {
+      return await this.alkemioLibClient.updateVisual(visual.id, uri);
+    }
+  }
+
+  async updateVisualsOnJourneyProfile(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    visuals: any[],
+    banner: string,
+    background: string,
+    avatar: string
+  ) {
+    await this.updateVisualByName(visuals, 'banner', banner);
+    await this.updateVisualByName(visuals, 'bannerNarrow', background);
+    await this.updateVisualByName(visuals, 'avatar', avatar);
   }
 }

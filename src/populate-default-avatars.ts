@@ -18,8 +18,8 @@ const main = async () => {
   logger.info(`Users count: ${users?.length}`);
   if (users) {
     for (const user of users) {
-      const avatar = user.profile?.avatar?.uri;
-      logger.info(`user (${user.displayName}) has avatar: ${avatar}`);
+      const avatar = user.profile.visual?.uri;
+      logger.info(`user (${user.profile.displayName}) has avatar: ${avatar}`);
       if (!avatar || avatar.length == 0) {
         const profileID = user.profile?.id;
         if (profileID) {
