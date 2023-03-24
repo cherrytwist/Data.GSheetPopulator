@@ -1,0 +1,23 @@
+query userDetails($userID: UUID_NAMEID_EMAIL!) {
+  user(ID: $userID) {
+    id
+    nameID
+    firstName
+    lastName
+    email
+    profile {
+      id
+      displayName
+      visual(type: AVATAR) {
+        id
+        uri
+      }
+      description
+      tagsets {
+        id
+        name
+        tags
+      }
+    }
+  }
+}
