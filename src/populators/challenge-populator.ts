@@ -1,4 +1,9 @@
-import { Organization, LifecycleType } from '@alkemio/client-lib';
+import {
+  Organization,
+  LifecycleType,
+  UpdateChallengeInput,
+  UpdateTagsetInput,
+} from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { Challenge } from '../models';
@@ -49,17 +54,16 @@ export class ChallengePopulator extends AbstractPopulator {
       const challengeProfileID = '===> challengeCreation - FULL';
       this.profiler.profile(challengeProfileID);
 
-      const existingChallenge =
-        await this.client.alkemioLibClient.challengeByNameID(
-          this.hubID,
-          challengeData.nameID
-        );
+      const existingChallenge = await this.client.challengeByNameID(
+        this.hubID,
+        challengeData.nameID
+      );
 
       if (existingChallenge) {
         this.logger.info(
           `Challenge ${challengeData.displayName} already exists! Updating`
         );
-        await this.updateChallengeContext(existingChallenge.id, challengeData);
+        await this.updateChallengeContext(existingChallenge, challengeData);
       } else {
         await this.createChallenge(challengeData);
       }
@@ -119,6 +123,7 @@ export class ChallengePopulator extends AbstractPopulator {
       }
 
       for (const user of challengeData.memberUsers) {
+        this.logger.info(`...adding user to Challenge: ${user}`);
         await this.addUserToChallenge(user, challengeData.nameID);
       }
       await this.populateCommunityRoles(createdChallenge?.id, challengeData);
@@ -192,27 +197,36 @@ export class ChallengePopulator extends AbstractPopulator {
   }
 
   // Load users from a particular googlesheet
-  async updateChallengeContext(challengeId: string, challengeData: Challenge) {
+  async updateChallengeContext(challenge: any, challengeData: Challenge) {
     try {
-      const updatedChallenge =
-        await this.client.alkemioLibClient.updateChallenge({
-          ID: challengeId,
-          profileData: {
-            displayName: challengeData.displayName,
-            tagline: challengeData.tagline,
-            description: challengeData.background,
-            location: {
-              country: challengeData.country,
-              city: challengeData.city,
-            },
-          },
-          context: {
-            vision: challengeData.vision,
-            impact: challengeData.impact,
-            who: challengeData.who,
-          },
+      const tagsetUpdateInput: UpdateTagsetInput[] = [
+        {
+          ID: challenge.profile.tagset.id,
           tags: challengeData.tags || [],
-        });
+        },
+      ];
+      const updateChallengeInput: UpdateChallengeInput = {
+        ID: challenge.id,
+        profileData: {
+          displayName: challengeData.displayName,
+          tagline: challengeData.tagline,
+          description: challengeData.background,
+          location: {
+            country: challengeData.country,
+            city: challengeData.city,
+          },
+          tagsets: tagsetUpdateInput,
+        },
+        context: {
+          vision: challengeData.vision,
+          impact: challengeData.impact,
+          who: challengeData.who,
+        },
+      };
+      const updatedChallenge =
+        await this.client.alkemioLibClient.updateChallenge(
+          updateChallengeInput
+        );
       const visuals = updatedChallenge?.profile?.visuals || [];
       await this.client.updateVisualsOnJourneyProfile(
         visuals,
@@ -222,9 +236,10 @@ export class ChallengePopulator extends AbstractPopulator {
       );
 
       for (const user of challengeData.memberUsers) {
+        this.logger.info(`...adding user to Challenge: ${user}`);
         await this.addUserToChallenge(user, challengeData.nameID);
       }
-      await this.populateCommunityRoles(challengeId, challengeData);
+      await this.populateCommunityRoles(challenge.id, challengeData);
 
       this.logger.info(`....updated: ${challengeData.displayName}`);
     } catch (e: any) {

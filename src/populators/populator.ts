@@ -48,7 +48,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const contextPopulator = new JourneyPopulator(
+    const journeyPopulator = new JourneyPopulator(
       this.client,
       this.data,
       this.logger,
@@ -84,7 +84,7 @@ export class Populator extends AbstractPopulator {
     await userPopulator.populate();
     await groupPopulator.populate();
 
-    await contextPopulator.populate();
+    await journeyPopulator.populate();
 
     // populate the specific opportunity entities. Todo: get this so it can also be updated
     await actorPopulator.populate();

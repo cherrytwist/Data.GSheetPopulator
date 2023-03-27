@@ -37,9 +37,7 @@ export class UserPopulator extends AbstractPopulator {
       const userProfileID = '===> userCreation - FULL';
       this.profiler.profile(userProfileID);
 
-      const existingUser = await this.client.alkemioLibClient.user(
-        userData.nameID
-      );
+      const existingUser = await this.client.user(userData.nameID);
       if (existingUser) {
         if (existingUser?.profile?.id) {
           this.logger.info(
@@ -92,9 +90,7 @@ export class UserPopulator extends AbstractPopulator {
       // start processing
       this.logger.info(`[${count}] - Processing user: ${userData.nameID} ...`);
 
-      const existingUser = await this.client.alkemioLibClient.user(
-        userData.nameID
-      );
+      const existingUser = await this.client.user(userData.nameID);
       if (!existingUser) {
         this.logger.warn(
           `User not found to populate roles: ${userData.nameID}`
@@ -178,22 +174,28 @@ export class UserPopulator extends AbstractPopulator {
     const visualID = userProfile.visual?.id || '';
     await this.client.alkemioLibClient.updateVisual(visualID, userData.avatar);
     const skillsTagset = userProfile.tagsets?.find(
-      t => t.name === Tagsets.SKILLS
+      t => t.name === Tagsets.SKILLS.toLowerCase()
     );
     const keywordsTagset = userProfile.tagsets?.find(
-      t => t.name === Tagsets.KEYWORDS
+      t => t.name === Tagsets.KEYWORDS.toLowerCase()
     );
+    if (!skillsTagset || !keywordsTagset) {
+      this.logger.warn(
+        `Unable to find tagsets on user: ${JSON.stringify(userProfile)}`
+      );
+      return false;
+    }
 
-    // todo: update the tagsets data
+    // Update the tagsets data
     const updateProfileInput: UpdateProfileDirectInput = {
       profileID: userProfile.id,
       tagsets: [
         {
-          ID: skillsTagset?.id || '',
+          ID: skillsTagset?.id,
           tags: userData.skills as string[],
         },
         {
-          ID: keywordsTagset?.id || '',
+          ID: keywordsTagset?.id,
           tags: userData.keywords as string[],
         },
       ],

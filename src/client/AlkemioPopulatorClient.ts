@@ -83,17 +83,20 @@ export class AlkemioPopulatorClient {
     const cardTemplate: CreateAspectTemplateInput = {
       defaultDescription: 'something',
       type: 'test',
-      info: {
+      profile: {
         description: 'asdf',
-        title: 'test',
+        displayName: 'test',
       },
     };
     const calloutData: CreateCalloutOnCollaborationInput = {
+      nameID,
       collaborationID,
       type,
       state,
-      displayName,
-      description,
+      profile: {
+        displayName,
+        description,
+      },
       cardTemplate,
     };
     const { data } = await this.sdkClient.createCalloutOnCollaboration({
@@ -124,8 +127,10 @@ export class AlkemioPopulatorClient {
   ) {
     const calloutData: UpdateCalloutInput = {
       ID: calloutID,
-      description,
-      displayName,
+      profileData: {
+        description,
+        displayName,
+      },
     };
     const { data } = await this.sdkClient.updateCallout({
       calloutData: calloutData,
@@ -169,5 +174,32 @@ export class AlkemioPopulatorClient {
     await this.updateVisualByName(visuals, 'banner', banner);
     await this.updateVisualByName(visuals, 'bannerNarrow', background);
     await this.updateVisualByName(visuals, 'avatar', avatar);
+  }
+
+  async user(userID: string) {
+    try {
+      const response = await this.sdkClient.userDetails({
+        userID: userID,
+      });
+
+      if (!response) return;
+      return response.data?.user;
+    } catch (error) {
+      return;
+    }
+  }
+
+  async challengeByNameID(hubNameID: string, challengeNameID: string) {
+    try {
+      const response = await this.sdkClient.challengeDetails({
+        hubID: hubNameID,
+        challengeID: challengeNameID,
+      });
+
+      if (!response) return;
+      return response.data?.hub.challenge;
+    } catch (error) {
+      return;
+    }
   }
 }
