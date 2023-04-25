@@ -15,7 +15,7 @@ import { Logger } from 'winston';
 import {
   AlkemioClient,
   AlkemioClientConfig,
-  CreateAspectTemplateInput,
+  CreatePostTemplateInput,
 } from '@alkemio/client-lib';
 
 export class AlkemioPopulatorClient {
@@ -80,7 +80,7 @@ export class AlkemioPopulatorClient {
     type: CalloutType,
     state: CalloutState
   ) {
-    const cardTemplate: CreateAspectTemplateInput = {
+    const postTemplate: CreatePostTemplateInput = {
       defaultDescription: 'something',
       type: 'test',
       profile: {
@@ -97,7 +97,7 @@ export class AlkemioPopulatorClient {
         displayName,
         description,
       },
-      cardTemplate,
+      postTemplate,
     };
     const { data } = await this.sdkClient.createCalloutOnCollaboration({
       data: calloutData,
