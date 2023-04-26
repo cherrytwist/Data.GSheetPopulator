@@ -1,6 +1,6 @@
 import {
   Organization,
-  LifecycleType,
+  InnovationFlowType,
   UpdateChallengeInput,
   UpdateTagsetInput,
 } from '@alkemio/client-lib';
@@ -75,8 +75,8 @@ export class ChallengePopulator extends AbstractPopulator {
     try {
       const hubInfo = await this.client.alkemioLibClient.hubInfo(this.hubID);
       const innovationFlowTemplate =
-        hubInfo?.templates?.lifecycleTemplates?.filter(
-          x => x.type === LifecycleType.Challenge
+        hubInfo?.templates?.innovationFlowTemplates?.filter(
+          x => x.type === InnovationFlowType.Challenge
         )[0];
 
       if (!innovationFlowTemplate)

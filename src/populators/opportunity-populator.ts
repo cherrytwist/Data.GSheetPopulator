@@ -9,7 +9,7 @@ import {
   assignUserAsLead,
   contributorsToAdd,
 } from '../utils';
-import { LifecycleType } from '@alkemio/client-lib';
+import { InnovationFlowType } from '@alkemio/client-lib';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 
 export class OpportunityPopulator extends AbstractPopulator {
@@ -95,8 +95,8 @@ export class OpportunityPopulator extends AbstractPopulator {
     }
     const hubInfo = await this.client.alkemioLibClient.hubInfo(this.hubID);
     const innovationFlowTemplate =
-      hubInfo?.templates?.lifecycleTemplates?.filter(
-        x => x.type === LifecycleType.Opportunity
+      hubInfo?.templates?.innovationFlowTemplates?.filter(
+        x => x.type === InnovationFlowType.Opportunity
       )[0];
 
     if (!innovationFlowTemplate)
