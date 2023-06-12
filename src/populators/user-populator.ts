@@ -54,7 +54,7 @@ export class UserPopulator extends AbstractPopulator {
         this.logger.info(`[${count}] User does not exist: ${userData.nameID}`);
         try {
           await this.createUser(userData);
-          await this.client.alkemioLibClient.addUserToHub(
+          await this.client.alkemioLibClient.addUserToSpace(
             this.hubID,
             userData.nameID
           );

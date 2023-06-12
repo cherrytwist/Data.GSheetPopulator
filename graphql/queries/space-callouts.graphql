@@ -1,4 +1,4 @@
-query hubCallouts($id: UUID_NAMEID!) {
+query spaceCallouts($id: UUID_NAMEID!) {
   hub(ID: $id) {
     id
     nameID
@@ -11,7 +11,7 @@ query hubCallouts($id: UUID_NAMEID!) {
         nameID
         id
         type
-        aspects {
+        posts {
           id
           nameID
         }

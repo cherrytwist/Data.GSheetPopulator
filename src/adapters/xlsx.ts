@@ -3,9 +3,9 @@ import {
   Actor,
   ActorGroup,
   Callout,
-  Card,
+  Post,
   Challenge,
-  Hub,
+  Space,
   Group,
   Opportunity,
   Organization,
@@ -17,7 +17,7 @@ import {
   ActorsSheet,
   CardSheet,
   ChallengesSheet,
-  HubSheet,
+  SpaceSheet,
   GroupsSheet,
   OpportunitiesSheet,
   OrganizationsSheet,
@@ -78,7 +78,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   }
 
-  cards(): Card[] {
+  posts(): Post[] {
     const sheet = this.workbook.Sheets[Sheets.Cards];
     const result = XLSX.utils.sheet_to_json(sheet) as CardSheet[];
     return result.map(x => ({
@@ -189,9 +189,9 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   };
 
-  public hubs(): Hub[] {
-    const sheet = this.workbook.Sheets[Sheets.Hub];
-    const result = XLSX.utils.sheet_to_json(sheet) as HubSheet[];
+  public hubs(): Space[] {
+    const sheet = this.workbook.Sheets[Sheets.Space];
+    const result = XLSX.utils.sheet_to_json(sheet) as SpaceSheet[];
 
     return result.map(hub => ({
       displayName: hub.DISPLAY_NAME,

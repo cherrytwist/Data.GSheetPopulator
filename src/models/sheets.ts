@@ -3,7 +3,7 @@ export enum Sheets {
   ActorGroups = 'ActorGroups',
   Callouts = 'Callouts',
   Cards = 'Cards',
-  Hub = 'Hub',
+  Space = 'Space',
   Information = 'Information',
   Challenges = 'Challenges',
   Opportunities = 'Opportunities',
@@ -13,7 +13,7 @@ export enum Sheets {
   Relations = 'Relations',
 }
 
-export interface HubSheet {
+export interface SpaceSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
   ANONYMOUS_READ_ACCESS: string;
@@ -118,7 +118,7 @@ export interface UserSheet {
   KEYWORDS: string;
   LINKEDIN: string;
   TWITTER: string;
-  // Hub membership
+  // Space membership
   GROUPS: string;
 }
 

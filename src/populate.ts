@@ -7,7 +7,7 @@ import { createConfigUsingEnvVars } from './utils/create-config-using-envvars';
 
 const main = async () => {
   dotenv.config();
-  const allowHubCreation = process.env.ALLOW_HUB_CREATION === 'true';
+  const allowSpaceCreation = process.env.ALLOW_HUB_CREATION === 'true';
   const logger = createLogger();
   const profiler = createProfiler();
   const config = createConfigUsingEnvVars();
@@ -29,13 +29,13 @@ const main = async () => {
     data,
     logger,
     profiler,
-    allowHubCreation
+    allowSpaceCreation
   );
-  const hubID = populator.getHubID();
-  const exists = await alkemioPopulatorClient.alkemioLibClient.hubExists(hubID);
-  if (!exists && !allowHubCreation) {
+  const hubID = populator.getSpaceID();
+  const exists = await alkemioPopulatorClient.alkemioLibClient.spaceExists(hubID);
+  if (!exists && !allowSpaceCreation) {
     logger.error(
-      `Hub does not exist: '${hubID}', please ensure it is created.`
+      `Space does not exist: '${hubID}', please ensure it is created.`
     );
     return;
   }

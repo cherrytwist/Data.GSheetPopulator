@@ -2,9 +2,9 @@ import {
   Actor,
   ActorGroup,
   Callout,
-  Card,
+  Post,
   Challenge,
-  Hub,
+  Space,
   Group,
   Opportunity,
   Organization,
@@ -15,9 +15,9 @@ import {
 export abstract class AbstractDataAdapter {
   abstract actors(): Actor[];
   abstract actorGroups(): ActorGroup[];
-  abstract cards(): Card[];
+  abstract posts(): Post[];
   abstract callouts(): Callout[];
-  abstract hubs(): Hub[];
+  abstract hubs(): Space[];
   abstract challenges(): Challenge[];
   abstract users(): User[];
   abstract opportunities(): Opportunity[];

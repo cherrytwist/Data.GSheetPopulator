@@ -1,4 +1,4 @@
-export type Hub = {
+export type Space = {
   nameID: string;
   displayName: string;
   anonymousReadAccess: boolean;

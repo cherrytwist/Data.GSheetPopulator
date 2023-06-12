@@ -33,7 +33,7 @@ export class GroupPopulator extends AbstractPopulator {
       this.profiler.profile(groupProfileID);
 
       try {
-        await this.client.alkemioLibClient.createUserGroupOnHub(
+        await this.client.alkemioLibClient.createUserGroupOnSpace(
           this.hubID,
           group.name,
           group.description

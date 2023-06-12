@@ -6,7 +6,7 @@ import {
   CalloutType,
   CalloutVisibility,
 } from '../generated/graphql';
-import { Card } from '../models';
+import { Post } from '../models';
 import { AbstractPopulator } from './abstract-populator';
 
 export class CalloutPopulator extends AbstractPopulator {
@@ -110,7 +110,7 @@ export class CalloutPopulator extends AbstractPopulator {
 
     const hub = await this.client.hubCallouts(this.hubID);
     if (!hub || !hub.collaboration) {
-      const errorMsg = `Skipping callout '${calloutNameID}'. Unable to get collaboration for Hub`;
+      const errorMsg = `Skipping callout '${calloutNameID}'. Unable to get collaboration for Space`;
       throw new Error(errorMsg);
     }
 
@@ -118,100 +118,100 @@ export class CalloutPopulator extends AbstractPopulator {
   }
 
   private async processCards() {
-    this.logger.info('Processing cards');
+    this.logger.info('Processing posts');
 
-    const cards = this.data.cards();
+    const posts = this.data.posts();
 
-    if (cards.length === 0) {
-      this.logger.warn('No cards to import!');
+    if (posts.length === 0) {
+      this.logger.warn('No posts to import!');
       return;
     }
 
-    for (const cardData of cards) {
-      if (!cardData.nameID) {
+    for (const postData of posts) {
+      if (!postData.nameID) {
         // End of valid organizations
         break;
       }
 
       // start processing
-      this.logger.info(`Processing card: ${cardData.nameID}....`);
-      const cardProfileID = '===> cardreation - FULL';
-      this.profiler.profile(cardProfileID);
+      this.logger.info(`Processing post: ${postData.nameID}....`);
+      const postProfileID = '===> postreation - FULL';
+      this.profiler.profile(postProfileID);
 
       try {
         const collaboration = await this.getCollaborationForCallout(
-          cardData.callout,
-          cardData.challenge
+          postData.callout,
+          postData.challenge
         );
         const callout = collaboration.callouts?.find(
-          c => c.nameID === cardData.callout
+          c => c.nameID === postData.callout
         );
         if (!callout) {
-          if (cardData.challenge) {
+          if (postData.challenge) {
             this.logger.error(
-              `Unable to find callout with nameID: ${cardData.callout} in challenge: ${cardData.challenge}`
+              `Unable to find callout with nameID: ${postData.callout} in challenge: ${postData.challenge}`
             );
           } else {
             this.logger.error(
-              `Unable to find callout with nameID: ${cardData.callout} in hub`
+              `Unable to find callout with nameID: ${postData.callout} in hub`
             );
           }
           continue;
         }
 
-        const existingCard = callout.aspects?.find(
-          c => c.nameID === cardData.nameID
+        const existingCard = callout.posts?.find(
+          c => c.nameID === postData.nameID
         );
 
         if (!existingCard) {
           const createdCard =
-            await this.client.alkemioLibClient.createAspectOnCallout(
+            await this.client.alkemioLibClient.createPostOnCallout(
               callout.id,
-              cardData.type,
-              cardData.displayName,
-              cardData.nameID,
-              cardData.description
+              postData.type,
+              postData.displayName,
+              postData.nameID,
+              postData.description
             );
 
-          await this.updateVisuals(cardData, createdCard);
+          await this.updateVisuals(postData, createdCard);
 
-          this.logger.info(`...added card: ${cardData.nameID}`);
+          this.logger.info(`...added post: ${postData.nameID}`);
         } else {
           const updatedCard = await this.client.updateCard(
             existingCard.id,
-            cardData.description,
-            cardData.displayName
+            postData.description,
+            postData.displayName
           );
-          await this.updateVisuals(cardData, updatedCard);
-          this.logger.info(`...updating card: ${cardData.nameID}`);
+          await this.updateVisuals(postData, updatedCard);
+          this.logger.info(`...updating post: ${postData.nameID}`);
         }
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create aspect (${cardData.nameID}): ${e.response.errors[0].message}`
+            `Unable to create aspect (${postData.nameID}): ${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(`Could not create aspect: ${e}`);
         }
       } finally {
-        this.profiler.profile(cardProfileID);
+        this.profiler.profile(postProfileID);
       }
     }
   }
 
-  private async updateVisuals(cardData: Card, aspect: any) {
+  private async updateVisuals(postData: Post, aspect: any) {
     const bannerNarrowVisualID = aspect?.bannerNarrow?.id || '';
     if (bannerNarrowVisualID && bannerNarrowVisualID.length > 0)
       await this.client.alkemioLibClient.updateVisual(
         bannerNarrowVisualID,
-        cardData.bannerNarrowURI
+        postData.bannerNarrowURI
       );
 
     const bannerVisualID = aspect?.banner?.id || '';
     if (bannerVisualID && bannerVisualID.length > 0)
       await this.client.alkemioLibClient.updateVisual(
         bannerVisualID,
-        cardData.bannerURI
+        postData.bannerURI
       );
   }
 }

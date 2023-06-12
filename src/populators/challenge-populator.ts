@@ -73,9 +73,9 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async createChallenge(challengeData: Challenge) {
     try {
-      const hubInfo = await this.client.alkemioLibClient.hubInfo(this.hubID);
+      const spaceInfo = await this.client.alkemioLibClient.spaceInfo(this.hubID);
       const innovationFlowTemplate =
-        hubInfo?.templates?.innovationFlowTemplates?.filter(
+        spaceInfo?.templates?.innovationFlowTemplates?.filter(
           x => x.type === InnovationFlowType.Challenge
         )[0];
 

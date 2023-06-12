@@ -1,4 +1,4 @@
-query hubProfile($id: UUID_NAMEID!) {
+query spaceProfile($id: UUID_NAMEID!) {
   hub(ID: $id) {
     id
     nameID

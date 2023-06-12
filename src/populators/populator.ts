@@ -6,7 +6,7 @@ import { ActorPopulator } from './actor-populator';
 import { CalloutPopulator } from './callout-populator';
 import { JourneyPopulator } from './journey-populator';
 import { GroupPopulator } from './group-populator';
-import { HubPopulator } from './hub-populator';
+import { SpacePopulator } from './space-populator';
 import { OrganizationPopulator } from './organization-populator';
 import { UserPopulator } from './user-populator';
 
@@ -25,7 +25,7 @@ export class Populator extends AbstractPopulator {
 
   async populate() {
     if (!this.data) throw new Error('No data to populate');
-    this.hubID = this.getHubID();
+    this.hubID = this.getSpaceID();
 
     const organizationPopulator = new OrganizationPopulator(
       this.client,
@@ -70,7 +70,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const hubPopulator = new HubPopulator(
+    const hubPopulator = new SpacePopulator(
       this.client,
       this.data,
       this.logger,
@@ -78,7 +78,7 @@ export class Populator extends AbstractPopulator {
       this.allowCreation
     );
 
-    // organizations first as they are needed for Hub + Challenges
+    // organizations first as they are needed for Space + Challenges
     await organizationPopulator.populate();
     await hubPopulator.populate();
     await userPopulator.populate();
