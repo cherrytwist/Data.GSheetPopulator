@@ -1,9 +1,9 @@
 import {
   Actor,
   ActorGroup,
-  Card,
+  Post,
   Challenge,
-  Hub,
+  Space,
   Group,
   Opportunity,
   Organization,
@@ -17,7 +17,7 @@ export class BaseDataAdapter extends AbstractDataAdapter {
   callouts(): Callout[] {
     return [];
   }
-  cards(): Card[] {
+  posts(): Post[] {
     return [];
   }
   relations(): Relation[] {
@@ -29,7 +29,7 @@ export class BaseDataAdapter extends AbstractDataAdapter {
   actorGroups(): ActorGroup[] {
     return [];
   }
-  hubs(): Hub[] {
+  hubs(): Space[] {
     return [];
   }
   challenges(): Challenge[] {

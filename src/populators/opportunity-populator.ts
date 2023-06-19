@@ -93,9 +93,9 @@ export class OpportunityPopulator extends AbstractPopulator {
       );
       return;
     }
-    const hubInfo = await this.client.alkemioLibClient.hubInfo(this.hubID);
+    const spaceInfo = await this.client.alkemioLibClient.spaceInfo(this.hubID);
     const innovationFlowTemplate =
-      hubInfo?.templates?.innovationFlowTemplates?.filter(
+      spaceInfo?.templates?.innovationFlowTemplates?.filter(
         x => x.type === InnovationFlowType.Opportunity
       )[0];
 

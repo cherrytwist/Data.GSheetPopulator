@@ -1,13 +1,13 @@
 import { assignUserAsLead } from '../utils';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Hub } from '../models/hub';
+import { Space } from '../models/hub';
 import { AbstractPopulator } from './abstract-populator';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { assignUserAsMember } from '../utils/assign-user-as-member';
 import { CreateHubInput, UpdateTagsetInput } from '@alkemio/client-lib';
 
-export class HubPopulator extends AbstractPopulator {
+export class SpacePopulator extends AbstractPopulator {
   private allowCreation: boolean;
 
   constructor(
@@ -25,7 +25,7 @@ export class HubPopulator extends AbstractPopulator {
   async populate() {
     const hubs = this.data.hubs();
     if (hubs.length === 0) {
-      this.logger.warn('No Hubs to import!');
+      this.logger.warn('No Spaces to import!');
       return;
     }
 
@@ -40,23 +40,23 @@ export class HubPopulator extends AbstractPopulator {
       const hubProfileID = '===> hubUpdate - FULL';
       this.profiler.profile(hubProfileID);
 
-      const hubExists = await this.client.alkemioLibClient.hubExists(
+      const spaceExists = await this.client.alkemioLibClient.spaceExists(
         hubData.nameID
       );
 
       try {
-        if (!hubExists) {
+        if (!spaceExists) {
           if (this.allowCreation) {
-            await this.createHub(hubData);
+            await this.createSpace(hubData);
           } else {
-            const msg = `Specified Hub does not exist: ${hubData.nameID}`;
+            const msg = `Specified Space does not exist: ${hubData.nameID}`;
             this.logger.error(msg);
             throw new Error(msg);
           }
         }
-        await this.updateHub(hubData);
+        await this.updateSpace(hubData);
 
-        await this.client.alkemioLibClient.updateReferencesOnHub(
+        await this.client.alkemioLibClient.updateReferencesOnSpace(
           hubData.nameID,
           [
             {
@@ -88,7 +88,7 @@ export class HubPopulator extends AbstractPopulator {
     }
   }
 
-  async updateHub(hubData: Hub) {
+  async updateSpace(hubData: Space) {
     const hubProfileData = await this.client.sdkClient.hubProfile({
       id: hubData.nameID,
     });
@@ -100,7 +100,7 @@ export class HubPopulator extends AbstractPopulator {
         tags: hubData.tags || [],
       });
     }
-    const updatedHub = await this.client.alkemioLibClient.updateHub({
+    const updatedSpace = await this.client.alkemioLibClient.updateSpace({
       ID: hubData.nameID,
       hostID: hubData.host,
       profileData: {
@@ -116,7 +116,7 @@ export class HubPopulator extends AbstractPopulator {
       },
     });
 
-    const visuals = updatedHub?.profile?.visuals || [];
+    const visuals = updatedSpace?.profile?.visuals || [];
     await this.client.updateVisualsOnJourneyProfile(
       visuals,
       hubData.visualBanner,
@@ -124,25 +124,25 @@ export class HubPopulator extends AbstractPopulator {
       hubData.visualAvatar
     );
 
-    if (updatedHub?.community?.id) {
+    if (updatedSpace?.community?.id) {
       await assignUserAsMember(
         this.client,
         this.logger,
-        updatedHub.community.id,
+        updatedSpace.community.id,
         hubData.leadUsers
       );
       await assignUserAsLead(
         this.client,
         this.logger,
-        updatedHub.community.id,
+        updatedSpace.community.id,
         hubData.leadUsers
       );
     }
 
-    this.logger.info(`Hub updated: ${hubData.displayName}`);
+    this.logger.info(`Space updated: ${hubData.displayName}`);
   }
 
-  async createHub(hubData: Hub) {
+  async createSpace(hubData: Space) {
     const input: CreateHubInput = {
       nameID: hubData.nameID,
       hostID: hubData.host,
@@ -150,8 +150,8 @@ export class HubPopulator extends AbstractPopulator {
         displayName: hubData.displayName,
       },
     };
-    await this.client.alkemioLibClient.createHub(input);
+    await this.client.alkemioLibClient.createSpace(input);
 
-    this.logger.info(`Hub created: ${hubData.displayName}`);
+    this.logger.info(`Space created: ${hubData.displayName}`);
   }
 }

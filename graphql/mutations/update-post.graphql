@@ -1,5 +1,5 @@
-mutation updateCard($cardData: UpdateAspectInput!) {
-  updateAspect(aspectData: $cardData) {
+mutation updateCard($postData: UpdatePostInput!) {
+  updatePost(aspectData: $postData) {
     id
     nameID
     profile {

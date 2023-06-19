@@ -16,6 +16,6 @@ export type User = {
   keywords: string[];
   linkedin: string;
   twitter: string;
-  // membership within an Hub related fields
+  // membership within an Space related fields
   groups: string[];
 };

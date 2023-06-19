@@ -9,7 +9,7 @@ import {
   CalloutVisibility,
   UpdateCalloutVisibilityInput,
   UpdateCalloutInput,
-  UpdateAspectInput,
+  UpdatePostInput,
 } from '../generated/graphql';
 import { Logger } from 'winston';
 import {
@@ -138,18 +138,18 @@ export class AlkemioPopulatorClient {
     return data.updateCallout;
   }
 
-  async updateCard(cardID: string, description: string, displayName: string) {
-    const cardData: UpdateAspectInput = {
-      ID: cardID,
+  async updateCard(postID: string, description: string, displayName: string) {
+    const postData: UpdatePostInput = {
+      ID: postID,
       profileData: {
         description,
         displayName,
       },
     };
     const { data } = await this.sdkClient.updateCard({
-      cardData: cardData,
+      postData: postData,
     });
-    return data.updateAspect;
+    return data.updatePost;
   }
 
   private async updateVisualByName(

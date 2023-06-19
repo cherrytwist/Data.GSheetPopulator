@@ -1,4 +1,4 @@
-export type Card = {
+export type Post = {
   type: string;
   nameID: string;
   displayName: string;
