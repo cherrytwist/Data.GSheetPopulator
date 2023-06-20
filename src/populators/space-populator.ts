@@ -1,11 +1,11 @@
 import { assignUserAsLead } from '../utils';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Space } from '../models/hub';
+import { Space } from '../models/space';
 import { AbstractPopulator } from './abstract-populator';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { assignUserAsMember } from '../utils/assign-user-as-member';
-import { CreateHubInput, UpdateTagsetInput } from '@alkemio/client-lib';
+import { CreateSpaceInput, UpdateTagsetInput } from '@alkemio/client-lib';
 
 export class SpacePopulator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -18,110 +18,110 @@ export class SpacePopulator extends AbstractPopulator {
     allowCreation = false
   ) {
     super(client, data, logger, profiler);
-    this.name = 'hub-populator';
+    this.name = 'space-populator';
     this.allowCreation = allowCreation;
   }
 
   async populate() {
-    const hubs = this.data.hubs();
-    if (hubs.length === 0) {
+    const spaces = this.data.spaces();
+    if (spaces.length === 0) {
       this.logger.warn('No Spaces to import!');
       return;
     }
 
-    for (const hubData of hubs) {
-      if (!hubData.displayName) {
-        // End of valid hubs
+    for (const spaceData of spaces) {
+      if (!spaceData.displayName) {
+        // End of valid spaces
         return;
       }
 
       // start processing
-      this.logger.info(`Processing hub: ${hubData.nameID}....`);
-      const hubProfileID = '===> hubUpdate - FULL';
-      this.profiler.profile(hubProfileID);
+      this.logger.info(`Processing space: ${spaceData.nameID}....`);
+      const spaceProfileID = '===> spaceUpdate - FULL';
+      this.profiler.profile(spaceProfileID);
 
       const spaceExists = await this.client.alkemioLibClient.spaceExists(
-        hubData.nameID
+        spaceData.nameID
       );
 
       try {
         if (!spaceExists) {
           if (this.allowCreation) {
-            await this.createSpace(hubData);
+            await this.createSpace(spaceData);
           } else {
-            const msg = `Specified Space does not exist: ${hubData.nameID}`;
+            const msg = `Specified Space does not exist: ${spaceData.nameID}`;
             this.logger.error(msg);
             throw new Error(msg);
           }
         }
-        await this.updateSpace(hubData);
+        await this.updateSpace(spaceData);
 
         await this.client.alkemioLibClient.updateReferencesOnSpace(
-          hubData.nameID,
+          spaceData.nameID,
           [
             {
               name: 'website',
-              uri: hubData.refWebsite,
-              description: 'The hub website',
+              uri: spaceData.refWebsite,
+              description: 'The space website',
             },
             {
               name: 'repo',
-              uri: hubData.refRepo,
-              description: 'The hub repository',
+              uri: spaceData.refRepo,
+              description: 'The space repository',
             },
           ]
         );
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to update hub (${hubData.nameID}):${e.response.errors[0].message}`
+            `Unable to update space (${spaceData.nameID}):${e.response.errors[0].message}`
           );
         } else {
           this.logger.error(
-            `Unable to update hub (${hubData.nameID}): ${e.message}`
+            `Unable to update space (${spaceData.nameID}): ${e.message}`
           );
         }
         throw e;
       } finally {
-        this.profiler.profile(hubProfileID);
+        this.profiler.profile(spaceProfileID);
       }
     }
   }
 
-  async updateSpace(hubData: Space) {
-    const hubProfileData = await this.client.sdkClient.hubProfile({
-      id: hubData.nameID,
+  async updateSpace(spaceData: Space) {
+    const spaceProfileData = await this.client.sdkClient.spaceProfile({
+      id: spaceData.nameID,
     });
-    const hubProfileTagset = hubProfileData.data.hub.profile.tagset;
+    const spaceProfileTagset = spaceProfileData.data.space.profile.tagset;
     const tagsetsData: UpdateTagsetInput[] = [];
-    if (hubProfileTagset) {
+    if (spaceProfileTagset) {
       tagsetsData.push({
-        ID: hubProfileTagset.id,
-        tags: hubData.tags || [],
+        ID: spaceProfileTagset.id,
+        tags: spaceData.tags || [],
       });
     }
     const updatedSpace = await this.client.alkemioLibClient.updateSpace({
-      ID: hubData.nameID,
-      hostID: hubData.host,
+      ID: spaceData.nameID,
+      hostID: spaceData.host,
       profileData: {
-        displayName: hubData.displayName,
-        description: hubData.background,
-        tagline: hubData.tagline,
+        displayName: spaceData.displayName,
+        description: spaceData.background,
+        tagline: spaceData.tagline,
         tagsets: tagsetsData,
       },
       context: {
-        impact: hubData.impact,
-        vision: hubData.vision,
-        who: hubData.who,
+        impact: spaceData.impact,
+        vision: spaceData.vision,
+        who: spaceData.who,
       },
     });
 
     const visuals = updatedSpace?.profile?.visuals || [];
     await this.client.updateVisualsOnJourneyProfile(
       visuals,
-      hubData.visualBanner,
-      hubData.visualBackground,
-      hubData.visualAvatar
+      spaceData.visualBanner,
+      spaceData.visualBackground,
+      spaceData.visualAvatar
     );
 
     if (updatedSpace?.community?.id) {
@@ -129,29 +129,29 @@ export class SpacePopulator extends AbstractPopulator {
         this.client,
         this.logger,
         updatedSpace.community.id,
-        hubData.leadUsers
+        spaceData.leadUsers
       );
       await assignUserAsLead(
         this.client,
         this.logger,
         updatedSpace.community.id,
-        hubData.leadUsers
+        spaceData.leadUsers
       );
     }
 
-    this.logger.info(`Space updated: ${hubData.displayName}`);
+    this.logger.info(`Space updated: ${spaceData.displayName}`);
   }
 
-  async createSpace(hubData: Space) {
-    const input: CreateHubInput = {
-      nameID: hubData.nameID,
-      hostID: hubData.host,
+  async createSpace(spaceData: Space) {
+    const input: CreateSpaceInput = {
+      nameID: spaceData.nameID,
+      hostID: spaceData.host,
       profileData: {
-        displayName: hubData.displayName,
+        displayName: spaceData.displayName,
       },
     };
     await this.client.alkemioLibClient.createSpace(input);
 
-    this.logger.info(`Space created: ${hubData.displayName}`);
+    this.logger.info(`Space created: ${spaceData.displayName}`);
   }
 }

@@ -59,17 +59,17 @@ export class AlkemioPopulatorClient {
     return await this.alkemioLibClient.validateConnection();
   }
 
-  async hubCallouts(hubID: string) {
-    const hubResponse = await this.sdkClient.hubCallouts({ id: hubID });
-    return hubResponse.data.hub;
+  async spaceCallouts(spaceID: string) {
+    const spaceResponse = await this.sdkClient.spaceCallouts({ id: spaceID });
+    return spaceResponse.data.space;
   }
 
-  async challengeCallouts(hubID: string, challengeID: string) {
-    const hubResponse = await this.sdkClient.challengeCallouts({
-      hubID,
+  async challengeCallouts(spaceID: string, challengeID: string) {
+    const spaceResponse = await this.sdkClient.challengeCallouts({
+      spaceID,
       challengeID,
     });
-    return hubResponse.data.hub.challenge;
+    return spaceResponse.data.space.challenge;
   }
 
   async createCalloutOnCollaboration(
@@ -189,15 +189,15 @@ export class AlkemioPopulatorClient {
     }
   }
 
-  async challengeByNameID(hubNameID: string, challengeNameID: string) {
+  async challengeByNameID(spaceNameID: string, challengeNameID: string) {
     try {
       const response = await this.sdkClient.challengeDetails({
-        hubID: hubNameID,
+        spaceID: spaceNameID,
         challengeID: challengeNameID,
       });
 
       if (!response) return;
-      return response.data?.hub.challenge;
+      return response.data?.space.challenge;
     } catch (error) {
       return;
     }

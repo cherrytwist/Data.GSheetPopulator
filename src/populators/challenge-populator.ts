@@ -55,7 +55,7 @@ export class ChallengePopulator extends AbstractPopulator {
       this.profiler.profile(challengeProfileID);
 
       const existingChallenge = await this.client.challengeByNameID(
-        this.hubID,
+        this.spaceID,
         challengeData.nameID
       );
 
@@ -73,7 +73,9 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async createChallenge(challengeData: Challenge) {
     try {
-      const spaceInfo = await this.client.alkemioLibClient.spaceInfo(this.hubID);
+      const spaceInfo = await this.client.alkemioLibClient.spaceInfo(
+        this.spaceID
+      );
       const innovationFlowTemplate =
         spaceInfo?.templates?.innovationFlowTemplates?.filter(
           x => x.type === InnovationFlowType.Challenge
@@ -81,12 +83,12 @@ export class ChallengePopulator extends AbstractPopulator {
 
       if (!innovationFlowTemplate)
         throw new Error(
-          `No challenge innovation flow template found in hub ${this.hubID}`
+          `No challenge innovation flow template found in space ${this.spaceID}`
         );
 
       const createdChallenge =
         await this.client.alkemioLibClient.createChallenge({
-          hubID: this.hubID,
+          spaceID: this.spaceID,
           nameID: challengeData.nameID,
           profileData: {
             displayName: challengeData.displayName,
@@ -142,7 +144,7 @@ export class ChallengePopulator extends AbstractPopulator {
 
   async populateCommunityRoles(challengeID: string, challengeData: Challenge) {
     const challenge = await this.client.alkemioLibClient.challengeByNameID(
-      this.hubID,
+      this.spaceID,
       challengeID
     );
 
@@ -282,7 +284,7 @@ export class ChallengePopulator extends AbstractPopulator {
     const userInfo = await this.client.alkemioLibClient.user(userNameId);
     if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
     await this.client.alkemioLibClient.addUserToChallenge(
-      this.hubID,
+      this.spaceID,
       challengeNameID,
       userInfo.nameID
     );

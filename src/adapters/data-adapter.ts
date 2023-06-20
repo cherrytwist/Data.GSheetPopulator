@@ -17,7 +17,7 @@ export abstract class AbstractDataAdapter {
   abstract actorGroups(): ActorGroup[];
   abstract posts(): Post[];
   abstract callouts(): Callout[];
-  abstract hubs(): Space[];
+  abstract spaces(): Space[];
   abstract challenges(): Challenge[];
   abstract users(): User[];
   abstract opportunities(): Opportunity[];

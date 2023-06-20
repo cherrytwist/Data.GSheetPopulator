@@ -3,7 +3,7 @@ export * from './actor-group';
 export * from './callout';
 export * from './post';
 export * from './challenge';
-export * from './hub';
+export * from './space';
 export * from './group';
 export * from './opportunity';
 export * from './organization';

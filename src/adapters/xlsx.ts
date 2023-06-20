@@ -189,27 +189,27 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   };
 
-  public hubs(): Space[] {
+  public spaces(): Space[] {
     const sheet = this.workbook.Sheets[Sheets.Space];
     const result = XLSX.utils.sheet_to_json(sheet) as SpaceSheet[];
 
-    return result.map(hub => ({
-      displayName: hub.DISPLAY_NAME,
-      nameID: hub.NAME_ID,
-      anonymousReadAccess: this.stringToBoolean(hub.ANONYMOUS_READ_ACCESS),
-      background: hub.BACKGROUND,
-      vision: hub.VISION,
-      impact: hub.IMPACT,
-      tagline: hub.TAGLINE,
-      who: hub.WHO,
-      host: hub.HOST,
-      visualAvatar: hub.VISUAL_AVATAR,
-      visualBackground: hub.VISUAL_BACKGROUND,
-      visualBanner: hub.VISUAL_BANNER,
-      refWebsite: hub.REF_WEBSITE,
-      refRepo: hub.REF_REPO,
-      tags: toArray(hub.TAGS),
-      leadUsers: toArray(hub.LEAD_USERS),
+    return result.map(space => ({
+      displayName: space.DISPLAY_NAME,
+      nameID: space.NAME_ID,
+      anonymousReadAccess: this.stringToBoolean(space.ANONYMOUS_READ_ACCESS),
+      background: space.BACKGROUND,
+      vision: space.VISION,
+      impact: space.IMPACT,
+      tagline: space.TAGLINE,
+      who: space.WHO,
+      host: space.HOST,
+      visualAvatar: space.VISUAL_AVATAR,
+      visualBackground: space.VISUAL_BACKGROUND,
+      visualBanner: space.VISUAL_BANNER,
+      refWebsite: space.REF_WEBSITE,
+      refRepo: space.REF_REPO,
+      tags: toArray(space.TAGS),
+      leadUsers: toArray(space.LEAD_USERS),
     }));
   }
 

@@ -25,7 +25,7 @@ export class Populator extends AbstractPopulator {
 
   async populate() {
     if (!this.data) throw new Error('No data to populate');
-    this.hubID = this.getSpaceID();
+    this.spaceID = this.getSpaceID();
 
     const organizationPopulator = new OrganizationPopulator(
       this.client,
@@ -70,7 +70,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const hubPopulator = new SpacePopulator(
+    const spacePopulator = new SpacePopulator(
       this.client,
       this.data,
       this.logger,
@@ -80,7 +80,7 @@ export class Populator extends AbstractPopulator {
 
     // organizations first as they are needed for Space + Challenges
     await organizationPopulator.populate();
-    await hubPopulator.populate();
+    await spacePopulator.populate();
     await userPopulator.populate();
     await groupPopulator.populate();
 

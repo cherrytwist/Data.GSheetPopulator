@@ -98,7 +98,7 @@ export class CalloutPopulator extends AbstractPopulator {
     // If challenge is specified, use the collaboration from the challenge
     if (challengeNameID) {
       const challenge = await this.client.challengeCallouts(
-        this.hubID,
+        this.spaceID,
         challengeNameID
       );
       if (!challenge || !challenge.collaboration) {
@@ -108,13 +108,13 @@ export class CalloutPopulator extends AbstractPopulator {
       return challenge.collaboration;
     }
 
-    const hub = await this.client.hubCallouts(this.hubID);
-    if (!hub || !hub.collaboration) {
+    const space = await this.client.spaceCallouts(this.spaceID);
+    if (!space || !space.collaboration) {
       const errorMsg = `Skipping callout '${calloutNameID}'. Unable to get collaboration for Space`;
       throw new Error(errorMsg);
     }
 
-    return hub.collaboration;
+    return space.collaboration;
   }
 
   private async processCards() {
@@ -153,7 +153,7 @@ export class CalloutPopulator extends AbstractPopulator {
             );
           } else {
             this.logger.error(
-              `Unable to find callout with nameID: ${postData.callout} in hub`
+              `Unable to find callout with nameID: ${postData.callout} in space`
             );
           }
           continue;
