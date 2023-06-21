@@ -138,7 +138,7 @@ export class AlkemioPopulatorClient {
     return data.updateCallout;
   }
 
-  async updateCard(postID: string, description: string, displayName: string) {
+  async updatePost(postID: string, description: string, displayName: string) {
     const postData: UpdatePostInput = {
       ID: postID,
       profileData: {
@@ -146,7 +146,7 @@ export class AlkemioPopulatorClient {
         displayName,
       },
     };
-    const { data } = await this.sdkClient.updateCard({
+    const { data } = await this.sdkClient.updatePost({
       postData: postData,
     });
     return data.updatePost;

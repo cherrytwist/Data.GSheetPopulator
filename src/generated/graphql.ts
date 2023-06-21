@@ -563,6 +563,7 @@ export enum AuthorizationPrivilege {
   CommunityApply = 'COMMUNITY_APPLY',
   CommunityContextReview = 'COMMUNITY_CONTEXT_REVIEW',
   CommunityInvite = 'COMMUNITY_INVITE',
+  CommunityInviteAccept = 'COMMUNITY_INVITE_ACCEPT',
   CommunityJoin = 'COMMUNITY_JOIN',
   Contribute = 'CONTRIBUTE',
   Create = 'CREATE',
@@ -3589,13 +3590,6 @@ export type RoomMessageReactionEventSubscriptionResult = {
   type: MutationType;
 };
 
-export type RoomMessageReceived = {
-  /** The message that has been sent. */
-  message: Message;
-  /** The identifier for the Room on which the message was sent. */
-  roomID: Scalars['String'];
-};
-
 export type RoomRemoveMessageInput = {
   /** The message id that should be removed */
   messageID: Scalars['MessageID'];
@@ -3930,8 +3924,6 @@ export type Subscription = {
   profileVerifiedCredential: ProfileCredentialVerified;
   /** Receive Room event */
   roomEvents: RoomEventSubscriptionResult;
-  /** Receive new Room messages */
-  roomMessageReceived: RoomMessageReceived;
   /** Receive updated content of a whiteboard */
   whiteboardContentUpdated: WhiteboardContentUpdated;
 };
@@ -3957,10 +3949,6 @@ export type SubscriptionOpportunityCreatedArgs = {
 };
 
 export type SubscriptionRoomEventsArgs = {
-  roomID: Scalars['UUID'];
-};
-
-export type SubscriptionRoomMessageReceivedArgs = {
   roomID: Scalars['UUID'];
 };
 
@@ -5033,7 +5021,6 @@ export type ResolversTypes = {
   RoomEventSubscriptionResult: ResolverTypeWrapper<RoomEventSubscriptionResult>;
   RoomMessageEventSubscriptionResult: ResolverTypeWrapper<RoomMessageEventSubscriptionResult>;
   RoomMessageReactionEventSubscriptionResult: ResolverTypeWrapper<RoomMessageReactionEventSubscriptionResult>;
-  RoomMessageReceived: ResolverTypeWrapper<RoomMessageReceived>;
   RoomRemoveMessageInput: RoomRemoveMessageInput;
   RoomRemoveReactionToMessageInput: RoomRemoveReactionToMessageInput;
   RoomSendMessageInput: RoomSendMessageInput;
@@ -5391,7 +5378,6 @@ export type ResolversParentTypes = {
   RoomEventSubscriptionResult: RoomEventSubscriptionResult;
   RoomMessageEventSubscriptionResult: RoomMessageEventSubscriptionResult;
   RoomMessageReactionEventSubscriptionResult: RoomMessageReactionEventSubscriptionResult;
-  RoomMessageReceived: RoomMessageReceived;
   RoomRemoveMessageInput: RoomRemoveMessageInput;
   RoomRemoveReactionToMessageInput: RoomRemoveReactionToMessageInput;
   RoomSendMessageInput: RoomSendMessageInput;
@@ -8907,15 +8893,6 @@ export type RoomMessageReactionEventSubscriptionResultResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RoomMessageReceivedResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['RoomMessageReceived'] = ResolversParentTypes['RoomMessageReceived']
-> = {
-  message?: Resolver<ResolversTypes['Message'], ParentType, ContextType>;
-  roomID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type SearchResultResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['SearchResult'] = ResolversParentTypes['SearchResult']
@@ -9272,13 +9249,6 @@ export type SubscriptionResolvers<
     ParentType,
     ContextType,
     RequireFields<SubscriptionRoomEventsArgs, 'roomID'>
-  >;
-  roomMessageReceived?: SubscriptionResolver<
-    ResolversTypes['RoomMessageReceived'],
-    'roomMessageReceived',
-    ParentType,
-    ContextType,
-    RequireFields<SubscriptionRoomMessageReceivedArgs, 'roomID'>
   >;
   whiteboardContentUpdated?: SubscriptionResolver<
     ResolversTypes['WhiteboardContentUpdated'],
@@ -9762,7 +9732,6 @@ export type Resolvers<ContextType = any> = {
   RoomEventSubscriptionResult?: RoomEventSubscriptionResultResolvers<ContextType>;
   RoomMessageEventSubscriptionResult?: RoomMessageEventSubscriptionResultResolvers<ContextType>;
   RoomMessageReactionEventSubscriptionResult?: RoomMessageReactionEventSubscriptionResultResolvers<ContextType>;
-  RoomMessageReceived?: RoomMessageReceivedResolvers<ContextType>;
   SearchResult?: SearchResultResolvers<ContextType>;
   SearchResultChallenge?: SearchResultChallengeResolvers<ContextType>;
   SearchResultOpportunity?: SearchResultOpportunityResolvers<ContextType>;
@@ -9843,11 +9812,11 @@ export type UpdateCalloutMutation = {
   updateCallout: { id: string; nameID: string };
 };
 
-export type UpdateCardMutationVariables = Exact<{
+export type UpdatePostMutationVariables = Exact<{
   postData: UpdatePostInput;
 }>;
 
-export type UpdateCardMutation = {
+export type UpdatePostMutation = {
   updatePost: {
     id: string;
     nameID: string;
@@ -10059,8 +10028,8 @@ export const UpdateCalloutDocument = gql`
     }
   }
 `;
-export const UpdateCardDocument = gql`
-  mutation updateCard($postData: UpdatePostInput!) {
+export const UpdatePostDocument = gql`
+  mutation updatePost($postData: UpdatePostInput!) {
     updatePost(postData: $postData) {
       id
       nameID
@@ -10267,7 +10236,7 @@ const UpdateCalloutVisibilityDocumentString = print(
   UpdateCalloutVisibilityDocument
 );
 const UpdateCalloutDocumentString = print(UpdateCalloutDocument);
-const UpdateCardDocumentString = print(UpdateCardDocument);
+const UpdatePostDocumentString = print(UpdatePostDocument);
 const UpdateProfileDocumentString = print(UpdateProfileDocument);
 const ChallengeCalloutsDocumentString = print(ChallengeCalloutsDocument);
 const ChallengeDetailsDocumentString = print(ChallengeDetailsDocument);
@@ -10360,23 +10329,23 @@ export function getSdk(
         'mutation'
       );
     },
-    updateCard(
-      variables: UpdateCardMutationVariables,
+    updatePost(
+      variables: UpdatePostMutationVariables,
       requestHeaders?: Dom.RequestInit['headers']
     ): Promise<{
-      data: UpdateCardMutation;
+      data: UpdatePostMutation;
       extensions?: any;
       headers: Dom.Headers;
       status: number;
     }> {
       return withWrapper(
         wrappedRequestHeaders =>
-          client.rawRequest<UpdateCardMutation>(
-            UpdateCardDocumentString,
+          client.rawRequest<UpdatePostMutation>(
+            UpdatePostDocumentString,
             variables,
             { ...requestHeaders, ...wrappedRequestHeaders }
           ),
-        'updateCard',
+        'updatePost',
         'mutation'
       );
     },

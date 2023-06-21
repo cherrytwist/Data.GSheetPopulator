@@ -15,7 +15,7 @@ import {
 import {
   ActorGroupsSheet,
   ActorsSheet,
-  CardSheet,
+  PostSheet,
   ChallengesSheet,
   SpaceSheet,
   GroupsSheet,
@@ -79,8 +79,8 @@ export class XLSXAdapter extends AbstractDataAdapter {
   }
 
   posts(): Post[] {
-    const sheet = this.workbook.Sheets[Sheets.Cards];
-    const result = XLSX.utils.sheet_to_json(sheet) as CardSheet[];
+    const sheet = this.workbook.Sheets[Sheets.Posts];
+    const result = XLSX.utils.sheet_to_json(sheet) as PostSheet[];
     return result.map(x => ({
       type: x.TYPE,
       nameID: x.NAME_ID,

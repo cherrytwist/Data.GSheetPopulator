@@ -1,4 +1,4 @@
-mutation updateCard($postData: UpdatePostInput!) {
+mutation updatePost($postData: UpdatePostInput!) {
   updatePost(postData: $postData) {
     id
     nameID
