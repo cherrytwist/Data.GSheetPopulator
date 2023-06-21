@@ -29,7 +29,7 @@ export class BaseDataAdapter extends AbstractDataAdapter {
   actorGroups(): ActorGroup[] {
     return [];
   }
-  hubs(): Space[] {
+  spaces(): Space[] {
     return [];
   }
   challenges(): Challenge[] {

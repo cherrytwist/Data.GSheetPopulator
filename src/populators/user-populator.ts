@@ -55,7 +55,7 @@ export class UserPopulator extends AbstractPopulator {
         try {
           await this.createUser(userData);
           await this.client.alkemioLibClient.addUserToSpace(
-            this.hubID,
+            this.spaceID,
             userData.nameID
           );
         } catch (e: any) {
@@ -212,7 +212,7 @@ export class UserPopulator extends AbstractPopulator {
   async addUserToGroups(userID: string, groups: string[]) {
     for (const groupName of groups) {
       const group = await this.client.alkemioLibClient.groupByName(
-        this.hubID,
+        this.spaceID,
         groupName
       );
       // Add the user into the team members group

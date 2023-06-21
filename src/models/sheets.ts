@@ -2,7 +2,7 @@ export enum Sheets {
   Actors = 'Actors',
   ActorGroups = 'ActorGroups',
   Callouts = 'Callouts',
-  Cards = 'Cards',
+  Posts = 'Posts',
   Space = 'Space',
   Information = 'Information',
   Challenges = 'Challenges',
@@ -146,7 +146,7 @@ export interface RelationSheet {
   OPPORTUNITY: string;
 }
 
-export interface CardSheet {
+export interface PostSheet {
   TYPE: string;
   NAME_ID: string;
   DISPLAY_NAME: string;

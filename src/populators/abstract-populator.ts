@@ -10,7 +10,7 @@ export abstract class AbstractPopulator {
   protected logger: Logger;
   protected profiler: Logger;
   protected name: string;
-  protected hubID: string;
+  protected spaceID: string;
 
   // Create the Space with enough defaults set/ members populated
   constructor(
@@ -24,16 +24,16 @@ export abstract class AbstractPopulator {
     this.logger = logger || createLogger();
     this.profiler = profiler || createProfiler();
     this.name = 'abstract-populator';
-    this.hubID = this.getSpaceID();
+    this.spaceID = this.getSpaceID();
   }
 
   getSpaceID(): string {
-    const hubs = this.data.hubs();
-    if (hubs.length != 1) {
+    const spaces = this.data.spaces();
+    if (spaces.length != 1) {
       throw new Error('Exactly one Space must be available!');
     }
 
-    return hubs[0].nameID;
+    return spaces[0].nameID;
   }
 
   abstract populate(): void;

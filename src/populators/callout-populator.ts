@@ -21,7 +21,7 @@ export class CalloutPopulator extends AbstractPopulator {
 
   async populate() {
     await this.processCallouts();
-    await this.processCards();
+    await this.processPosts();
   }
 
   private async processCallouts() {
@@ -58,7 +58,7 @@ export class CalloutPopulator extends AbstractPopulator {
             calloutData.displayName,
             calloutData.nameID,
             calloutData.description,
-            CalloutType.Card,
+            CalloutType.Post,
             CalloutState.Open
           );
 
@@ -98,7 +98,7 @@ export class CalloutPopulator extends AbstractPopulator {
     // If challenge is specified, use the collaboration from the challenge
     if (challengeNameID) {
       const challenge = await this.client.challengeCallouts(
-        this.hubID,
+        this.spaceID,
         challengeNameID
       );
       if (!challenge || !challenge.collaboration) {
@@ -108,16 +108,16 @@ export class CalloutPopulator extends AbstractPopulator {
       return challenge.collaboration;
     }
 
-    const hub = await this.client.hubCallouts(this.hubID);
-    if (!hub || !hub.collaboration) {
+    const space = await this.client.spaceCallouts(this.spaceID);
+    if (!space || !space.collaboration) {
       const errorMsg = `Skipping callout '${calloutNameID}'. Unable to get collaboration for Space`;
       throw new Error(errorMsg);
     }
 
-    return hub.collaboration;
+    return space.collaboration;
   }
 
-  private async processCards() {
+  private async processPosts() {
     this.logger.info('Processing posts');
 
     const posts = this.data.posts();
@@ -153,18 +153,18 @@ export class CalloutPopulator extends AbstractPopulator {
             );
           } else {
             this.logger.error(
-              `Unable to find callout with nameID: ${postData.callout} in hub`
+              `Unable to find callout with nameID: ${postData.callout} in space`
             );
           }
           continue;
         }
 
-        const existingCard = callout.posts?.find(
+        const existingPost = callout.posts?.find(
           c => c.nameID === postData.nameID
         );
 
-        if (!existingCard) {
-          const createdCard =
+        if (!existingPost) {
+          const createdPost =
             await this.client.alkemioLibClient.createPostOnCallout(
               callout.id,
               postData.type,
@@ -173,16 +173,16 @@ export class CalloutPopulator extends AbstractPopulator {
               postData.description
             );
 
-          await this.updateVisuals(postData, createdCard);
+          await this.updateVisuals(postData, createdPost);
 
           this.logger.info(`...added post: ${postData.nameID}`);
         } else {
-          const updatedCard = await this.client.updateCard(
-            existingCard.id,
+          const updatedPost = await this.client.updatePost(
+            existingPost.id,
             postData.description,
             postData.displayName
           );
-          await this.updateVisuals(postData, updatedCard);
+          await this.updateVisuals(postData, updatedPost);
           this.logger.info(`...updating post: ${postData.nameID}`);
         }
       } catch (e: any) {

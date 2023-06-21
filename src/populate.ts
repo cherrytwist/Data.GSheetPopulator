@@ -31,11 +31,13 @@ const main = async () => {
     profiler,
     allowSpaceCreation
   );
-  const hubID = populator.getSpaceID();
-  const exists = await alkemioPopulatorClient.alkemioLibClient.spaceExists(hubID);
+  const spaceID = populator.getSpaceID();
+  const exists = await alkemioPopulatorClient.alkemioLibClient.spaceExists(
+    spaceID
+  );
   if (!exists && !allowSpaceCreation) {
     logger.error(
-      `Space does not exist: '${hubID}', please ensure it is created.`
+      `Space does not exist: '${spaceID}', please ensure it is created.`
     );
     return;
   }

@@ -54,7 +54,7 @@ export class OpportunityPopulator extends AbstractPopulator {
 
       const existingOpportunity =
         await this.client.alkemioLibClient.opportunityByNameID(
-          this.hubID,
+          this.spaceID,
           opportunityData.nameID
         );
 
@@ -84,7 +84,7 @@ export class OpportunityPopulator extends AbstractPopulator {
   async createOpportunity(opportunityData: Opportunity) {
     // First need to get the id for the challenge
     const challenge = await this.client.alkemioLibClient.challengeByNameID(
-      this.hubID,
+      this.spaceID,
       opportunityData.challenge
     );
     if (!challenge) {
@@ -93,7 +93,9 @@ export class OpportunityPopulator extends AbstractPopulator {
       );
       return;
     }
-    const spaceInfo = await this.client.alkemioLibClient.spaceInfo(this.hubID);
+    const spaceInfo = await this.client.alkemioLibClient.spaceInfo(
+      this.spaceID
+    );
     const innovationFlowTemplate =
       spaceInfo?.templates?.innovationFlowTemplates?.filter(
         x => x.type === InnovationFlowType.Opportunity
@@ -101,7 +103,7 @@ export class OpportunityPopulator extends AbstractPopulator {
 
     if (!innovationFlowTemplate)
       throw new Error(
-        `No opportunity innovation flow template found in hub ${this.hubID}`
+        `No opportunity innovation flow template found in space ${this.spaceID}`
       );
 
     const createdOpportunity =
@@ -224,7 +226,7 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityData: Opportunity
   ) {
     const opportunity = await this.client.alkemioLibClient.opportunityByNameID(
-      this.hubID,
+      this.spaceID,
       opportunityID
     );
 
@@ -285,7 +287,7 @@ export class OpportunityPopulator extends AbstractPopulator {
     const userInfo = await this.client.alkemioLibClient.user(userNameId);
     if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
     await this.client.alkemioLibClient.addUserToOpportunity(
-      this.hubID,
+      this.spaceID,
       opportunityNameID,
       userInfo.nameID
     );

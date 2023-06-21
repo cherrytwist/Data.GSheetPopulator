@@ -34,7 +34,7 @@ export class GroupPopulator extends AbstractPopulator {
 
       try {
         await this.client.alkemioLibClient.createUserGroupOnSpace(
-          this.hubID,
+          this.spaceID,
           group.name,
           group.description
         );

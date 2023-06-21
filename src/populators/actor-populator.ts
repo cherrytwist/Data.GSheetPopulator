@@ -42,7 +42,7 @@ export class ActorPopulator extends AbstractPopulator {
 
       const opportunity =
         await this.client.alkemioLibClient.opportunityByNameID(
-          this.hubID,
+          this.spaceID,
           actorGroup.opportunity
         );
 
@@ -106,7 +106,7 @@ export class ActorPopulator extends AbstractPopulator {
 
       const opportunity =
         await this.client.alkemioLibClient.opportunityByNameID(
-          this.hubID,
+          this.spaceID,
           actor.opportunity
         );
 
@@ -177,7 +177,7 @@ export class ActorPopulator extends AbstractPopulator {
 
       const opportunity =
         await this.client.alkemioLibClient.opportunityByNameID(
-          this.hubID,
+          this.spaceID,
           relation.opportunity
         );
 
