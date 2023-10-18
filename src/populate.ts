@@ -7,7 +7,7 @@ import { createConfigUsingEnvVars } from './utils/create-config-using-envvars';
 
 const main = async () => {
   dotenv.config();
-  const allowSpaceCreation = process.env.ALLOW_HUB_CREATION === 'true';
+  const allowSpaceCreation = process.env.ALLOW_SPACE_CREATION === 'true';
   const logger = createLogger();
   const profiler = createProfiler();
   const config = createConfigUsingEnvVars();

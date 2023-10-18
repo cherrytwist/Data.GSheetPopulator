@@ -58,7 +58,7 @@ export class CalloutPopulator extends AbstractPopulator {
             calloutData.displayName,
             calloutData.nameID,
             calloutData.description,
-            CalloutType.Post,
+            CalloutType.PostCollection,
             CalloutState.Open
           );
 
@@ -188,10 +188,10 @@ export class CalloutPopulator extends AbstractPopulator {
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
-            `Unable to create aspect (${postData.nameID}): ${e.response.errors[0].message}`
+            `Unable to create post contribution (${postData.nameID}): ${e.response.errors[0].message}`
           );
         } else {
-          this.logger.error(`Could not create aspect: ${e}`);
+          this.logger.error(`Could not create post contribution: ${e}`);
         }
       } finally {
         this.profiler.profile(postProfileID);
@@ -199,15 +199,15 @@ export class CalloutPopulator extends AbstractPopulator {
     }
   }
 
-  private async updateVisuals(postData: Post, aspect: any) {
-    const bannerNarrowVisualID = aspect?.bannerNarrow?.id || '';
+  private async updateVisuals(postData: Post, post: any) {
+    const bannerNarrowVisualID = post?.bannerNarrow?.id || '';
     if (bannerNarrowVisualID && bannerNarrowVisualID.length > 0)
       await this.client.alkemioLibClient.updateVisual(
         bannerNarrowVisualID,
         postData.bannerNarrowURI
       );
 
-    const bannerVisualID = aspect?.banner?.id || '';
+    const bannerVisualID = post?.banner?.id || '';
     if (bannerVisualID && bannerVisualID.length > 0)
       await this.client.alkemioLibClient.updateVisual(
         bannerVisualID,

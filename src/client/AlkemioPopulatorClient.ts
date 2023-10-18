@@ -12,11 +12,7 @@ import {
   UpdatePostInput,
 } from '../generated/graphql';
 import { Logger } from 'winston';
-import {
-  AlkemioClient,
-  AlkemioClientConfig,
-  CreatePostTemplateInput,
-} from '@alkemio/client-lib';
+import { AlkemioClient, AlkemioClientConfig } from '@alkemio/client-lib';
 
 export class AlkemioPopulatorClient {
   public config!: AlkemioClientConfig;
@@ -51,7 +47,7 @@ export class AlkemioPopulatorClient {
   async logUser() {
     const userResponse = await this.sdkClient.me();
     this.logger.info(
-      `Authenticated user: '${userResponse.data.me.profile.displayName}'`
+      `Authenticated user: '${userResponse.data.me.user?.profile.displayName}'`
     );
   }
 
@@ -80,24 +76,22 @@ export class AlkemioPopulatorClient {
     type: CalloutType,
     state: CalloutState
   ) {
-    const postTemplate: CreatePostTemplateInput = {
-      defaultDescription: 'something',
-      type: 'test',
-      profile: {
-        description: 'asdf',
-        displayName: 'test',
-      },
-    };
     const calloutData: CreateCalloutOnCollaborationInput = {
       nameID,
       collaborationID,
       type,
-      state,
-      profile: {
-        displayName,
-        description,
+      framing: {
+        profile: {
+          displayName,
+          description,
+        },
       },
-      postTemplate,
+      contributionPolicy: {
+        state,
+      },
+      contributionDefaults: {
+        postDescription: 'test',
+      },
     };
     const { data } = await this.sdkClient.createCalloutOnCollaboration({
       data: calloutData,
@@ -127,9 +121,11 @@ export class AlkemioPopulatorClient {
   ) {
     const calloutData: UpdateCalloutInput = {
       ID: calloutID,
-      profileData: {
-        description,
-        displayName,
+      framing: {
+        profile: {
+          description,
+          displayName,
+        },
       },
     };
     const { data } = await this.sdkClient.updateCallout({

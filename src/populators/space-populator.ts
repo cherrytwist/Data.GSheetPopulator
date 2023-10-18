@@ -102,7 +102,6 @@ export class SpacePopulator extends AbstractPopulator {
     }
     const updatedSpace = await this.client.alkemioLibClient.updateSpace({
       ID: spaceData.nameID,
-      hostID: spaceData.host,
       profileData: {
         displayName: spaceData.displayName,
         description: spaceData.background,

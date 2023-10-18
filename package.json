@@ -24,7 +24,6 @@
     "populate-context": "ts-node-dev src/populate-context.ts",
     "populate-organizations": "ts-node-dev src/populate-organizations.ts",
     "start": "npm run populate",
-    "test-connection": "ts-node-dev src/scripts/test-connection.ts",
     "prepublishOnly": "npm run build",
     "codegen": "graphql-codegen --config codegen.yml"
   },
@@ -52,7 +51,7 @@
     "tsconfig-paths": "^4.0.0"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.23.0",
+    "@alkemio/client-lib": "^0.24.0",
     "@graphql-codegen/typescript-graphql-request": "^4.5.3",
     "@graphql-codegen/typescript-operations": "^2.5.3",
     "@types/graphql-upload": "^8.0.11",
