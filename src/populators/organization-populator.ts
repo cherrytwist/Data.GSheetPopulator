@@ -1,7 +1,7 @@
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
-import { Organization } from '../models/organization';
+import { Organization } from '../inputModels/organization';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganizationPopulator extends AbstractPopulator {

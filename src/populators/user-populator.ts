@@ -1,8 +1,4 @@
-import {
-  CreateReferenceInput,
-  CreateUserInput,
-  UpdateProfileInput,
-} from '@alkemio/client-lib';
+import { CreateReferenceInput, CreateUserInput } from '@alkemio/client-lib';
 import { UpdateProfileDirectInput } from '@alkemio/client-lib/dist/generated/graphql';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
@@ -103,9 +99,6 @@ export class UserPopulator extends AbstractPopulator {
           existingUser.id,
           userData.organization
         );
-
-        // Add the user to groups
-        await this.addUserToGroups(existingUser.nameID, userData.groups);
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
@@ -207,25 +200,5 @@ export class UserPopulator extends AbstractPopulator {
     this.logger.info(`... created user: ${createdUser.data.createUser.nameID}`);
 
     this.profiler.profile(userProfile.id);
-  }
-
-  async addUserToGroups(userID: string, groups: string[]) {
-    for (const groupName of groups) {
-      const group = await this.client.alkemioLibClient.groupByName(
-        this.spaceID,
-        groupName
-      );
-      // Add the user into the team members group
-      if (!group) {
-        this.logger.warn(
-          `Unable to find group (${groupName}) for user (${userID})`
-        );
-        return false;
-      } else {
-        await this.client.alkemioLibClient.addUserToGroup(userID, group.id);
-        this.logger.info(`... added user to group: ${groupName}`);
-      }
-      return true;
-    }
   }
 }

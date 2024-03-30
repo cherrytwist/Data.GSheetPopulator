@@ -1,4 +1,5 @@
 export type Challenge = {
+  process: boolean;
   nameID: string;
   displayName: string;
   tagline: string;

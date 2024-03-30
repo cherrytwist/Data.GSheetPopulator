@@ -13,12 +13,14 @@ import {
 } from '../generated/graphql';
 import { Logger } from 'winston';
 import { AlkemioClient, AlkemioClientConfig } from '@alkemio/client-lib';
+import { OpportunityApi } from '../apiModels/opportunityApi';
 
 export class AlkemioPopulatorClient {
   public config!: AlkemioClientConfig;
   public sdkClient!: Sdk;
   public alkemioLibClient!: AlkemioClient;
   private logger: Logger;
+  private opportunitiesCache: Map<string, any> = new Map();
 
   constructor(config: AlkemioClientConfig, logger: Logger) {
     this.config = config;
@@ -66,6 +68,47 @@ export class AlkemioPopulatorClient {
       challengeID,
     });
     return spaceResponse.data.space.challenge;
+  }
+
+  async getOpportunityByNameIdOrFail(
+    spaceID: string,
+    opportunityNameID: string
+  ): Promise<OpportunityApi> {
+    const opportunity = await this.getOpportunityByNameID(
+      spaceID,
+      opportunityNameID
+    );
+    if (!opportunity) {
+      throw new Error(`Opportunity ${opportunityNameID} not found`);
+    }
+    return opportunity;
+  }
+
+  async getOpportunityByNameID(
+    spaceID: string,
+    opportunityNameID: string
+  ): Promise<OpportunityApi | undefined> {
+    let cachedOpportunity = this.opportunitiesCache.get(opportunityNameID);
+    if (!cachedOpportunity) {
+      const response = await this.sdkClient.opportunitiesInSpace({
+        spaceID,
+      });
+      const challenges = response.data.space.challenges || [];
+      for (const challenge of challenges) {
+        const opportunities = challenge.opportunities || [];
+        for (const opportunity of opportunities) {
+          const key = opportunity.nameID;
+          this.opportunitiesCache.set(key, opportunity);
+        }
+      }
+      cachedOpportunity = this.opportunitiesCache.get(opportunityNameID);
+    }
+
+    if (!cachedOpportunity) {
+      return undefined;
+    }
+
+    return cachedOpportunity;
   }
 
   async createCalloutOnCollaboration(

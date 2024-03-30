@@ -2,10 +2,8 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
-import { ActorPopulator } from './actor-populator';
 import { CalloutPopulator } from './callout-populator';
 import { JourneyPopulator } from './journey-populator';
-import { GroupPopulator } from './group-populator';
 import { SpacePopulator } from './space-populator';
 import { OrganizationPopulator } from './organization-populator';
 import { UserPopulator } from './user-populator';
@@ -34,13 +32,6 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const groupPopulator = new GroupPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
     const userPopulator = new UserPopulator(
       this.client,
       this.data,
@@ -54,13 +45,6 @@ export class Populator extends AbstractPopulator {
       this.logger,
       this.profiler,
       this.allowCreation
-    );
-
-    const actorPopulator = new ActorPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
     );
 
     const calloutPopulator = new CalloutPopulator(
@@ -82,12 +66,8 @@ export class Populator extends AbstractPopulator {
     await organizationPopulator.populate();
     await spacePopulator.populate();
     await userPopulator.populate();
-    await groupPopulator.populate();
 
     await journeyPopulator.populate();
-
-    // populate the specific opportunity entities. Todo: get this so it can also be updated
-    await actorPopulator.populate();
 
     await calloutPopulator.populate();
 

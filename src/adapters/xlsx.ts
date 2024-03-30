@@ -1,31 +1,23 @@
 import XLSX from 'xlsx';
 import {
-  Actor,
-  ActorGroup,
   Callout,
   Post,
   Challenge,
   Space,
-  Group,
   Opportunity,
   Organization,
-  Relation,
   User,
-} from '../models';
+} from '../inputModels';
 import {
-  ActorGroupsSheet,
-  ActorsSheet,
   PostSheet,
   ChallengesSheet,
   SpaceSheet,
-  GroupsSheet,
   OpportunitiesSheet,
   OrganizationsSheet,
-  RelationSheet,
   Sheets,
   UserSheet,
   CalloutSheet,
-} from '../models/sheets';
+} from '../inputModels/sheets';
 import { toArray } from '../utils/string-to-array';
 import { AbstractDataAdapter } from './data-adapter';
 
@@ -42,29 +34,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       console.error(ex.message);
       this.workbook = XLSX.utils.book_new();
     }
-  }
-
-  actors(): Actor[] {
-    const sheet = this.workbook.Sheets[Sheets.Actors];
-    const result = XLSX.utils.sheet_to_json(sheet) as ActorsSheet[];
-    return result.map(x => ({
-      name: x.NAME,
-      description: x.DESCRIPTION,
-      impact: x.IMPACT,
-      actorGroup: x.ACTOR_GROUP,
-      value: x.VALUE,
-      opportunity: x.OPPORTUNITY,
-    }));
-  }
-
-  actorGroups(): ActorGroup[] {
-    const sheet = this.workbook.Sheets[Sheets.ActorGroups];
-    const result = XLSX.utils.sheet_to_json(sheet) as ActorGroupsSheet[];
-    return result.map(x => ({
-      name: x.NAME,
-      description: x.DESCRIPTION,
-      opportunity: x.OPPORTUNITY,
-    }));
   }
 
   callouts(): Callout[] {
@@ -98,6 +67,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     const sheet = this.workbook.Sheets[Sheets.Challenges];
     const result = XLSX.utils.sheet_to_json(sheet) as ChallengesSheet[];
     return result.map(x => ({
+      process: x.PROCESS === 'Y', // 'Y' or 'N
       nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
@@ -144,8 +114,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       organization: x.ORGANIZATION,
       skills: toArray(x.SKILLS),
       twitter: x.TWITTER,
-      // Membership
-      groups: toArray(x.GROUPS),
     }));
   }
   public opportunities = (): Opportunity[] => {
@@ -175,17 +143,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       ref1Value: x.REF_1_VALUE,
       ref1Description: x.REF_1_DESCRIPTION,
       tags: toArray(x.TAGS),
-    }));
-  };
-
-  public groups = (): Group[] => {
-    const sheet = this.workbook.Sheets[Sheets.Groups];
-    const result = XLSX.utils.sheet_to_json(sheet) as GroupsSheet[];
-    return result.map(x => ({
-      name: x.NAME,
-      description: x.DESCRIPTION,
-      avatar: x.AVATAR,
-      keywords: toArray(x.KEYWORDS),
     }));
   };
 
@@ -226,20 +183,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       city: x.CITY,
     }));
   };
-
-  relations(): Relation[] {
-    const sheet = this.workbook.Sheets[Sheets.Relations];
-    const result = XLSX.utils.sheet_to_json(sheet) as RelationSheet[];
-
-    return result.map(x => ({
-      type: x.TYPE,
-      actorName: x.ACTOR_NAME,
-      actorRole: x.ACTOR_ROLE,
-      actorType: x.ACTOR_TYPE,
-      description: x.DESCRIPTION,
-      opportunity: x.OPPORTUNITY,
-    }));
-  }
 
   private stringToBoolean(value: string): boolean {
     if (String(value).toLowerCase() === 'false') {

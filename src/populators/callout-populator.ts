@@ -6,7 +6,7 @@ import {
   CalloutType,
   CalloutVisibility,
 } from '../generated/graphql';
-import { Post } from '../models';
+import { Post } from '../inputModels';
 import { AbstractPopulator } from './abstract-populator';
 
 export class CalloutPopulator extends AbstractPopulator {

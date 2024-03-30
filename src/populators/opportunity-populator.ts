@@ -1,6 +1,6 @@
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Opportunity } from '../models';
+import { Opportunity } from '../inputModels';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 import {
@@ -9,8 +9,8 @@ import {
   assignUserAsLead,
   contributorsToAdd,
 } from '../utils';
-import { InnovationFlowType } from '@alkemio/client-lib';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
+import { UpdateOpportunityInput } from '@alkemio/client-lib';
 
 export class OpportunityPopulator extends AbstractPopulator {
   constructor(
@@ -52,11 +52,10 @@ export class OpportunityPopulator extends AbstractPopulator {
         continue;
       }
 
-      const existingOpportunity =
-        await this.client.alkemioLibClient.opportunityByNameID(
-          this.spaceID,
-          opportunityData.nameID
-        );
+      const existingOpportunity = await this.client.getOpportunityByNameID(
+        this.spaceID,
+        opportunityData.nameID
+      );
 
       try {
         if (existingOpportunity) {
@@ -96,10 +95,14 @@ export class OpportunityPopulator extends AbstractPopulator {
     const spaceInfo = await this.client.alkemioLibClient.spaceInfo(
       this.spaceID
     );
-    const innovationFlowTemplate =
-      spaceInfo?.templates?.innovationFlowTemplates?.filter(
-        x => x.type === InnovationFlowType.Opportunity
-      )[0];
+    const libraryTemplates: { id: string }[] =
+      spaceInfo?.account.library?.innovationFlowTemplates || [];
+    if (libraryTemplates.length === 0) {
+      throw new Error(
+        `No challenge innovation flow template found in space ${this.spaceID}`
+      );
+    }
+    const innovationFlowTemplate = libraryTemplates[0];
 
     if (!innovationFlowTemplate)
       throw new Error(
@@ -126,7 +129,9 @@ export class OpportunityPopulator extends AbstractPopulator {
           vision: opportunityData.vision,
         },
         tags: opportunityData.tags || [],
-        innovationFlowTemplateID: innovationFlowTemplate.id,
+        collaborationData: {
+          innovationFlowTemplateID: innovationFlowTemplate.id,
+        },
       });
 
     if (!createdOpportunity) {
@@ -174,30 +179,32 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityData: Opportunity,
     existingOpportunity: any
   ) {
-    const updatedOpportunity =
-      await this.client.alkemioLibClient.updateOpportunity({
-        ID: existingOpportunity.id,
-        profileData: {
-          displayName: opportunityData.displayName,
-          description: opportunityData.background,
-          tagline: opportunityData.tagline,
-          location: {
-            country: opportunityData.country,
-            city: opportunityData.city,
+    const updateData: UpdateOpportunityInput = {
+      ID: existingOpportunity.id,
+      profileData: {
+        displayName: opportunityData.displayName,
+        description: opportunityData.background,
+        tagline: opportunityData.tagline,
+        location: {
+          country: opportunityData.country,
+          city: opportunityData.city,
+        },
+        tagsets: [
+          {
+            ID: existingOpportunity.profile.tagset.id,
+            tags: opportunityData.tags || [],
           },
-          tagsets: [
-            {
-              ID: existingOpportunity.profile.tagset.id,
-              tags: opportunityData.tags || [],
-            },
-          ],
-        },
-        context: {
-          impact: opportunityData.impact,
-          who: opportunityData.who,
-          vision: opportunityData.vision,
-        },
-      });
+        ],
+      },
+      context: {
+        impact: opportunityData.impact,
+        who: opportunityData.who,
+        vision: opportunityData.vision,
+      },
+    };
+
+    const updatedOpportunity =
+      await this.client.alkemioLibClient.updateOpportunity(updateData);
 
     const visuals = updatedOpportunity?.profile.visuals || [];
     await this.client.updateVisualsOnJourneyProfile(
@@ -225,7 +232,7 @@ export class OpportunityPopulator extends AbstractPopulator {
     opportunityID: string,
     opportunityData: Opportunity
   ) {
-    const opportunity = await this.client.alkemioLibClient.opportunityByNameID(
+    const opportunity = await this.client.getOpportunityByNameIdOrFail(
       this.spaceID,
       opportunityID
     );
@@ -286,10 +293,13 @@ export class OpportunityPopulator extends AbstractPopulator {
   ) {
     const userInfo = await this.client.alkemioLibClient.user(userNameId);
     if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
-    await this.client.alkemioLibClient.addUserToOpportunity(
+    const opportunity = await this.client.getOpportunityByNameIdOrFail(
       this.spaceID,
-      opportunityNameID,
-      userInfo.nameID
+      opportunityNameID
+    );
+    await this.client.alkemioLibClient.addUserToCommunity(
+      userInfo.id,
+      opportunity.community.id
     );
   }
 }

@@ -1,12 +1,11 @@
 import {
   Organization,
-  InnovationFlowType,
   UpdateChallengeInput,
   UpdateTagsetInput,
 } from '@alkemio/client-lib';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Challenge } from '../models';
+import { Challenge } from '../inputModels';
 import { ReferencesCreator } from '../utils/references-creator';
 import { AbstractPopulator } from './abstract-populator';
 import {
@@ -49,6 +48,11 @@ export class ChallengePopulator extends AbstractPopulator {
         break;
       }
 
+      if (!challengeData.process) {
+        // Do not process this challenge
+        break;
+      }
+
       // start processing
       this.logger.info(`Processing challenge: ${challengeData.nameID}....`);
       const challengeProfileID = '===> challengeCreation - FULL';
@@ -76,15 +80,14 @@ export class ChallengePopulator extends AbstractPopulator {
       const spaceInfo = await this.client.alkemioLibClient.spaceInfo(
         this.spaceID
       );
-      const innovationFlowTemplate =
-        spaceInfo?.templates?.innovationFlowTemplates?.filter(
-          x => x.type === InnovationFlowType.Challenge
-        )[0];
-
-      if (!innovationFlowTemplate)
+      const libraryTemplates: { id: string }[] =
+        spaceInfo?.account.library?.innovationFlowTemplates || [];
+      if (libraryTemplates.length === 0) {
         throw new Error(
           `No challenge innovation flow template found in space ${this.spaceID}`
         );
+      }
+      const innovationFlowTemplate = libraryTemplates[0];
 
       const createdChallenge =
         await this.client.alkemioLibClient.createChallenge({
@@ -106,7 +109,9 @@ export class ChallengePopulator extends AbstractPopulator {
             who: challengeData.who,
           },
           tags: challengeData.tags || [],
-          innovationFlowTemplateID: innovationFlowTemplate.id,
+          collaborationData: {
+            innovationFlowTemplateID: innovationFlowTemplate.id,
+          },
         });
       this.logger.info(`....created: ${challengeData.displayName}`);
 

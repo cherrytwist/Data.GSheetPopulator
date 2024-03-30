@@ -1,16 +1,12 @@
 import {
-  Actor,
-  ActorGroup,
   Post,
   Challenge,
   Space,
-  Group,
   Opportunity,
   Organization,
-  Relation,
   User,
   Callout,
-} from '../models';
+} from '../inputModels';
 import { AbstractDataAdapter } from './data-adapter';
 
 export class BaseDataAdapter extends AbstractDataAdapter {
@@ -18,15 +14,6 @@ export class BaseDataAdapter extends AbstractDataAdapter {
     return [];
   }
   posts(): Post[] {
-    return [];
-  }
-  relations(): Relation[] {
-    return [];
-  }
-  actors(): Actor[] {
-    return [];
-  }
-  actorGroups(): ActorGroup[] {
     return [];
   }
   spaces(): Space[] {
@@ -42,9 +29,6 @@ export class BaseDataAdapter extends AbstractDataAdapter {
     return [];
   }
   organizations(): Organization[] {
-    return [];
-  }
-  groups(): Group[] {
     return [];
   }
   hosts(): Organization[] {

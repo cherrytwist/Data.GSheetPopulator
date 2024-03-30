@@ -1,0 +1,27 @@
+query opportunitiesInSpace($spaceID: UUID_NAMEID!) {
+  space(ID: $spaceID) {
+    challenges {
+      nameID
+      id
+      opportunities {
+        id
+        nameID
+        community {
+          id
+          leadOrganizations: organizationsInRole(role: LEAD) {
+            id
+            nameID
+          }
+          memberOrganizations: organizationsInRole(role: MEMBER) {
+            id
+            nameID
+          }
+          leadUsers: usersInRole(role: LEAD) {
+            id
+            nameID
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,4 @@
 export enum Sheets {
-  Actors = 'Actors',
-  ActorGroups = 'ActorGroups',
   Callouts = 'Callouts',
   Posts = 'Posts',
   Space = 'Space',
@@ -8,9 +6,7 @@ export enum Sheets {
   Challenges = 'Challenges',
   Opportunities = 'Opportunities',
   Organizations = 'Organizations',
-  Groups = 'Groups',
   Users = 'Users',
-  Relations = 'Relations',
 }
 
 export interface SpaceSheet {
@@ -33,6 +29,7 @@ export interface SpaceSheet {
 }
 
 export interface ChallengesSheet {
+  PROCESS: string;
   NAME_ID: string;
   DISPLAY_NAME: string;
   TAGLINE: string;
@@ -92,14 +89,6 @@ export interface OrganizationsSheet {
   CITY: string;
   AVATAR: string;
 }
-
-export interface GroupsSheet {
-  NAME: string;
-  DESCRIPTION: string;
-  KEYWORDS: string;
-  AVATAR: string;
-}
-
 export interface UserSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
@@ -118,32 +107,6 @@ export interface UserSheet {
   KEYWORDS: string;
   LINKEDIN: string;
   TWITTER: string;
-  // Space membership
-  GROUPS: string;
-}
-
-export interface ActorGroupsSheet {
-  NAME: string;
-  DESCRIPTION: string;
-  OPPORTUNITY: string;
-}
-
-export interface ActorsSheet {
-  NAME: string;
-  DESCRIPTION: string;
-  ACTOR_GROUP: string;
-  VALUE: string;
-  IMPACT: string;
-  OPPORTUNITY: string;
-}
-
-export interface RelationSheet {
-  TYPE: string;
-  ACTOR_NAME: string;
-  ACTOR_TYPE: string;
-  ACTOR_ROLE: string;
-  DESCRIPTION: string;
-  OPPORTUNITY: string;
 }
 
 export interface PostSheet {

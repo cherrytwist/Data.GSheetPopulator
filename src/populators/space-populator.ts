@@ -1,11 +1,15 @@
 import { assignUserAsLead } from '../utils';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Space } from '../models/space';
+import { Space } from '../inputModels/space';
 import { AbstractPopulator } from './abstract-populator';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { assignUserAsMember } from '../utils/assign-user-as-member';
-import { CreateSpaceInput, UpdateTagsetInput } from '@alkemio/client-lib';
+import {
+  CreateSpaceInput,
+  UpdateSpaceInput,
+  UpdateTagsetInput,
+} from '@alkemio/client-lib';
 
 export class SpacePopulator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -54,23 +58,21 @@ export class SpacePopulator extends AbstractPopulator {
             throw new Error(msg);
           }
         }
-        await this.updateSpace(spaceData);
 
-        await this.client.alkemioLibClient.updateReferencesOnSpace(
-          spaceData.nameID,
-          [
-            {
-              name: 'website',
-              uri: spaceData.refWebsite,
-              description: 'The space website',
-            },
-            {
-              name: 'repo',
-              uri: spaceData.refRepo,
-              description: 'The space repository',
-            },
-          ]
-        );
+        const spaceID = await this.updateSpace(spaceData);
+
+        await this.client.alkemioLibClient.updateReferencesOnSpace(spaceID, [
+          {
+            name: 'website',
+            uri: spaceData.refWebsite,
+            description: 'The space website',
+          },
+          {
+            name: 'repo',
+            uri: spaceData.refRepo,
+            description: 'The space repository',
+          },
+        ]);
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
@@ -100,8 +102,8 @@ export class SpacePopulator extends AbstractPopulator {
         tags: spaceData.tags || [],
       });
     }
-    const updatedSpace = await this.client.alkemioLibClient.updateSpace({
-      ID: spaceData.nameID,
+    const spaceInput: UpdateSpaceInput = {
+      ID: spaceProfileData.data.space.id,
       profileData: {
         displayName: spaceData.displayName,
         description: spaceData.background,
@@ -113,7 +115,10 @@ export class SpacePopulator extends AbstractPopulator {
         vision: spaceData.vision,
         who: spaceData.who,
       },
-    });
+    };
+    const updatedSpace = await this.client.alkemioLibClient.updateSpace(
+      spaceInput
+    );
 
     const visuals = updatedSpace?.profile?.visuals || [];
     await this.client.updateVisualsOnJourneyProfile(
@@ -139,12 +144,15 @@ export class SpacePopulator extends AbstractPopulator {
     }
 
     this.logger.info(`Space updated: ${spaceData.displayName}`);
+    return spaceProfileData.data.space.id;
   }
 
   async createSpace(spaceData: Space) {
     const input: CreateSpaceInput = {
       nameID: spaceData.nameID,
-      hostID: spaceData.host,
+      accountData: {
+        hostID: spaceData.host,
+      },
       profileData: {
         displayName: spaceData.displayName,
       },
