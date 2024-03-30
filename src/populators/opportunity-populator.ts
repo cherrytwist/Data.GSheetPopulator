@@ -11,6 +11,7 @@ import {
 } from '../utils';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { UpdateOpportunityInput } from '@alkemio/client-lib';
+import { OpportunityApi } from '../apiModels/opportunityApi';
 
 export class OpportunityPopulator extends AbstractPopulator {
   constructor(
@@ -140,10 +141,16 @@ export class OpportunityPopulator extends AbstractPopulator {
       );
     }
 
-    for (const user of opportunityData.memberUsers) {
-      await this.addUserToOpportunity(user, opportunityData.nameID);
-    }
-    await this.populateCommunityRoles(createdOpportunity?.id, opportunityData);
+    const opportunityWithCommunity =
+      await this.client.getOpportunityByNameIdOrFail(
+        this.spaceID,
+        opportunityData.nameID
+      );
+    await this.populateMembers(opportunityWithCommunity, opportunityData);
+    await this.populateCommunityRoles(
+      opportunityWithCommunity,
+      opportunityData
+    );
 
     const visuals = createdOpportunity?.profile?.visuals || [];
     await this.client.updateVisualsOnJourneyProfile(
@@ -220,30 +227,53 @@ export class OpportunityPopulator extends AbstractPopulator {
       );
     }
 
-    for (const user of opportunityData.memberUsers) {
-      await this.addUserToOpportunity(user, opportunityData.nameID);
-    }
-    await this.populateCommunityRoles(updatedOpportunity?.id, opportunityData);
+    const opportunityWithCommunity =
+      await this.client.getOpportunityByNameIdOrFail(
+        this.spaceID,
+        opportunityData.nameID
+      );
+
+    await this.populateMembers(opportunityWithCommunity, opportunityData);
+    await this.populateCommunityRoles(
+      opportunityWithCommunity,
+      opportunityData
+    );
 
     this.logger.info(`...updated opportunity: ${opportunityData.displayName}`);
   }
 
-  async populateCommunityRoles(
-    opportunityID: string,
+  async populateMembers(
+    opportunity: OpportunityApi,
     opportunityData: Opportunity
   ) {
-    const opportunity = await this.client.getOpportunityByNameIdOrFail(
-      this.spaceID,
-      opportunityID
-    );
-
-    const communityID = opportunity?.community?.id;
-    if (!communityID) {
+    const community = opportunity.community;
+    if (!community) {
       throw new Error(
-        `Opportunity ${opportunity?.profile.displayName} doesn't have a community with ID ${communityID}`
+        `Opportunity ${opportunityData.displayName} has no community`
       );
     }
+    const challengeMembers = community?.memberUsers || [];
+    for (const user of opportunityData.memberUsers) {
+      this.logger.info(`...adding user to Opportunity: ${user}`);
+      const existingMember = challengeMembers.find(
+        member => member.nameID === user.toLowerCase()
+      );
+      if (!existingMember) {
+        const userInfo = await this.client.alkemioLibClient.user(user);
+        if (!userInfo) throw new Error(`Unable to locate user: ${user}`);
+        await this.client.alkemioLibClient.addUserToCommunity(
+          userInfo.nameID,
+          community.id
+        );
+      }
+    }
+  }
 
+  async populateCommunityRoles(
+    opportunity: OpportunityApi,
+    opportunityData: Opportunity
+  ) {
+    const communityID = opportunity.community.id;
     const existingLeadOrgs = opportunity?.community?.leadOrganizations?.map(
       org => org.nameID
     );
@@ -284,22 +314,6 @@ export class OpportunityPopulator extends AbstractPopulator {
       this.logger,
       communityID,
       leadUsersToAdd
-    );
-  }
-
-  private async addUserToOpportunity(
-    userNameId: string,
-    opportunityNameID: string
-  ) {
-    const userInfo = await this.client.alkemioLibClient.user(userNameId);
-    if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
-    const opportunity = await this.client.getOpportunityByNameIdOrFail(
-      this.spaceID,
-      opportunityNameID
-    );
-    await this.client.alkemioLibClient.addUserToCommunity(
-      userInfo.id,
-      opportunity.community.id
     );
   }
 }

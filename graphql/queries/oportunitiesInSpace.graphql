@@ -6,6 +6,12 @@ query opportunitiesInSpace($spaceID: UUID_NAMEID!) {
       opportunities {
         id
         nameID
+        profile {
+          tagset {
+            id
+            tags
+          }
+        }
         community {
           id
           leadOrganizations: organizationsInRole(role: LEAD) {
@@ -17,6 +23,10 @@ query opportunitiesInSpace($spaceID: UUID_NAMEID!) {
             nameID
           }
           leadUsers: usersInRole(role: LEAD) {
+            id
+            nameID
+          }
+          memberUsers: usersInRole(role: MEMBER) {
             id
             nameID
           }

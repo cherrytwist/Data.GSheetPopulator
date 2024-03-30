@@ -3,11 +3,15 @@ export type OpportunityApi = {
   nameID: string;
   profile: {
     displayName: string;
+    tagset: {
+      id: string;
+    };
   };
   community: {
     id: string;
     leadOrganizations: Contributor[];
     memberOrganizations: Contributor[];
+    memberUsers: Contributor[];
     leadUsers: Contributor[];
   };
 };

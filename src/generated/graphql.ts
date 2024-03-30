@@ -11958,9 +11958,11 @@ export type ChallengeDetailsQuery = {
       community?:
         | {
             id: string;
-            memberUsers?: Array<{ nameID: string }> | undefined;
-            memberOrganizations?: Array<{ nameID: string }> | undefined;
-            usersInRole?: Array<{ nameID: string }> | undefined;
+            memberOrganizations?:
+              | Array<{ id: string; nameID: string }>
+              | undefined;
+            memberUsers?: Array<{ id: string; nameID: string }> | undefined;
+            leadUsers?: Array<{ id: string; nameID: string }> | undefined;
             leadOrganizations?: Array<{ nameID: string }> | undefined;
           }
         | undefined;
@@ -12011,6 +12013,9 @@ export type OpportunitiesInSpaceQuery = {
             | Array<{
                 id: string;
                 nameID: string;
+                profile: {
+                  tagset?: { id: string; tags: Array<string> } | undefined;
+                };
                 community?:
                   | {
                       id: string;
@@ -12023,6 +12028,9 @@ export type OpportunitiesInSpaceQuery = {
                       leadUsers?:
                         | Array<{ id: string; nameID: string }>
                         | undefined;
+                      memberUsers?:
+                        | Array<{ id: string; nameID: string }>
+                        | undefined;
                     }
                   | undefined;
               }>
@@ -12030,6 +12038,29 @@ export type OpportunitiesInSpaceQuery = {
         }>
       | undefined;
   };
+};
+
+export type OrganizationsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type OrganizationsQuery = {
+  organizations: Array<{
+    id: string;
+    nameID: string;
+    profile: {
+      id: string;
+      displayName: string;
+      description?: any | undefined;
+      visual?: { id: string; uri: string } | undefined;
+    };
+    agent?:
+      | {
+          id: string;
+          credentials?:
+            | Array<{ type: AuthorizationCredential; resourceID: string }>
+            | undefined;
+        }
+      | undefined;
+  }>;
 };
 
 export type SpaceCalloutsQueryVariables = Exact<{
@@ -12212,13 +12243,16 @@ export const ChallengeDetailsDocument = gql`
         }
         community {
           id
-          memberUsers {
-            nameID
-          }
           memberOrganizations: organizationsInRole(role: MEMBER) {
+            id
             nameID
           }
-          usersInRole(role: LEAD) {
+          memberUsers: usersInRole(role: MEMBER) {
+            id
+            nameID
+          }
+          leadUsers: usersInRole(role: LEAD) {
+            id
             nameID
           }
           leadOrganizations: organizationsInRole(role: LEAD) {
@@ -12271,6 +12305,12 @@ export const OpportunitiesInSpaceDocument = gql`
         opportunities {
           id
           nameID
+          profile {
+            tagset {
+              id
+              tags
+            }
+          }
           community {
             id
             leadOrganizations: organizationsInRole(role: LEAD) {
@@ -12285,7 +12325,35 @@ export const OpportunitiesInSpaceDocument = gql`
               id
               nameID
             }
+            memberUsers: usersInRole(role: MEMBER) {
+              id
+              nameID
+            }
           }
+        }
+      }
+    }
+  }
+`;
+export const OrganizationsDocument = gql`
+  query organizations {
+    organizations {
+      id
+      nameID
+      profile {
+        id
+        displayName
+        visual(type: AVATAR) {
+          id
+          uri
+        }
+        description
+      }
+      agent {
+        id
+        credentials {
+          type
+          resourceID
         }
       }
     }
@@ -12386,6 +12454,7 @@ const ChallengeCalloutsDocumentString = print(ChallengeCalloutsDocument);
 const ChallengeDetailsDocumentString = print(ChallengeDetailsDocument);
 const MeDocumentString = print(MeDocument);
 const OpportunitiesInSpaceDocumentString = print(OpportunitiesInSpaceDocument);
+const OrganizationsDocumentString = print(OrganizationsDocument);
 const SpaceCalloutsDocumentString = print(SpaceCalloutsDocument);
 const SpaceProfileDocumentString = print(SpaceProfileDocument);
 const UserDetailsDocumentString = print(UserDetailsDocument);
@@ -12590,6 +12659,26 @@ export function getSdk(
             { ...requestHeaders, ...wrappedRequestHeaders }
           ),
         'opportunitiesInSpace',
+        'query'
+      );
+    },
+    organizations(
+      variables?: OrganizationsQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<{
+      data: OrganizationsQuery;
+      extensions?: any;
+      headers: Dom.Headers;
+      status: number;
+    }> {
+      return withWrapper(
+        wrappedRequestHeaders =>
+          client.rawRequest<OrganizationsQuery>(
+            OrganizationsDocumentString,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        'organizations',
         'query'
       );
     },

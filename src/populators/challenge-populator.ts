@@ -129,10 +129,7 @@ export class ChallengePopulator extends AbstractPopulator {
         );
       }
 
-      for (const user of challengeData.memberUsers) {
-        this.logger.info(`...adding user to Challenge: ${user}`);
-        await this.addUserToChallenge(user, challengeData.nameID);
-      }
+      await this.populateMembers(challengeData.nameID, challengeData);
       await this.populateCommunityRoles(createdChallenge?.id, challengeData);
     } catch (e: any) {
       if (e.response && e.response.errors) {
@@ -142,6 +139,35 @@ export class ChallengePopulator extends AbstractPopulator {
       } else {
         this.logger.error(
           `Unable to create challenge (${challengeData.displayName}): ${e.message}`
+        );
+      }
+    }
+  }
+
+  async populateMembers(challengeNameID: string, challengeData: Challenge) {
+    const challengeCommunityDetails =
+      await this.client.sdkClient.challengeDetails({
+        spaceID: this.spaceID,
+        challengeID: challengeNameID,
+      });
+    const community = challengeCommunityDetails?.data.space.challenge.community;
+    if (!community) {
+      throw new Error(
+        `Challenge ${challengeData.displayName} has no community`
+      );
+    }
+    const challengeMembers = community?.memberUsers || [];
+    for (const user of challengeData.memberUsers) {
+      this.logger.info(`...adding user to Challenge: ${user}`);
+      const existingMember = challengeMembers.find(
+        member => member.nameID === user.toLowerCase()
+      );
+      if (!existingMember) {
+        const userInfo = await this.client.alkemioLibClient.user(user);
+        if (!userInfo) throw new Error(`Unable to locate user: ${user}`);
+        await this.client.alkemioLibClient.addUserToCommunity(
+          userInfo.nameID,
+          community.id
         );
       }
     }
@@ -234,6 +260,7 @@ export class ChallengePopulator extends AbstractPopulator {
         await this.client.alkemioLibClient.updateChallenge(
           updateChallengeInput
         );
+
       const visuals = updatedChallenge?.profile?.visuals || [];
       await this.client.updateVisualsOnJourneyProfile(
         visuals,
@@ -242,10 +269,7 @@ export class ChallengePopulator extends AbstractPopulator {
         challengeData.visualAvatar
       );
 
-      for (const user of challengeData.memberUsers) {
-        this.logger.info(`...adding user to Challenge: ${user}`);
-        await this.addUserToChallenge(user, challengeData.nameID);
-      }
+      await this.populateMembers(challengeData.nameID, challengeData);
       await this.populateCommunityRoles(challenge.id, challengeData);
 
       this.logger.info(`....updated: ${challengeData.displayName}`);
@@ -280,18 +304,5 @@ export class ChallengePopulator extends AbstractPopulator {
       challengeData.ref1Description
     );
     return references.getReferences();
-  }
-
-  private async addUserToChallenge(
-    userNameId: string,
-    challengeNameID: string
-  ) {
-    const userInfo = await this.client.alkemioLibClient.user(userNameId);
-    if (!userInfo) throw new Error(`Unable to locate user: ${userNameId}`);
-    await this.client.alkemioLibClient.addUserToChallenge(
-      this.spaceID,
-      challengeNameID,
-      userInfo.nameID
-    );
   }
 }

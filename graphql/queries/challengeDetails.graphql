@@ -17,13 +17,16 @@ query challengeDetails($spaceID: UUID_NAMEID!, $challengeID: UUID_NAMEID!) {
       }
       community {
         id
-        memberUsers {
-          nameID
-        }
         memberOrganizations: organizationsInRole(role: MEMBER) {
+          id
           nameID
         }
-        usersInRole(role: LEAD) {
+        memberUsers: usersInRole(role: MEMBER) {
+          id
+          nameID
+        }
+        leadUsers: usersInRole(role: LEAD) {
+          id
           nameID
         }
         leadOrganizations: organizationsInRole(role: LEAD) {
