@@ -1605,7 +1605,7 @@ export type CreateSpaceInput = {
   tags?: InputMaybe<Array<Scalars['String']>>;
 };
 
-export type CreateSubspaceOnSpaceInput = {
+export type CreateSubspaceInput = {
   collaborationData?: InputMaybe<CreateCollaborationInput>;
   context?: InputMaybe<CreateContextInput>;
   /** A readable identifier, unique within the containing Account. */
@@ -2919,7 +2919,7 @@ export type MutationCreateRelationOnCollaborationArgs = {
 };
 
 export type MutationCreateSubspaceArgs = {
-  subspaceData: CreateSubspaceOnSpaceInput;
+  subspaceData: CreateSubspaceInput;
 };
 
 export type MutationCreateTagsetOnProfileArgs = {
@@ -5864,7 +5864,7 @@ export type ResolversTypes = {
   CreateReferenceOnProfileInput: CreateReferenceOnProfileInput;
   CreateRelationOnCollaborationInput: CreateRelationOnCollaborationInput;
   CreateSpaceInput: CreateSpaceInput;
-  CreateSubspaceOnSpaceInput: CreateSubspaceOnSpaceInput;
+  CreateSubspaceInput: CreateSubspaceInput;
   CreateTagsetInput: CreateTagsetInput;
   CreateTagsetOnProfileInput: CreateTagsetOnProfileInput;
   CreateUserGroupInput: CreateUserGroupInput;
@@ -6304,7 +6304,7 @@ export type ResolversParentTypes = {
   CreateReferenceOnProfileInput: CreateReferenceOnProfileInput;
   CreateRelationOnCollaborationInput: CreateRelationOnCollaborationInput;
   CreateSpaceInput: CreateSpaceInput;
-  CreateSubspaceOnSpaceInput: CreateSubspaceOnSpaceInput;
+  CreateSubspaceInput: CreateSubspaceInput;
   CreateTagsetInput: CreateTagsetInput;
   CreateTagsetOnProfileInput: CreateTagsetOnProfileInput;
   CreateUserGroupInput: CreateUserGroupInput;
@@ -11801,6 +11801,22 @@ export type SpaceProfileFragment = {
   context: { id: string };
 };
 
+export type AssignCommunityRoleToOrganizationMutationVariables = Exact<{
+  input: AssignCommunityRoleToOrganizationInput;
+}>;
+
+export type AssignCommunityRoleToOrganizationMutation = {
+  assignCommunityRoleToOrganization: { id: string };
+};
+
+export type AssignCommunityRoleToUserMutationVariables = Exact<{
+  input: AssignCommunityRoleToUserInput;
+}>;
+
+export type AssignCommunityRoleToUserMutation = {
+  assignCommunityRoleToUser: { id: string };
+};
+
 export type CreateAccountMutationVariables = Exact<{
   accountData: CreateAccountInput;
 }>;
@@ -12216,6 +12232,22 @@ export const SpaceProfileFragmentDoc = gql`
     }
   }
 `;
+export const AssignCommunityRoleToOrganizationDocument = gql`
+  mutation assignCommunityRoleToOrganization(
+    $input: AssignCommunityRoleToOrganizationInput!
+  ) {
+    assignCommunityRoleToOrganization(roleData: $input) {
+      id
+    }
+  }
+`;
+export const AssignCommunityRoleToUserDocument = gql`
+  mutation assignCommunityRoleToUser($input: AssignCommunityRoleToUserInput!) {
+    assignCommunityRoleToUser(roleData: $input) {
+      id
+    }
+  }
+`;
 export const CreateAccountDocument = gql`
   mutation createAccount($accountData: CreateAccountInput!) {
     createAccount(accountData: $accountData) {
@@ -12452,6 +12484,12 @@ const defaultWrapper: SdkFunctionWrapper = (
   _operationName,
   _operationType
 ) => action();
+const AssignCommunityRoleToOrganizationDocumentString = print(
+  AssignCommunityRoleToOrganizationDocument
+);
+const AssignCommunityRoleToUserDocumentString = print(
+  AssignCommunityRoleToUserDocument
+);
 const CreateAccountDocumentString = print(CreateAccountDocument);
 const CreateCalloutOnCollaborationDocumentString = print(
   CreateCalloutOnCollaborationDocument
@@ -12480,6 +12518,46 @@ export function getSdk(
   withWrapper: SdkFunctionWrapper = defaultWrapper
 ) {
   return {
+    assignCommunityRoleToOrganization(
+      variables: AssignCommunityRoleToOrganizationMutationVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<{
+      data: AssignCommunityRoleToOrganizationMutation;
+      extensions?: any;
+      headers: Dom.Headers;
+      status: number;
+    }> {
+      return withWrapper(
+        wrappedRequestHeaders =>
+          client.rawRequest<AssignCommunityRoleToOrganizationMutation>(
+            AssignCommunityRoleToOrganizationDocumentString,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        'assignCommunityRoleToOrganization',
+        'mutation'
+      );
+    },
+    assignCommunityRoleToUser(
+      variables: AssignCommunityRoleToUserMutationVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<{
+      data: AssignCommunityRoleToUserMutation;
+      extensions?: any;
+      headers: Dom.Headers;
+      status: number;
+    }> {
+      return withWrapper(
+        wrappedRequestHeaders =>
+          client.rawRequest<AssignCommunityRoleToUserMutation>(
+            AssignCommunityRoleToUserDocumentString,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders }
+          ),
+        'assignCommunityRoleToUser',
+        'mutation'
+      );
+    },
     createAccount(
       variables: CreateAccountMutationVariables,
       requestHeaders?: Dom.RequestInit['headers']

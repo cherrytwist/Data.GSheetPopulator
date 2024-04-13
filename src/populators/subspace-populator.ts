@@ -1,4 +1,5 @@
 import {
+  CommunityRole,
   Organization,
   UpdateSpaceInput,
   UpdateTagsetInput,
@@ -142,12 +143,14 @@ export class SubspacePopulator extends AbstractPopulator {
   }
 
   async populateMembers(subspaceNameID: string, subspaceData: Subspace) {
-    const subspaceCommunityDetails =
-      await this.client.sdkClient.subspaceProfileCommunity({
-        spaceID: this.spaceID,
-        subspaceID: subspaceNameID,
-      });
-    const community = subspaceCommunityDetails?.data.space.subspace.community;
+    const response = await this.client.subspaceByNameID(
+      this.spaceID,
+      subspaceNameID
+    );
+    if (!response) {
+      throw new Error(`subspace ${subspaceNameID} not found`);
+    }
+    const community = response.community;
     const subspaceMembers = community?.memberUsers || [];
     for (const user of subspaceData.memberUsers) {
       this.logger.info(`...adding user to Subspace: ${user}`);
@@ -157,16 +160,17 @@ export class SubspacePopulator extends AbstractPopulator {
       if (!existingMember) {
         const userInfo = await this.client.alkemioLibClient.user(user);
         if (!userInfo) throw new Error(`Unable to locate user: ${user}`);
-        await this.client.alkemioLibClient.addUserToCommunity(
+        await this.client.assignCommunityRoleToUser(
           userInfo.nameID,
-          community.id
+          community.id,
+          CommunityRole.Member
         );
       }
     }
   }
 
   async populateCommunityRoles(subspaceID: string, subspaceData: Subspace) {
-    const subspace = await this.client.alkemioLibClient.subspaceByNameID(
+    const subspace = await this.client.subspaceByNameID(
       this.spaceID,
       subspaceID
     );

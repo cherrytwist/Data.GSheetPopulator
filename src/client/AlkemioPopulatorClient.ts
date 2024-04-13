@@ -12,7 +12,11 @@ import {
   UpdatePostInput,
 } from '../generated/graphql';
 import { Logger } from 'winston';
-import { AlkemioClient, AlkemioClientConfig } from '@alkemio/client-lib';
+import {
+  AlkemioClient,
+  AlkemioClientConfig,
+  CommunityRole,
+} from '@alkemio/client-lib';
 import { SpaceProfile } from '../apiModels/spaceProfile';
 import { SpaceProfileCommunity } from '../apiModels/spaceProfileCommunity';
 import { SpaceCollaboration } from '../apiModels/spaceCollaboration';
@@ -89,24 +93,56 @@ export class AlkemioPopulatorClient {
     return spaceCollaboration;
   }
 
+  async assignCommunityRoleToUser(
+    userID: string,
+    communityID: string,
+    role: CommunityRole
+  ) {
+    const { data } = await this.sdkClient.assignCommunityRoleToUser({
+      input: {
+        role: role,
+        userID: userID,
+        communityID: communityID,
+      },
+    });
+
+    return data?.assignCommunityRoleToUser;
+  }
+
+  async assignCommunityRoleToOrg(
+    organizationID: string,
+    communityID: string,
+    role: CommunityRole
+  ) {
+    const { data } = await this.sdkClient.assignCommunityRoleToOrganization({
+      input: {
+        role: role,
+        organizationID: organizationID,
+        communityID: communityID,
+      },
+    });
+
+    return data?.assignCommunityRoleToOrganization;
+  }
+
   async getSubsubspaceByNameIdOrFail(
     spaceID: string,
     opportunityNameID: string
   ): Promise<SpaceProfile> {
-    const opportunity = await this.subsubspaceByNameID(
+    const subsubspace = await this.subsubspaceByNameID(
       spaceID,
       opportunityNameID
     );
-    if (!opportunity) {
-      throw new Error(`Opportunity ${opportunityNameID} not found`);
+    if (!subsubspace) {
+      throw new Error(`Subsubspace ${opportunityNameID} not found`);
     }
-    return opportunity;
+    return subsubspace;
   }
 
   async subsubspaceByNameID(
     spaceID: string,
     subsubspaceNameID: string
-  ): Promise<SpaceProfile | undefined> {
+  ): Promise<SpaceProfileCommunity | undefined> {
     let cachedOpportunity = this.subsubspacesCache.get(subsubspaceNameID);
     if (!cachedOpportunity) {
       const response = await this.sdkClient.subsubspacesInSpace({

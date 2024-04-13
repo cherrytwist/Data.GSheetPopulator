@@ -10,7 +10,7 @@ import {
 } from '../utils';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { Subsubspace } from '../inputModels';
-import { UpdateSpaceInput } from '@alkemio/client-lib';
+import { CommunityRole, UpdateSpaceInput } from '@alkemio/client-lib';
 import { SpaceProfileCommunity } from '../apiModels/spaceProfileCommunity';
 
 export class SubsubspacePopulator extends AbstractPopulator {
@@ -267,9 +267,10 @@ export class SubsubspacePopulator extends AbstractPopulator {
       if (!existingMember) {
         const userInfo = await this.client.alkemioLibClient.user(user);
         if (!userInfo) throw new Error(`Unable to locate user: ${user}`);
-        await this.client.alkemioLibClient.addUserToCommunity(
+        await this.client.assignCommunityRoleToUser(
           userInfo.nameID,
-          community.id
+          community.id,
+          CommunityRole.Member
         );
       }
     }
