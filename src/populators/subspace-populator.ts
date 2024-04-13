@@ -30,9 +30,9 @@ export class SubspacePopulator extends AbstractPopulator {
 
   async populate() {
     this.logger.info('Processing subspaces');
-    const spacesData = this.data.subspaces();
+    const subspacesData = this.data.subspaces();
 
-    if (spacesData.length === 0) {
+    if (subspacesData.length === 0) {
       this.logger.warn('No subspaces to import!');
       return;
     }
@@ -42,21 +42,21 @@ export class SubspacePopulator extends AbstractPopulator {
         []) as Organization[];
 
     // Iterate over the rows
-    for (const subspaceData of spacesData) {
+    for (const subspaceData of subspacesData) {
       if (!subspaceData.displayName) {
-        // End of valid spaces
+        // End of valid subspaces
         break;
       }
 
       if (!subspaceData.process) {
-        // Do not process this space
+        // Do not process this subspace
         break;
       }
 
       // start processing
       this.logger.info(`Processing subspace: ${subspaceData.nameID}....`);
-      const spaceProfileID = '===> spaceCreation - FULL';
-      this.profiler.profile(spaceProfileID);
+      const subspaceProfileID = '===> subspaceCreation - FULL';
+      this.profiler.profile(subspaceProfileID);
 
       const existingSpace = await this.client.subspaceByNameID(
         this.spaceID,
@@ -65,13 +65,13 @@ export class SubspacePopulator extends AbstractPopulator {
 
       if (existingSpace) {
         this.logger.info(
-          `Space ${subspaceData.displayName} already exists! Updating`
+          `Subspace ${subspaceData.displayName} already exists! Updating`
         );
-        await this.updateSpaceContext(existingSpace, subspaceData);
+        await this.updateSubspaceContext(existingSpace, subspaceData);
       } else {
         await this.createSubspace(subspaceData);
       }
-      this.profiler.profile(spaceProfileID);
+      this.profiler.profile(subspaceProfileID);
     }
   }
 
@@ -141,7 +141,7 @@ export class SubspacePopulator extends AbstractPopulator {
     }
   }
 
-  async populateMembers(subspaceNameID: string, spaceData: Subspace) {
+  async populateMembers(subspaceNameID: string, subspaceData: Subspace) {
     const subspaceCommunityDetails =
       await this.client.sdkClient.subspaceProfileCommunity({
         spaceID: this.spaceID,
@@ -149,7 +149,7 @@ export class SubspacePopulator extends AbstractPopulator {
       });
     const community = subspaceCommunityDetails?.data.space.subspace.community;
     const subspaceMembers = community?.memberUsers || [];
-    for (const user of spaceData.memberUsers) {
+    for (const user of subspaceData.memberUsers) {
       this.logger.info(`...adding user to Subspace: ${user}`);
       const existingMember = subspaceMembers.find(
         member => member.nameID === user.toLowerCase()
@@ -165,25 +165,25 @@ export class SubspacePopulator extends AbstractPopulator {
     }
   }
 
-  async populateCommunityRoles(spaceID: string, spaceData: Subspace) {
-    const space = await this.client.alkemioLibClient.subspaceByNameID(
+  async populateCommunityRoles(subspaceID: string, subspaceData: Subspace) {
+    const subspace = await this.client.alkemioLibClient.subspaceByNameID(
       this.spaceID,
-      spaceID
+      subspaceID
     );
 
-    const communityID = space?.community?.id;
+    const communityID = subspace?.community?.id;
     if (!communityID) {
       throw new Error(
-        `Space ${space?.profile.displayName} doesn't have a community with ID ${communityID}`
+        `Space ${subspace?.profile.displayName} doesn't have a community with ID ${communityID}`
       );
     }
 
-    const existingLeadOrgs = space?.community?.leadOrganizations?.map(
+    const existingLeadOrgs = subspace?.community?.leadOrganizations?.map(
       org => org.nameID
     );
     const leadOrgsToAdd = contributorsToAdd(
       existingLeadOrgs,
-      spaceData.leadOrganizations
+      subspaceData.leadOrganizations
     );
     await assignOrgsAsLead(
       this.client,
@@ -192,12 +192,12 @@ export class SubspacePopulator extends AbstractPopulator {
       leadOrgsToAdd
     );
 
-    const existingMemberOrgs = space?.community?.memberOrganizations?.map(
+    const existingMemberOrgs = subspace?.community?.memberOrganizations?.map(
       org => org.nameID
     );
     const memberOrgsToAdd = contributorsToAdd(
       existingMemberOrgs,
-      spaceData.memberOrganizations
+      subspaceData.memberOrganizations
     );
     await assignOrgsAsMember(
       this.client,
@@ -206,12 +206,12 @@ export class SubspacePopulator extends AbstractPopulator {
       memberOrgsToAdd
     );
 
-    const existingLeadUsers = space?.community?.leadUsers?.map(
+    const existingLeadUsers = subspace?.community?.leadUsers?.map(
       user => user.nameID
     );
     const leadUsersToAdd = contributorsToAdd(
       existingLeadUsers,
-      spaceData.leadUsers
+      subspaceData.leadUsers
     );
     await assignUserAsLead(
       this.client,
@@ -222,30 +222,30 @@ export class SubspacePopulator extends AbstractPopulator {
   }
 
   // Load users from a particular googlesheet
-  async updateSpaceContext(space: any, spaceData: Subspace) {
+  async updateSubspaceContext(subspace: any, subspaceData: Subspace) {
     try {
       const tagsetUpdateInput: UpdateTagsetInput[] = [
         {
-          ID: space.profile.tagset.id,
-          tags: spaceData.tags || [],
+          ID: subspace.profile.tagset.id,
+          tags: subspaceData.tags || [],
         },
       ];
       const updateSpaceInput: UpdateSpaceInput = {
-        ID: space.id,
+        ID: subspace.id,
         profileData: {
-          displayName: spaceData.displayName,
-          tagline: spaceData.tagline,
-          description: spaceData.background,
+          displayName: subspaceData.displayName,
+          tagline: subspaceData.tagline,
+          description: subspaceData.background,
           location: {
-            country: spaceData.country,
-            city: spaceData.city,
+            country: subspaceData.country,
+            city: subspaceData.city,
           },
           tagsets: tagsetUpdateInput,
         },
         context: {
-          vision: spaceData.vision,
-          impact: spaceData.impact,
-          who: spaceData.who,
+          vision: subspaceData.vision,
+          impact: subspaceData.impact,
+          who: subspaceData.who,
         },
       };
       const updatedSpace = await this.client.alkemioLibClient.updateSpace(
@@ -255,23 +255,23 @@ export class SubspacePopulator extends AbstractPopulator {
       const visuals = updatedSpace?.profile?.visuals || [];
       await this.client.updateVisualsOnJourneyProfile(
         visuals,
-        spaceData.visualBanner,
-        spaceData.visualBackground,
-        spaceData.visualAvatar
+        subspaceData.visualBanner,
+        subspaceData.visualBackground,
+        subspaceData.visualAvatar
       );
 
-      await this.populateMembers(spaceData.nameID, spaceData);
-      await this.populateCommunityRoles(space.id, spaceData);
+      await this.populateMembers(subspaceData.nameID, subspaceData);
+      await this.populateCommunityRoles(subspace.id, subspaceData);
 
-      this.logger.info(`....updated: ${spaceData.displayName}`);
+      this.logger.info(`....updated: ${subspaceData.displayName}`);
     } catch (e: any) {
       if (e.response && e.response.errors) {
         this.logger.error(
-          `Unable to update space (${spaceData.displayName}):${e.response.errors[0].message}`
+          `Unable to update subspace (${subspaceData.displayName}):${e.response.errors[0].message}`
         );
       } else {
         this.logger.error(
-          `Unable to update space (${spaceData.displayName}): ${e.message}`
+          `Unable to update subspace (${subspaceData.displayName}): ${e.message}`
         );
       }
     }
@@ -282,12 +282,12 @@ export class SubspacePopulator extends AbstractPopulator {
     references.addReference(
       'video',
       subspaceData.refVideo,
-      'Video explainer for the space'
+      'Video explainer for the subspace'
     );
     references.addReference(
       'jitsi',
       subspaceData.refJitsi,
-      'Jitsi meeting space for the space'
+      'Jitsi meeting subspace for the subspace'
     );
     references.addReference(
       subspaceData.ref1Name,
