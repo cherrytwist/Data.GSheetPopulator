@@ -10,7 +10,7 @@ export const assignUserAsMember = (
   userNameIds: string[]
 ) => {
   const requests = userNameIds.map(nameId =>
-    client.assignCommunityRoleToUser(communityId, nameId, CommunityRole.Member)
+    client.assignCommunityRoleToUser(nameId, communityId, CommunityRole.Member)
   );
 
   return handleRequests(

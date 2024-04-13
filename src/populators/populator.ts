@@ -70,9 +70,9 @@ export class Populator extends AbstractPopulator {
     );
 
     // organizations first as they are needed for Space + Challenges
-    // await organizationPopulator.populate();
-    // await spacePopulator.populate();
-    // await userPopulator.populate();
+    await organizationPopulator.populate();
+    await spacePopulator.populate();
+    await userPopulator.populate();
 
     await subspacesPopulator.populate();
     await subsubspacesPopulator.populate();
