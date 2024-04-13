@@ -1,8 +1,8 @@
 import {
   Post,
-  Challenge,
   Space,
-  Opportunity,
+  Subspace,
+  Subsubspace,
   Organization,
   User,
   Callout,
@@ -19,13 +19,13 @@ export class BaseDataAdapter extends AbstractDataAdapter {
   spaces(): Space[] {
     return [];
   }
-  challenges(): Challenge[] {
+  subspaces(): Subspace[] {
     return [];
   }
   users(): User[] {
     return [];
   }
-  opportunities(): Opportunity[] {
+  subsubspaces(): Subsubspace[] {
     return [];
   }
   organizations(): Organization[] {

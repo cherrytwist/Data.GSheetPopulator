@@ -1,0 +1,13 @@
+query subspaceCollaboration($spaceID: UUID_NAMEID!, $subspaceID: UUID_NAMEID!) {
+  space(ID: $spaceID) {
+    id
+    nameID
+    profile {
+      displayName
+    }
+    subspace(ID: $subspaceID) {
+      ...SpaceProfile
+      ...SpaceCollaboration
+    }
+  }
+}

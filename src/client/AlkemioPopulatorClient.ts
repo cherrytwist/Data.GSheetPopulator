@@ -13,14 +13,16 @@ import {
 } from '../generated/graphql';
 import { Logger } from 'winston';
 import { AlkemioClient, AlkemioClientConfig } from '@alkemio/client-lib';
-import { OpportunityApi } from '../apiModels/opportunityApi';
+import { SpaceProfile } from '../apiModels/spaceProfile';
+import { SpaceProfileCommunity } from '../apiModels/spaceProfileCommunity';
+import { SpaceCollaboration } from '../apiModels/spaceCollaboration';
 
 export class AlkemioPopulatorClient {
   public config!: AlkemioClientConfig;
   public sdkClient!: Sdk;
   public alkemioLibClient!: AlkemioClient;
   private logger: Logger;
-  private opportunitiesCache: Map<string, any> = new Map();
+  private subsubspacesCache: Map<string, any> = new Map();
 
   constructor(config: AlkemioClientConfig, logger: Logger) {
     this.config = config;
@@ -58,23 +60,40 @@ export class AlkemioPopulatorClient {
   }
 
   async spaceCallouts(spaceID: string) {
-    const spaceResponse = await this.sdkClient.spaceCallouts({ id: spaceID });
+    const spaceResponse = await this.sdkClient.spaceCollaboration({
+      id: spaceID,
+    });
     return spaceResponse.data.space;
   }
 
-  async challengeCallouts(spaceID: string, challengeID: string) {
-    const spaceResponse = await this.sdkClient.challengeCallouts({
+  async subspaceCallouts(
+    spaceID: string,
+    subspaceID: string
+  ): Promise<SpaceCollaboration> {
+    const spaceResponse = await this.sdkClient.subspaceCollaboration({
       spaceID,
-      challengeID,
+      subspaceID,
     });
-    return spaceResponse.data.space.challenge;
+    const subspaceResult = spaceResponse.data.space.subspace;
+    const spaceCollaboration: SpaceCollaboration = {
+      collaboration: {
+        id: subspaceResult.collaboration?.id || '',
+        callouts: subspaceResult.collaboration.callouts,
+      },
+    };
+    if (!spaceCollaboration) {
+      throw new Error(
+        `Subspace ${subspaceID} in space ${spaceID} has no collaboration`
+      );
+    }
+    return spaceCollaboration;
   }
 
-  async getOpportunityByNameIdOrFail(
+  async getSubsubspaceByNameIdOrFail(
     spaceID: string,
     opportunityNameID: string
-  ): Promise<OpportunityApi> {
-    const opportunity = await this.getOpportunityByNameID(
+  ): Promise<SpaceProfile> {
+    const opportunity = await this.getSubsubspaceByNameID(
       spaceID,
       opportunityNameID
     );
@@ -84,24 +103,24 @@ export class AlkemioPopulatorClient {
     return opportunity;
   }
 
-  async getOpportunityByNameID(
+  async getSubsubspaceByNameID(
     spaceID: string,
-    opportunityNameID: string
-  ): Promise<OpportunityApi | undefined> {
-    let cachedOpportunity = this.opportunitiesCache.get(opportunityNameID);
+    subsubspaceNameID: string
+  ): Promise<SpaceProfile | undefined> {
+    let cachedOpportunity = this.subsubspacesCache.get(subsubspaceNameID);
     if (!cachedOpportunity) {
-      const response = await this.sdkClient.opportunitiesInSpace({
+      const response = await this.sdkClient.subsubspacesInSpace({
         spaceID,
       });
-      const challenges = response.data.space.challenges || [];
-      for (const challenge of challenges) {
-        const opportunities = challenge.opportunities || [];
-        for (const opportunity of opportunities) {
-          const key = opportunity.nameID;
-          this.opportunitiesCache.set(key, opportunity);
+      const subspaces = response.data.space.subspaces || [];
+      for (const subspace of subspaces) {
+        const subsubspaces = subspace.subspaces || [];
+        for (const subsubspace of subsubspaces) {
+          const key = subsubspace.nameID;
+          this.subsubspacesCache.set(key, subsubspace);
         }
       }
-      cachedOpportunity = this.opportunitiesCache.get(opportunityNameID);
+      cachedOpportunity = this.subsubspacesCache.get(subsubspaceNameID);
     }
 
     if (!cachedOpportunity) {
@@ -228,17 +247,19 @@ export class AlkemioPopulatorClient {
     }
   }
 
-  async challengeByNameID(spaceNameID: string, challengeNameID: string) {
-    try {
-      const response = await this.sdkClient.challengeDetails({
-        spaceID: spaceNameID,
-        challengeID: challengeNameID,
-      });
+  async subspaceByNameID(
+    spaceNameID: string,
+    subspaceNameID: string
+  ): Promise<SpaceProfileCommunity> {
+    const response = await this.sdkClient.subspaceProfileCommunity({
+      spaceID: spaceNameID,
+      subspaceID: subspaceNameID,
+    });
 
-      if (!response) return;
-      return response.data?.space.challenge;
-    } catch (error) {
-      return;
+    if (!response) {
+      throw new Error(`Subspace ${spaceNameID} ${spaceNameID} not found`);
     }
+    const subspace = response.data?.space.subspace;
+    return subspace;
   }
 }

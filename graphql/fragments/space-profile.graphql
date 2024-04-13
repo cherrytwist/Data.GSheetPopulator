@@ -1,0 +1,19 @@
+fragment SpaceProfile on Space {
+  id
+  nameID
+  profile {
+    displayName
+    visuals {
+      id
+      name
+      uri
+    }
+    tagset {
+      id
+      tags
+    }
+  }
+  context {
+    id
+  }
+}

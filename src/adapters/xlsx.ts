@@ -2,17 +2,17 @@ import XLSX from 'xlsx';
 import {
   Callout,
   Post,
-  Challenge,
   Space,
-  Opportunity,
+  Subspace,
+  Subsubspace,
   Organization,
   User,
 } from '../inputModels';
 import {
   PostSheet,
-  ChallengesSheet,
+  SubspacesSheet,
   SpaceSheet,
-  OpportunitiesSheet,
+  SubsubspacesSheet,
   OrganizationsSheet,
   Sheets,
   UserSheet,
@@ -63,9 +63,9 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   }
 
-  public challenges(): Challenge[] {
+  public subspaces(): Subspace[] {
     const sheet = this.workbook.Sheets[Sheets.Challenges];
-    const result = XLSX.utils.sheet_to_json(sheet) as ChallengesSheet[];
+    const result = XLSX.utils.sheet_to_json(sheet) as SubspacesSheet[];
     return result.map(x => ({
       process: x.PROCESS === 'Y', // 'Y' or 'N
       nameID: x.NAME_ID,
@@ -116,14 +116,14 @@ export class XLSXAdapter extends AbstractDataAdapter {
       twitter: x.TWITTER,
     }));
   }
-  public opportunities = (): Opportunity[] => {
+  public subsubspaces = (): Subsubspace[] => {
     const sheet = this.workbook.Sheets[Sheets.Opportunities];
-    const result = XLSX.utils.sheet_to_json(sheet) as OpportunitiesSheet[];
+    const result = XLSX.utils.sheet_to_json(sheet) as SubsubspacesSheet[];
     return result.map(x => ({
       nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
-      challenge: x.CHALLENGE,
+      parentSpace: x.SUBSPACE,
       impact: x.IMPACT,
       tagline: x.TAGLINE,
       vision: x.VISION,

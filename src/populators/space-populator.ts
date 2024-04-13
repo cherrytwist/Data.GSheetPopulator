@@ -6,10 +6,11 @@ import { AbstractPopulator } from './abstract-populator';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { assignUserAsMember } from '../utils/assign-user-as-member';
 import {
-  CreateSpaceInput,
+  CreateAccountInput,
   UpdateSpaceInput,
   UpdateTagsetInput,
 } from '@alkemio/client-lib';
+import { SpaceProfile } from '../apiModels/spaceProfile';
 
 export class SpacePopulator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -51,7 +52,7 @@ export class SpacePopulator extends AbstractPopulator {
       try {
         if (!spaceExists) {
           if (this.allowCreation) {
-            await this.createSpace(spaceData);
+            await this.createAccount(spaceData);
           } else {
             const msg = `Specified Space does not exist: ${spaceData.nameID}`;
             this.logger.error(msg);
@@ -147,18 +148,26 @@ export class SpacePopulator extends AbstractPopulator {
     return spaceProfileData.data.space.id;
   }
 
-  async createSpace(spaceData: Space) {
-    const input: CreateSpaceInput = {
-      nameID: spaceData.nameID,
-      accountData: {
-        hostID: spaceData.host,
-      },
-      profileData: {
-        displayName: spaceData.displayName,
+  async createAccount(spaceData: Space): Promise<SpaceProfile> {
+    const input: CreateAccountInput = {
+      hostID: spaceData.host,
+      spaceData: {
+        nameID: spaceData.nameID,
+        profileData: {
+          displayName: spaceData.displayName,
+        },
       },
     };
-    await this.client.alkemioLibClient.createSpace(input);
+    const result = await this.client.sdkClient.createAccount({
+      accountData: input,
+    });
 
-    this.logger.info(`Space created: ${spaceData.displayName}`);
+    this.logger.info(`Account created: ${spaceData.displayName}`);
+    const spaceID = result.data.createAccount.spaceID;
+    const response = await this.client.sdkClient.spaceProfile({
+      id: spaceID,
+    });
+    const spaceInfo = response.data.space;
+    return spaceInfo as SpaceProfile;
   }
 }

@@ -1,7 +1,7 @@
-export type Opportunity = {
+export type Subsubspace = {
   nameID: string;
   displayName: string;
-  challenge: string;
+  parentSpace: string;
   tagline: string;
   background: string;
   vision: string;

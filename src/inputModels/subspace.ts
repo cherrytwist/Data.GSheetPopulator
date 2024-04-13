@@ -1,4 +1,4 @@
-export type Challenge = {
+export type Subspace = {
   process: boolean;
   nameID: string;
   displayName: string;

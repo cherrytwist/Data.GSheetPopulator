@@ -2,39 +2,36 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
-import { ChallengePopulator } from './challenge-populator';
-import { OpportunityPopulator } from './opportunity-populator';
+import { SubspacePopulator } from './subspace-populator';
+import { SubsubspacePopulator } from './subsubspace-populator';
 
-export class JourneyPopulator extends AbstractPopulator {
-  private allowCreation: boolean;
+export class SpacesPopulator extends AbstractPopulator {
   constructor(
     client: AlkemioPopulatorClient,
     data: AbstractDataAdapter,
     logger: Logger,
-    profiler: Logger,
-    allowCreation = false
+    profiler: Logger
   ) {
     super(client, data, logger, profiler);
-    this.allowCreation = allowCreation;
   }
 
   async populate() {
     if (!this.data) throw new Error('No data to populate');
-    const challengePopulator = new ChallengePopulator(
+    const subspacePopulator = new SubspacePopulator(
       this.client,
       this.data,
       this.logger,
       this.profiler
     );
 
-    const opportunityPopulator = new OpportunityPopulator(
+    const subsubspacesPopulator = new SubsubspacePopulator(
       this.client,
       this.data,
       this.logger,
       this.profiler
     );
 
-    await challengePopulator.populate();
-    await opportunityPopulator.populate();
+    await subspacePopulator.populate();
+    await subsubspacesPopulator.populate();
   }
 }

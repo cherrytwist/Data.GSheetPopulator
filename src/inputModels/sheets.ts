@@ -28,7 +28,7 @@ export interface SpaceSheet {
   VISUAL_BANNER: string;
 }
 
-export interface ChallengesSheet {
+export interface SubspacesSheet {
   PROCESS: string;
   NAME_ID: string;
   DISPLAY_NAME: string;
@@ -54,10 +54,10 @@ export interface ChallengesSheet {
   VISUAL_BANNER: string;
 }
 
-export interface OpportunitiesSheet {
+export interface SubsubspacesSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
-  CHALLENGE: string;
+  SUBSPACE: string;
   TAGLINE: string;
   BACKGROUND: string;
   VISION: string;

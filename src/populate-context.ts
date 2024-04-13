@@ -1,6 +1,6 @@
 import { createLogger, createProfiler } from './utils/create-logger';
 import * as dotenv from 'dotenv';
-import { JourneyPopulator } from './populators/journey-populator';
+import { SpacesPopulator } from './populators/spaces-populator';
 import { createDataAdapterUsingEnvVars } from './utils/create-data-adapter-using-envvars';
 import { createConfigUsingEnvVars } from './utils/create-config-using-envvars';
 import { AlkemioPopulatorClient } from './client/AlkemioPopulatorClient';
@@ -21,7 +21,7 @@ const main = async () => {
   const data = await createDataAdapterUsingEnvVars();
   logger.info(`Alkemio data template: ${data.filename}`);
 
-  const populator = new JourneyPopulator(
+  const populator = new SpacesPopulator(
     alkemioPopulatorClient,
     data,
     logger,

@@ -1,11 +1,8 @@
-export type OpportunityApi = {
+export type SpaceCommunity = {
   id: string;
   nameID: string;
   profile: {
     displayName: string;
-    tagset: {
-      id: string;
-    };
   };
   community: {
     id: string;

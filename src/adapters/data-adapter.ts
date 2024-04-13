@@ -1,9 +1,9 @@
 import {
   Callout,
   Post,
-  Challenge,
+  Subspace,
   Space,
-  Opportunity,
+  Subsubspace,
   Organization,
   User,
 } from '../inputModels';
@@ -12,8 +12,8 @@ export abstract class AbstractDataAdapter {
   abstract posts(): Post[];
   abstract callouts(): Callout[];
   abstract spaces(): Space[];
-  abstract challenges(): Challenge[];
+  abstract subspaces(): Subspace[];
   abstract users(): User[];
-  abstract opportunities(): Opportunity[];
+  abstract subsubspaces(): Subsubspace[];
   abstract organizations(): Organization[];
 }

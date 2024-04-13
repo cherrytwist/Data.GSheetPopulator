@@ -97,7 +97,7 @@ export class CalloutPopulator extends AbstractPopulator {
   ) {
     // If challenge is specified, use the collaboration from the challenge
     if (challengeNameID) {
-      const challenge = await this.client.challengeCallouts(
+      const challenge = await this.client.subspaceCallouts(
         this.spaceID,
         challengeNameID
       );
@@ -159,8 +159,8 @@ export class CalloutPopulator extends AbstractPopulator {
           continue;
         }
 
-        const existingPost = callout.posts?.find(
-          c => c.nameID === postData.nameID
+        const existingPost = callout.contributions?.find(
+          c => c.post?.nameID === postData.nameID
         );
 
         if (!existingPost) {
