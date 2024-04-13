@@ -64,7 +64,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
   }
 
   public subspaces(): Subspace[] {
-    const sheet = this.workbook.Sheets[Sheets.Challenges];
+    const sheet = this.workbook.Sheets[Sheets.Subspaces];
     const result = XLSX.utils.sheet_to_json(sheet) as SubspacesSheet[];
     return result.map(x => ({
       process: x.PROCESS === 'Y', // 'Y' or 'N
@@ -117,7 +117,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }));
   }
   public subsubspaces = (): Subsubspace[] => {
-    const sheet = this.workbook.Sheets[Sheets.Opportunities];
+    const sheet = this.workbook.Sheets[Sheets.Subsubspaces];
     const result = XLSX.utils.sheet_to_json(sheet) as SubsubspacesSheet[];
     return result.map(x => ({
       nameID: x.NAME_ID,

@@ -24,12 +24,12 @@ export class SubsubspacePopulator extends AbstractPopulator {
   }
 
   async populate() {
-    this.logger.info('Processing opportunities');
+    this.logger.info('Processing subsubspaces');
 
     const subsubspacesData = this.data.subsubspaces();
 
     if (subsubspacesData.length === 0) {
-      this.logger.warn('No opportunities to import!');
+      this.logger.warn('No subsubspaces to import!');
       return;
     }
 
@@ -53,7 +53,7 @@ export class SubsubspacePopulator extends AbstractPopulator {
         continue;
       }
 
-      const existingSubsubspace = await this.client.subspaceByNameID(
+      const existingSubsubspace = await this.client.subsubspaceByNameID(
         this.spaceID,
         subsubspaceData.nameID
       );

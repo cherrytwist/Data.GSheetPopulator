@@ -93,7 +93,7 @@ export class AlkemioPopulatorClient {
     spaceID: string,
     opportunityNameID: string
   ): Promise<SpaceProfile> {
-    const opportunity = await this.getSubsubspaceByNameID(
+    const opportunity = await this.subsubspaceByNameID(
       spaceID,
       opportunityNameID
     );
@@ -103,7 +103,7 @@ export class AlkemioPopulatorClient {
     return opportunity;
   }
 
-  async getSubsubspaceByNameID(
+  async subsubspaceByNameID(
     spaceID: string,
     subsubspaceNameID: string
   ): Promise<SpaceProfile | undefined> {
@@ -250,16 +250,27 @@ export class AlkemioPopulatorClient {
   async subspaceByNameID(
     spaceNameID: string,
     subspaceNameID: string
-  ): Promise<SpaceProfileCommunity> {
-    const response = await this.sdkClient.subspaceProfileCommunity({
-      spaceID: spaceNameID,
-      subspaceID: subspaceNameID,
-    });
+  ): Promise<SpaceProfileCommunity | undefined> {
+    try {
+      const response = await this.sdkClient.subspaceProfileCommunity({
+        spaceID: spaceNameID,
+        subspaceID: subspaceNameID,
+      });
 
-    if (!response) {
+      return response.data?.space.subspace;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  async subspaceByNameIDOrFail(
+    spaceNameID: string,
+    subspaceNameID: string
+  ): Promise<SpaceProfileCommunity> {
+    const subspace = await this.subspaceByNameID(spaceNameID, subspaceNameID);
+    if (!subspace) {
       throw new Error(`Subspace ${spaceNameID} ${spaceNameID} not found`);
     }
-    const subspace = response.data?.space.subspace;
     return subspace;
   }
 }

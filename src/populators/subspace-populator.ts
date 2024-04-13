@@ -29,11 +29,11 @@ export class SubspacePopulator extends AbstractPopulator {
   }
 
   async populate() {
-    this.logger.info('Processing spaces');
+    this.logger.info('Processing subspaces');
     const spacesData = this.data.subspaces();
 
     if (spacesData.length === 0) {
-      this.logger.warn('No spaces to import!');
+      this.logger.warn('No subspaces to import!');
       return;
     }
 
@@ -54,7 +54,7 @@ export class SubspacePopulator extends AbstractPopulator {
       }
 
       // start processing
-      this.logger.info(`Processing space: ${subspaceData.nameID}....`);
+      this.logger.info(`Processing subspace: ${subspaceData.nameID}....`);
       const spaceProfileID = '===> spaceCreation - FULL';
       this.profiler.profile(spaceProfileID);
 
@@ -75,7 +75,7 @@ export class SubspacePopulator extends AbstractPopulator {
     }
   }
 
-  async createSubspace(spaceData: Subspace) {
+  async createSubspace(subspaceData: Subspace) {
     try {
       const spaceInfo = await this.client.alkemioLibClient.spaceInfo(
         this.spaceID
@@ -84,77 +84,74 @@ export class SubspacePopulator extends AbstractPopulator {
         spaceInfo?.account.library?.innovationFlowTemplates || [];
       if (libraryTemplates.length === 0) {
         throw new Error(
-          `No space innovation flow template found in space ${this.spaceID}`
+          `No innovation flow template found in subspace ${this.spaceID}`
         );
       }
       const innovationFlowTemplate = libraryTemplates[0];
 
       const createdSpace = await this.client.alkemioLibClient.createSubspace({
         spaceID: this.spaceID,
-        nameID: spaceData.nameID,
+        nameID: subspaceData.nameID,
         profileData: {
-          displayName: spaceData.displayName,
-          tagline: spaceData.tagline,
-          description: spaceData.background,
+          displayName: subspaceData.displayName,
+          tagline: subspaceData.tagline,
+          description: subspaceData.background,
           location: {
-            country: spaceData.country,
-            city: spaceData.city,
+            country: subspaceData.country,
+            city: subspaceData.city,
           },
-          referencesData: this.getReferences(spaceData),
+          referencesData: this.getReferences(subspaceData),
         },
         context: {
-          vision: spaceData.vision,
-          impact: spaceData.impact,
-          who: spaceData.who,
+          vision: subspaceData.vision,
+          impact: subspaceData.impact,
+          who: subspaceData.who,
         },
-        tags: spaceData.tags || [],
+        tags: subspaceData.tags || [],
         collaborationData: {
           innovationFlowTemplateID: innovationFlowTemplate.id,
         },
       });
-      this.logger.info(`....created: ${spaceData.displayName}`);
+      this.logger.info(`....created: ${subspaceData.displayName}`);
 
       const visuals = createdSpace?.profile?.visuals || [];
       await this.client.updateVisualsOnJourneyProfile(
         visuals,
-        spaceData.visualBanner,
-        spaceData.visualBackground,
-        spaceData.visualAvatar
+        subspaceData.visualBanner,
+        subspaceData.visualBackground,
+        subspaceData.visualAvatar
       );
 
       if (!createdSpace) {
-        throw new Error(`Space ${spaceData.nameID} was not initialized!`);
+        throw new Error(`Space ${subspaceData.nameID} was not initialized!`);
       }
 
-      await this.populateMembers(spaceData.nameID, spaceData);
-      await this.populateCommunityRoles(createdSpace?.id, spaceData);
+      await this.populateMembers(subspaceData.nameID, subspaceData);
+      await this.populateCommunityRoles(createdSpace?.id, subspaceData);
     } catch (e: any) {
       if (e.response && e.response.errors) {
         this.logger.error(
-          `Unable to create space (${spaceData.displayName}):${e.response.errors[0].message}`
+          `Unable to create subspace (${subspaceData.displayName}):${e.response.errors[0].message}`
         );
       } else {
         this.logger.error(
-          `Unable to create space (${spaceData.displayName}): ${e.message}`
+          `Unable to create subspace (${subspaceData.displayName}): ${e.message}`
         );
       }
     }
   }
 
   async populateMembers(subspaceNameID: string, spaceData: Subspace) {
-    const spaceCommunityDetails =
+    const subspaceCommunityDetails =
       await this.client.sdkClient.subspaceProfileCommunity({
         spaceID: this.spaceID,
         subspaceID: subspaceNameID,
       });
-    const community = spaceCommunityDetails?.data.space.subspace.community;
-    if (!community) {
-      throw new Error(`Space ${spaceData.displayName} has no community`);
-    }
-    const spaceMembers = community?.memberUsers || [];
+    const community = subspaceCommunityDetails?.data.space.subspace.community;
+    const subspaceMembers = community?.memberUsers || [];
     for (const user of spaceData.memberUsers) {
-      this.logger.info(`...adding user to Space: ${user}`);
-      const existingMember = spaceMembers.find(
+      this.logger.info(`...adding user to Subspace: ${user}`);
+      const existingMember = subspaceMembers.find(
         member => member.nameID === user.toLowerCase()
       );
       if (!existingMember) {

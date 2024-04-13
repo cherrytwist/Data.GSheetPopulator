@@ -3,10 +3,11 @@ import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
 import { CalloutPopulator } from './callout-populator';
-import { SpacesPopulator } from './spaces-populator';
 import { SpacePopulator } from './space-populator';
 import { OrganizationPopulator } from './organization-populator';
 import { UserPopulator } from './user-populator';
+import { SubsubspacePopulator } from './subsubspace-populator';
+import { SubspacePopulator } from './subspace-populator';
 
 export class Populator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -54,7 +55,14 @@ export class Populator extends AbstractPopulator {
       this.allowCreation
     );
 
-    const spacesPopulator = new SpacesPopulator(
+    const subspacesPopulator = new SubspacePopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    const subsubspacesPopulator = new SubsubspacePopulator(
       this.client,
       this.data,
       this.logger,
@@ -66,7 +74,8 @@ export class Populator extends AbstractPopulator {
     await spacePopulator.populate();
     await userPopulator.populate();
 
-    await spacesPopulator.populate();
+    await subspacesPopulator.populate();
+    await subsubspacesPopulator.populate();
 
     await calloutPopulator.populate();
 

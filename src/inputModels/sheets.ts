@@ -3,8 +3,8 @@ export enum Sheets {
   Posts = 'Posts',
   Space = 'Space',
   Information = 'Information',
-  Challenges = 'Challenges',
-  Opportunities = 'Opportunities',
+  Subspaces = 'Subspaces',
+  Subsubspaces = 'Subsubspaces',
   Organizations = 'Organizations',
   Users = 'Users',
 }
