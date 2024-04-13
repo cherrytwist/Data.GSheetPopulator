@@ -127,14 +127,14 @@ export class AlkemioPopulatorClient {
 
   async getSubsubspaceByNameIdOrFail(
     spaceID: string,
-    opportunityNameID: string
+    subsubspaceNameID: string
   ): Promise<SpaceProfile> {
     const subsubspace = await this.subsubspaceByNameID(
       spaceID,
-      opportunityNameID
+      subsubspaceNameID
     );
     if (!subsubspace) {
-      throw new Error(`Subsubspace ${opportunityNameID} not found`);
+      throw new Error(`Subsubspace ${subsubspaceNameID} not found`);
     }
     return subsubspace;
   }
@@ -143,8 +143,8 @@ export class AlkemioPopulatorClient {
     spaceID: string,
     subsubspaceNameID: string
   ): Promise<SpaceProfileCommunity | undefined> {
-    let cachedOpportunity = this.subsubspacesCache.get(subsubspaceNameID);
-    if (!cachedOpportunity) {
+    let cachedSubsubspace = this.subsubspacesCache.get(subsubspaceNameID);
+    if (!cachedSubsubspace) {
       const response = await this.sdkClient.subsubspacesInSpace({
         spaceID,
       });
@@ -156,14 +156,14 @@ export class AlkemioPopulatorClient {
           this.subsubspacesCache.set(key, subsubspace);
         }
       }
-      cachedOpportunity = this.subsubspacesCache.get(subsubspaceNameID);
+      cachedSubsubspace = this.subsubspacesCache.get(subsubspaceNameID);
     }
 
-    if (!cachedOpportunity) {
+    if (!cachedSubsubspace) {
       return undefined;
     }
 
-    return cachedOpportunity;
+    return cachedSubsubspace;
   }
 
   async createCalloutOnCollaboration(

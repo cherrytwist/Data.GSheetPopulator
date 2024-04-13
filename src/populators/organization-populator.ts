@@ -54,7 +54,7 @@ export class OrganizationPopulator extends AbstractPopulator {
               `Unable to update organization (${organizationData.displayName}):${e.response.errors[0].message}`
             );
           } else {
-            this.logger.error(`Could not create opportunity: ${e}`);
+            this.logger.error(`Could not update organization: ${e}`);
           }
         } finally {
           this.profiler.profile(organizationProfileID);
@@ -69,7 +69,7 @@ export class OrganizationPopulator extends AbstractPopulator {
               `Unable to create organization (${organizationData.displayName}):${e.response.errors[0].message}`
             );
           } else {
-            this.logger.error(`Could not create opportunity: ${e}`);
+            this.logger.error(`Could not create organization: ${e}`);
           }
         } finally {
           this.profiler.profile(organizationProfileID);

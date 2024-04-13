@@ -69,7 +69,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    // organizations first as they are needed for Space + Challenges
+    // organizations first as they are needed for Space + Subspaces
     await organizationPopulator.populate();
     await spacePopulator.populate();
     await userPopulator.populate();

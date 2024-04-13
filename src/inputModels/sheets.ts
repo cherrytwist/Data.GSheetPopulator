@@ -117,7 +117,7 @@ export interface PostSheet {
   TAGS: string;
   VISUAL_BANNER: string;
   VISUAL_BANNER_NARROW: string;
-  CHALLENGE: string;
+  SUBSPACE: string;
   CALLOUT: string;
 }
 
@@ -125,5 +125,5 @@ export interface CalloutSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
   DESCRIPTION: string;
-  CHALLENGE: string;
+  SUBSPACE: string;
 }

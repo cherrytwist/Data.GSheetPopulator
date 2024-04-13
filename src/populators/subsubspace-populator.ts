@@ -35,7 +35,7 @@ export class SubsubspacePopulator extends AbstractPopulator {
 
     for (const subsubspaceData of subsubspacesData) {
       if (!subsubspaceData.displayName) {
-        // End of valid opportunities
+        // End of valid subsubspaces
         break;
       }
 

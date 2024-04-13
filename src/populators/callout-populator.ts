@@ -47,7 +47,7 @@ export class CalloutPopulator extends AbstractPopulator {
       try {
         const collaboration = await this.getCollaborationForCallout(
           calloutData.nameID,
-          calloutData.challenge
+          calloutData.subspace
         );
         const existingCallout = collaboration.callouts?.find(
           c => c.nameID === calloutData.nameID
@@ -141,15 +141,15 @@ export class CalloutPopulator extends AbstractPopulator {
       try {
         const collaboration = await this.getCollaborationForCallout(
           postData.callout,
-          postData.challenge
+          postData.subspace
         );
         const callout = collaboration.callouts?.find(
           c => c.nameID === postData.callout
         );
         if (!callout) {
-          if (postData.challenge) {
+          if (postData.subspace) {
             this.logger.error(
-              `Unable to find callout with nameID: ${postData.callout} in challenge: ${postData.challenge}`
+              `Unable to find callout with nameID: ${postData.callout} in challenge: ${postData.subspace}`
             );
           } else {
             this.logger.error(

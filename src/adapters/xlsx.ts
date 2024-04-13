@@ -43,7 +43,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       description: x.DESCRIPTION,
-      challenge: x.CHALLENGE,
+      subspace: x.SUBSPACE,
     }));
   }
 
@@ -56,7 +56,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       displayName: x.DISPLAY_NAME,
       description: x.DESCRIPTION,
       callout: x.CALLOUT,
-      challenge: x.CHALLENGE,
+      subspace: x.SUBSPACE,
       tags: toArray(x.TAGS),
       bannerURI: x.VISUAL_BANNER,
       bannerNarrowURI: x.VISUAL_BANNER_NARROW,
