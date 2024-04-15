@@ -1,27 +1,19 @@
 import {
-  Actor,
-  ActorGroup,
   Callout,
   Post,
-  Challenge,
+  Subspace,
   Space,
-  Group,
-  Opportunity,
+  Subsubspace,
   Organization,
-  Relation,
   User,
-} from '../models';
+} from '../inputModels';
 
 export abstract class AbstractDataAdapter {
-  abstract actors(): Actor[];
-  abstract actorGroups(): ActorGroup[];
   abstract posts(): Post[];
   abstract callouts(): Callout[];
   abstract spaces(): Space[];
-  abstract challenges(): Challenge[];
+  abstract subspaces(): Subspace[];
   abstract users(): User[];
-  abstract opportunities(): Opportunity[];
+  abstract subsubspaces(): Subsubspace[];
   abstract organizations(): Organization[];
-  abstract groups(): Group[];
-  abstract relations(): Relation[];
 }

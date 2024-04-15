@@ -1,31 +1,23 @@
 import XLSX from 'xlsx';
 import {
-  Actor,
-  ActorGroup,
   Callout,
   Post,
-  Challenge,
   Space,
-  Group,
-  Opportunity,
+  Subspace,
+  Subsubspace,
   Organization,
-  Relation,
   User,
-} from '../models';
+} from '../inputModels';
 import {
-  ActorGroupsSheet,
-  ActorsSheet,
   PostSheet,
-  ChallengesSheet,
+  SubspacesSheet,
   SpaceSheet,
-  GroupsSheet,
-  OpportunitiesSheet,
+  SubsubspacesSheet,
   OrganizationsSheet,
-  RelationSheet,
   Sheets,
   UserSheet,
   CalloutSheet,
-} from '../models/sheets';
+} from '../inputModels/sheets';
 import { toArray } from '../utils/string-to-array';
 import { AbstractDataAdapter } from './data-adapter';
 
@@ -44,29 +36,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
     }
   }
 
-  actors(): Actor[] {
-    const sheet = this.workbook.Sheets[Sheets.Actors];
-    const result = XLSX.utils.sheet_to_json(sheet) as ActorsSheet[];
-    return result.map(x => ({
-      name: x.NAME,
-      description: x.DESCRIPTION,
-      impact: x.IMPACT,
-      actorGroup: x.ACTOR_GROUP,
-      value: x.VALUE,
-      opportunity: x.OPPORTUNITY,
-    }));
-  }
-
-  actorGroups(): ActorGroup[] {
-    const sheet = this.workbook.Sheets[Sheets.ActorGroups];
-    const result = XLSX.utils.sheet_to_json(sheet) as ActorGroupsSheet[];
-    return result.map(x => ({
-      name: x.NAME,
-      description: x.DESCRIPTION,
-      opportunity: x.OPPORTUNITY,
-    }));
-  }
-
   callouts(): Callout[] {
     const sheet = this.workbook.Sheets[Sheets.Callouts];
     const result = XLSX.utils.sheet_to_json(sheet) as CalloutSheet[];
@@ -74,7 +43,7 @@ export class XLSXAdapter extends AbstractDataAdapter {
       nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       description: x.DESCRIPTION,
-      challenge: x.CHALLENGE,
+      subspace: x.SUBSPACE,
     }));
   }
 
@@ -87,17 +56,18 @@ export class XLSXAdapter extends AbstractDataAdapter {
       displayName: x.DISPLAY_NAME,
       description: x.DESCRIPTION,
       callout: x.CALLOUT,
-      challenge: x.CHALLENGE,
+      subspace: x.SUBSPACE,
       tags: toArray(x.TAGS),
       bannerURI: x.VISUAL_BANNER,
       bannerNarrowURI: x.VISUAL_BANNER_NARROW,
     }));
   }
 
-  public challenges(): Challenge[] {
-    const sheet = this.workbook.Sheets[Sheets.Challenges];
-    const result = XLSX.utils.sheet_to_json(sheet) as ChallengesSheet[];
+  public subspaces(): Subspace[] {
+    const sheet = this.workbook.Sheets[Sheets.Subspaces];
+    const result = XLSX.utils.sheet_to_json(sheet) as SubspacesSheet[];
     return result.map(x => ({
+      process: x.PROCESS === 'Y', // 'Y' or 'N
       nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
@@ -144,18 +114,16 @@ export class XLSXAdapter extends AbstractDataAdapter {
       organization: x.ORGANIZATION,
       skills: toArray(x.SKILLS),
       twitter: x.TWITTER,
-      // Membership
-      groups: toArray(x.GROUPS),
     }));
   }
-  public opportunities = (): Opportunity[] => {
-    const sheet = this.workbook.Sheets[Sheets.Opportunities];
-    const result = XLSX.utils.sheet_to_json(sheet) as OpportunitiesSheet[];
+  public subsubspaces = (): Subsubspace[] => {
+    const sheet = this.workbook.Sheets[Sheets.Subsubspaces];
+    const result = XLSX.utils.sheet_to_json(sheet) as SubsubspacesSheet[];
     return result.map(x => ({
       nameID: x.NAME_ID,
       displayName: x.DISPLAY_NAME,
       background: x.BACKGROUND,
-      challenge: x.CHALLENGE,
+      parentSpace: x.SUBSPACE,
       impact: x.IMPACT,
       tagline: x.TAGLINE,
       vision: x.VISION,
@@ -175,17 +143,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       ref1Value: x.REF_1_VALUE,
       ref1Description: x.REF_1_DESCRIPTION,
       tags: toArray(x.TAGS),
-    }));
-  };
-
-  public groups = (): Group[] => {
-    const sheet = this.workbook.Sheets[Sheets.Groups];
-    const result = XLSX.utils.sheet_to_json(sheet) as GroupsSheet[];
-    return result.map(x => ({
-      name: x.NAME,
-      description: x.DESCRIPTION,
-      avatar: x.AVATAR,
-      keywords: toArray(x.KEYWORDS),
     }));
   };
 
@@ -226,20 +183,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       city: x.CITY,
     }));
   };
-
-  relations(): Relation[] {
-    const sheet = this.workbook.Sheets[Sheets.Relations];
-    const result = XLSX.utils.sheet_to_json(sheet) as RelationSheet[];
-
-    return result.map(x => ({
-      type: x.TYPE,
-      actorName: x.ACTOR_NAME,
-      actorRole: x.ACTOR_ROLE,
-      actorType: x.ACTOR_TYPE,
-      description: x.DESCRIPTION,
-      opportunity: x.OPPORTUNITY,
-    }));
-  }
 
   private stringToBoolean(value: string): boolean {
     if (String(value).toLowerCase() === 'false') {

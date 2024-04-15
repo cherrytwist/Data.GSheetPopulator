@@ -6,6 +6,6 @@ export type Post = {
   tags: string[];
   bannerURI: string;
   bannerNarrowURI: string;
-  challenge: string;
+  subspace: string;
   callout: string;
 };

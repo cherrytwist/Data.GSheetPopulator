@@ -1,19 +1,7 @@
 query spaceProfile($id: UUID_NAMEID!) {
   space(ID: $id) {
-    id
-    nameID
-    profile {
-      displayName
-      tagset {
-        id
-        tags
-        name
-      }
-      visuals {
-        id
-        uri
-        name
-      }
-    }
+    ...SpaceProfile
+    ...SpaceCollaboration
+    ...SpaceCommunity
   }
 }

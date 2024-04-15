@@ -1,0 +1,17 @@
+fragment SpaceCollaboration on Space {
+  collaboration {
+    id
+    callouts {
+      id
+      nameID
+      type
+      contributions {
+        id
+        post {
+          id
+          nameID
+        }
+      }
+    }
+  }
+}

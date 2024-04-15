@@ -1,6 +1,7 @@
-export type Challenge = {
+export type Subsubspace = {
   nameID: string;
   displayName: string;
+  parentSpace: string;
   tagline: string;
   background: string;
   vision: string;
@@ -8,6 +9,10 @@ export type Challenge = {
   who: string;
   country: string;
   city: string;
+  leadOrganizations: string[];
+  memberOrganizations: string[];
+  leadUsers: string[];
+  memberUsers: string[];
   refVideo: string;
   refJitsi: string;
   ref1Name: string;
@@ -16,9 +21,5 @@ export type Challenge = {
   visualAvatar: string;
   visualBackground: string;
   visualBanner: string;
-  leadOrganizations: string[];
-  memberOrganizations: string[];
-  leadUsers: string[];
-  memberUsers: string[];
   tags: string[];
 };

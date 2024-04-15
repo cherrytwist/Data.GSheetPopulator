@@ -12,13 +12,21 @@ import {
   UpdatePostInput,
 } from '../generated/graphql';
 import { Logger } from 'winston';
-import { AlkemioClient, AlkemioClientConfig } from '@alkemio/client-lib';
+import {
+  AlkemioClient,
+  AlkemioClientConfig,
+  CommunityRole,
+} from '@alkemio/client-lib';
+import { SpaceProfile } from '../apiModels/spaceProfile';
+import { SpaceProfileCommunity } from '../apiModels/spaceProfileCommunity';
+import { SpaceCollaboration } from '../apiModels/spaceCollaboration';
 
 export class AlkemioPopulatorClient {
   public config!: AlkemioClientConfig;
   public sdkClient!: Sdk;
   public alkemioLibClient!: AlkemioClient;
   private logger: Logger;
+  private subsubspacesCache: Map<string, any> = new Map();
 
   constructor(config: AlkemioClientConfig, logger: Logger) {
     this.config = config;
@@ -56,16 +64,106 @@ export class AlkemioPopulatorClient {
   }
 
   async spaceCallouts(spaceID: string) {
-    const spaceResponse = await this.sdkClient.spaceCallouts({ id: spaceID });
+    const spaceResponse = await this.sdkClient.spaceCollaboration({
+      id: spaceID,
+    });
     return spaceResponse.data.space;
   }
 
-  async challengeCallouts(spaceID: string, challengeID: string) {
-    const spaceResponse = await this.sdkClient.challengeCallouts({
+  async subspaceCallouts(
+    spaceID: string,
+    subspaceID: string
+  ): Promise<SpaceCollaboration> {
+    const spaceResponse = await this.sdkClient.subspaceCollaboration({
       spaceID,
-      challengeID,
+      subspaceID,
     });
-    return spaceResponse.data.space.challenge;
+    const subspaceResult = spaceResponse.data.space.subspace;
+    const spaceCollaboration: SpaceCollaboration = {
+      collaboration: {
+        id: subspaceResult.collaboration?.id || '',
+        callouts: subspaceResult.collaboration.callouts,
+      },
+    };
+    if (!spaceCollaboration) {
+      throw new Error(
+        `Subspace ${subspaceID} in space ${spaceID} has no collaboration`
+      );
+    }
+    return spaceCollaboration;
+  }
+
+  async assignCommunityRoleToUser(
+    userID: string,
+    communityID: string,
+    role: CommunityRole
+  ) {
+    const { data } = await this.sdkClient.assignCommunityRoleToUser({
+      input: {
+        role: role,
+        userID: userID,
+        communityID: communityID,
+      },
+    });
+
+    return data?.assignCommunityRoleToUser;
+  }
+
+  async assignCommunityRoleToOrg(
+    organizationID: string,
+    communityID: string,
+    role: CommunityRole
+  ) {
+    const { data } = await this.sdkClient.assignCommunityRoleToOrganization({
+      input: {
+        role: role,
+        organizationID: organizationID,
+        communityID: communityID,
+      },
+    });
+
+    return data?.assignCommunityRoleToOrganization;
+  }
+
+  async getSubsubspaceByNameIdOrFail(
+    spaceID: string,
+    subsubspaceNameID: string
+  ): Promise<SpaceProfile> {
+    const subsubspace = await this.subsubspaceByNameID(
+      spaceID,
+      subsubspaceNameID
+    );
+    if (!subsubspace) {
+      throw new Error(`Subsubspace ${subsubspaceNameID} not found`);
+    }
+    return subsubspace;
+  }
+
+  async subsubspaceByNameID(
+    spaceID: string,
+    subsubspaceNameID: string
+  ): Promise<SpaceProfileCommunity | undefined> {
+    let cachedSubsubspace = this.subsubspacesCache.get(subsubspaceNameID);
+    if (!cachedSubsubspace) {
+      const response = await this.sdkClient.subsubspacesInSpace({
+        spaceID,
+      });
+      const subspaces = response.data.space.subspaces || [];
+      for (const subspace of subspaces) {
+        const subsubspaces = subspace.subspaces || [];
+        for (const subsubspace of subsubspaces) {
+          const key = subsubspace.nameID;
+          this.subsubspacesCache.set(key, subsubspace);
+        }
+      }
+      cachedSubsubspace = this.subsubspacesCache.get(subsubspaceNameID);
+    }
+
+    if (!cachedSubsubspace) {
+      return undefined;
+    }
+
+    return cachedSubsubspace;
   }
 
   async createCalloutOnCollaboration(
@@ -185,17 +283,30 @@ export class AlkemioPopulatorClient {
     }
   }
 
-  async challengeByNameID(spaceNameID: string, challengeNameID: string) {
+  async subspaceByNameID(
+    spaceNameID: string,
+    subspaceNameID: string
+  ): Promise<SpaceProfileCommunity | undefined> {
     try {
-      const response = await this.sdkClient.challengeDetails({
+      const response = await this.sdkClient.subspaceProfileCommunity({
         spaceID: spaceNameID,
-        challengeID: challengeNameID,
+        subspaceID: subspaceNameID,
       });
 
-      if (!response) return;
-      return response.data?.space.challenge;
+      return response.data?.space.subspace;
     } catch (error) {
-      return;
+      return undefined;
     }
+  }
+
+  async subspaceByNameIDOrFail(
+    spaceNameID: string,
+    subspaceNameID: string
+  ): Promise<SpaceProfileCommunity> {
+    const subspace = await this.subspaceByNameID(spaceNameID, subspaceNameID);
+    if (!subspace) {
+      throw new Error(`Subspace ${spaceNameID} ${spaceNameID} not found`);
+    }
+    return subspace;
   }
 }

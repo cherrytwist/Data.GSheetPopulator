@@ -1,7 +1,7 @@
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
-import { Organization } from '../models/organization';
+import { Organization } from '../inputModels/organization';
 import { AbstractPopulator } from './abstract-populator';
 
 export class OrganizationPopulator extends AbstractPopulator {
@@ -44,24 +44,36 @@ export class OrganizationPopulator extends AbstractPopulator {
         x => x.nameID.toLowerCase() === organizationData.nameID.toLowerCase()
       );
 
-      try {
-        if (existingOrganization) {
+      if (existingOrganization) {
+        try {
           this.logger.info(`...updating: ${organizationData.displayName}`);
           await this.updateOrganization(organizationData, existingOrganization);
-        } else {
+        } catch (e: any) {
+          if (e.response && e.response.errors) {
+            this.logger.error(
+              `Unable to update organization (${organizationData.displayName}):${e.response.errors[0].message}`
+            );
+          } else {
+            this.logger.error(`Could not update organization: ${e}`);
+          }
+        } finally {
+          this.profiler.profile(organizationProfileID);
+        }
+      } else {
+        try {
           this.logger.info(`...creating: ${organizationData.displayName}`);
           await this.createOrganization(organizationData);
+        } catch (e: any) {
+          if (e.response && e.response.errors) {
+            this.logger.error(
+              `Unable to create organization (${organizationData.displayName}):${e.response.errors[0].message}`
+            );
+          } else {
+            this.logger.error(`Could not create organization: ${e}`);
+          }
+        } finally {
+          this.profiler.profile(organizationProfileID);
         }
-      } catch (e: any) {
-        if (e.response && e.response.errors) {
-          this.logger.error(
-            `Unable to create organization (${organizationData.displayName}):${e.response.errors[0].message}`
-          );
-        } else {
-          this.logger.error(`Could not create opportunity: ${e}`);
-        }
-      } finally {
-        this.profiler.profile(organizationProfileID);
       }
     }
   }
@@ -100,7 +112,7 @@ export class OrganizationPopulator extends AbstractPopulator {
     existingOrganization: any
   ) {
     const profileID = existingOrganization?.profile.id;
-    const visualID = existingOrganization?.profile.avatar?.id || '';
+    const visualID = existingOrganization?.profile.visual?.id || '';
 
     if (profileID) {
       // todo: fill this out more
@@ -111,6 +123,12 @@ export class OrganizationPopulator extends AbstractPopulator {
       if (!organizationData.avatar) {
         this.logger.warn(
           `No avatar supplied for organization: ${organizationData.nameID}`
+        );
+        return;
+      }
+      if (!visualID) {
+        this.logger.warn(
+          `Unable to find avatar visual ID for organization: ${organizationData.nameID}`
         );
         return;
       }

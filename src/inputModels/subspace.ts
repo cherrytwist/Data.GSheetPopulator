@@ -1,7 +1,7 @@
-export type Opportunity = {
+export type Subspace = {
+  process: boolean;
   nameID: string;
   displayName: string;
-  challenge: string;
   tagline: string;
   background: string;
   vision: string;
@@ -9,10 +9,6 @@ export type Opportunity = {
   who: string;
   country: string;
   city: string;
-  leadOrganizations: string[];
-  memberOrganizations: string[];
-  leadUsers: string[];
-  memberUsers: string[];
   refVideo: string;
   refJitsi: string;
   ref1Name: string;
@@ -21,5 +17,9 @@ export type Opportunity = {
   visualAvatar: string;
   visualBackground: string;
   visualBanner: string;
+  leadOrganizations: string[];
+  memberOrganizations: string[];
+  leadUsers: string[];
+  memberUsers: string[];
   tags: string[];
 };

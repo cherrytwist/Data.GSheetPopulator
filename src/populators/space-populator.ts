@@ -1,11 +1,16 @@
 import { assignUserAsLead } from '../utils';
 import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
-import { Space } from '../models/space';
+import { Space } from '../inputModels/space';
 import { AbstractPopulator } from './abstract-populator';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { assignUserAsMember } from '../utils/assign-user-as-member';
-import { CreateSpaceInput, UpdateTagsetInput } from '@alkemio/client-lib';
+import {
+  CreateAccountInput,
+  UpdateSpaceInput,
+  UpdateTagsetInput,
+} from '@alkemio/client-lib';
+import { SpaceProfile } from '../apiModels/spaceProfile';
 
 export class SpacePopulator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -47,30 +52,28 @@ export class SpacePopulator extends AbstractPopulator {
       try {
         if (!spaceExists) {
           if (this.allowCreation) {
-            await this.createSpace(spaceData);
+            await this.createAccount(spaceData);
           } else {
             const msg = `Specified Space does not exist: ${spaceData.nameID}`;
             this.logger.error(msg);
             throw new Error(msg);
           }
         }
-        await this.updateSpace(spaceData);
 
-        await this.client.alkemioLibClient.updateReferencesOnSpace(
-          spaceData.nameID,
-          [
-            {
-              name: 'website',
-              uri: spaceData.refWebsite,
-              description: 'The space website',
-            },
-            {
-              name: 'repo',
-              uri: spaceData.refRepo,
-              description: 'The space repository',
-            },
-          ]
-        );
+        const spaceID = await this.updateSpace(spaceData);
+
+        await this.client.alkemioLibClient.updateReferencesOnSpace(spaceID, [
+          {
+            name: 'website',
+            uri: spaceData.refWebsite,
+            description: 'The space website',
+          },
+          {
+            name: 'repo',
+            uri: spaceData.refRepo,
+            description: 'The space repository',
+          },
+        ]);
       } catch (e: any) {
         if (e.response && e.response.errors) {
           this.logger.error(
@@ -100,8 +103,8 @@ export class SpacePopulator extends AbstractPopulator {
         tags: spaceData.tags || [],
       });
     }
-    const updatedSpace = await this.client.alkemioLibClient.updateSpace({
-      ID: spaceData.nameID,
+    const spaceInput: UpdateSpaceInput = {
+      ID: spaceProfileData.data.space.id,
       profileData: {
         displayName: spaceData.displayName,
         description: spaceData.background,
@@ -113,7 +116,10 @@ export class SpacePopulator extends AbstractPopulator {
         vision: spaceData.vision,
         who: spaceData.who,
       },
-    });
+    };
+    const updatedSpace = await this.client.alkemioLibClient.updateSpace(
+      spaceInput
+    );
 
     const visuals = updatedSpace?.profile?.visuals || [];
     await this.client.updateVisualsOnJourneyProfile(
@@ -139,18 +145,29 @@ export class SpacePopulator extends AbstractPopulator {
     }
 
     this.logger.info(`Space updated: ${spaceData.displayName}`);
+    return spaceProfileData.data.space.id;
   }
 
-  async createSpace(spaceData: Space) {
-    const input: CreateSpaceInput = {
-      nameID: spaceData.nameID,
+  async createAccount(spaceData: Space): Promise<SpaceProfile> {
+    const input: CreateAccountInput = {
       hostID: spaceData.host,
-      profileData: {
-        displayName: spaceData.displayName,
+      spaceData: {
+        nameID: spaceData.nameID,
+        profileData: {
+          displayName: spaceData.displayName,
+        },
       },
     };
-    await this.client.alkemioLibClient.createSpace(input);
+    const result = await this.client.sdkClient.createAccount({
+      accountData: input,
+    });
 
-    this.logger.info(`Space created: ${spaceData.displayName}`);
+    this.logger.info(`Account created: ${spaceData.displayName}`);
+    const spaceID = result.data.createAccount.spaceID;
+    const response = await this.client.sdkClient.spaceProfile({
+      id: spaceID,
+    });
+    const spaceInfo = response.data.space;
+    return spaceInfo as SpaceProfile;
   }
 }

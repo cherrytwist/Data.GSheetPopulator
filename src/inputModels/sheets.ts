@@ -1,16 +1,12 @@
 export enum Sheets {
-  Actors = 'Actors',
-  ActorGroups = 'ActorGroups',
   Callouts = 'Callouts',
   Posts = 'Posts',
   Space = 'Space',
   Information = 'Information',
-  Challenges = 'Challenges',
-  Opportunities = 'Opportunities',
+  Subspaces = 'Subspaces',
+  Subsubspaces = 'Subsubspaces',
   Organizations = 'Organizations',
-  Groups = 'Groups',
   Users = 'Users',
-  Relations = 'Relations',
 }
 
 export interface SpaceSheet {
@@ -32,7 +28,8 @@ export interface SpaceSheet {
   VISUAL_BANNER: string;
 }
 
-export interface ChallengesSheet {
+export interface SubspacesSheet {
+  PROCESS: string;
   NAME_ID: string;
   DISPLAY_NAME: string;
   TAGLINE: string;
@@ -57,10 +54,10 @@ export interface ChallengesSheet {
   VISUAL_BANNER: string;
 }
 
-export interface OpportunitiesSheet {
+export interface SubsubspacesSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
-  CHALLENGE: string;
+  SUBSPACE: string;
   TAGLINE: string;
   BACKGROUND: string;
   VISION: string;
@@ -92,14 +89,6 @@ export interface OrganizationsSheet {
   CITY: string;
   AVATAR: string;
 }
-
-export interface GroupsSheet {
-  NAME: string;
-  DESCRIPTION: string;
-  KEYWORDS: string;
-  AVATAR: string;
-}
-
 export interface UserSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
@@ -118,32 +107,6 @@ export interface UserSheet {
   KEYWORDS: string;
   LINKEDIN: string;
   TWITTER: string;
-  // Space membership
-  GROUPS: string;
-}
-
-export interface ActorGroupsSheet {
-  NAME: string;
-  DESCRIPTION: string;
-  OPPORTUNITY: string;
-}
-
-export interface ActorsSheet {
-  NAME: string;
-  DESCRIPTION: string;
-  ACTOR_GROUP: string;
-  VALUE: string;
-  IMPACT: string;
-  OPPORTUNITY: string;
-}
-
-export interface RelationSheet {
-  TYPE: string;
-  ACTOR_NAME: string;
-  ACTOR_TYPE: string;
-  ACTOR_ROLE: string;
-  DESCRIPTION: string;
-  OPPORTUNITY: string;
 }
 
 export interface PostSheet {
@@ -154,7 +117,7 @@ export interface PostSheet {
   TAGS: string;
   VISUAL_BANNER: string;
   VISUAL_BANNER_NARROW: string;
-  CHALLENGE: string;
+  SUBSPACE: string;
   CALLOUT: string;
 }
 
@@ -162,5 +125,5 @@ export interface CalloutSheet {
   NAME_ID: string;
   DISPLAY_NAME: string;
   DESCRIPTION: string;
-  CHALLENGE: string;
+  SUBSPACE: string;
 }

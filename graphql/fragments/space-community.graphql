@@ -1,0 +1,33 @@
+fragment SpaceCommunity on Space {
+  community {
+    id
+    memberOrganizations: organizationsInRole(role: MEMBER) {
+      id
+      nameID
+      profile {
+        displayName
+      }
+    }
+    memberUsers: usersInRole(role: MEMBER) {
+      id
+      nameID
+      profile {
+        displayName
+      }
+    }
+    leadUsers: usersInRole(role: LEAD) {
+      id
+      nameID
+      profile {
+        displayName
+      }
+    }
+    leadOrganizations: organizationsInRole(role: LEAD) {
+      id
+      nameID
+      profile {
+        displayName
+      }
+    }
+  }
+}

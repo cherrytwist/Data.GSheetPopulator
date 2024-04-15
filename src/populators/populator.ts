@@ -2,13 +2,12 @@ import { Logger } from 'winston';
 import { AbstractDataAdapter } from '../adapters/data-adapter';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { AbstractPopulator } from './abstract-populator';
-import { ActorPopulator } from './actor-populator';
 import { CalloutPopulator } from './callout-populator';
-import { JourneyPopulator } from './journey-populator';
-import { GroupPopulator } from './group-populator';
 import { SpacePopulator } from './space-populator';
 import { OrganizationPopulator } from './organization-populator';
 import { UserPopulator } from './user-populator';
+import { SubsubspacePopulator } from './subsubspace-populator';
+import { SubspacePopulator } from './subspace-populator';
 
 export class Populator extends AbstractPopulator {
   private allowCreation: boolean;
@@ -34,29 +33,7 @@ export class Populator extends AbstractPopulator {
       this.profiler
     );
 
-    const groupPopulator = new GroupPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
     const userPopulator = new UserPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler
-    );
-
-    const journeyPopulator = new JourneyPopulator(
-      this.client,
-      this.data,
-      this.logger,
-      this.profiler,
-      this.allowCreation
-    );
-
-    const actorPopulator = new ActorPopulator(
       this.client,
       this.data,
       this.logger,
@@ -78,16 +55,27 @@ export class Populator extends AbstractPopulator {
       this.allowCreation
     );
 
-    // organizations first as they are needed for Space + Challenges
+    const subspacesPopulator = new SubspacePopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    const subsubspacesPopulator = new SubsubspacePopulator(
+      this.client,
+      this.data,
+      this.logger,
+      this.profiler
+    );
+
+    // organizations first as they are needed for Space + Subspaces
     await organizationPopulator.populate();
     await spacePopulator.populate();
     await userPopulator.populate();
-    await groupPopulator.populate();
 
-    await journeyPopulator.populate();
-
-    // populate the specific opportunity entities. Todo: get this so it can also be updated
-    await actorPopulator.populate();
+    await subspacesPopulator.populate();
+    await subsubspacesPopulator.populate();
 
     await calloutPopulator.populate();
 

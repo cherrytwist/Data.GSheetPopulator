@@ -6,7 +6,7 @@ import {
   CalloutType,
   CalloutVisibility,
 } from '../generated/graphql';
-import { Post } from '../models';
+import { Post } from '../inputModels';
 import { AbstractPopulator } from './abstract-populator';
 
 export class CalloutPopulator extends AbstractPopulator {
@@ -47,7 +47,7 @@ export class CalloutPopulator extends AbstractPopulator {
       try {
         const collaboration = await this.getCollaborationForCallout(
           calloutData.nameID,
-          calloutData.challenge
+          calloutData.subspace
         );
         const existingCallout = collaboration.callouts?.find(
           c => c.nameID === calloutData.nameID
@@ -93,19 +93,19 @@ export class CalloutPopulator extends AbstractPopulator {
 
   private async getCollaborationForCallout(
     calloutNameID: string,
-    challengeNameID: string | undefined
+    subspaceNameID: string | undefined
   ) {
-    // If challenge is specified, use the collaboration from the challenge
-    if (challengeNameID) {
-      const challenge = await this.client.challengeCallouts(
+    // If subspace is specified, use the collaboration from the subspace
+    if (subspaceNameID) {
+      const subspace = await this.client.subspaceCallouts(
         this.spaceID,
-        challengeNameID
+        subspaceNameID
       );
-      if (!challenge || !challenge.collaboration) {
-        const errorMsg = `Skipping callout '${calloutNameID}'. Unable to identify challenge '${challengeNameID}'!`;
+      if (!subspace || !subspace.collaboration) {
+        const errorMsg = `Skipping callout '${calloutNameID}'. Unable to identify subspace '${subspaceNameID}'!`;
         throw new Error(errorMsg);
       }
-      return challenge.collaboration;
+      return subspace.collaboration;
     }
 
     const space = await this.client.spaceCallouts(this.spaceID);
@@ -141,15 +141,15 @@ export class CalloutPopulator extends AbstractPopulator {
       try {
         const collaboration = await this.getCollaborationForCallout(
           postData.callout,
-          postData.challenge
+          postData.subspace
         );
         const callout = collaboration.callouts?.find(
           c => c.nameID === postData.callout
         );
         if (!callout) {
-          if (postData.challenge) {
+          if (postData.subspace) {
             this.logger.error(
-              `Unable to find callout with nameID: ${postData.callout} in challenge: ${postData.challenge}`
+              `Unable to find callout with nameID: ${postData.callout} in subspace: ${postData.subspace}`
             );
           } else {
             this.logger.error(
@@ -159,8 +159,8 @@ export class CalloutPopulator extends AbstractPopulator {
           continue;
         }
 
-        const existingPost = callout.posts?.find(
-          c => c.nameID === postData.nameID
+        const existingPost = callout.contributions?.find(
+          c => c.post?.nameID === postData.nameID
         );
 
         if (!existingPost) {

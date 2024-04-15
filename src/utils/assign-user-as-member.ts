@@ -1,6 +1,7 @@
 import { Logger } from 'winston';
 import { AlkemioPopulatorClient } from '../client/AlkemioPopulatorClient';
 import { handleRequests } from './handle-requests';
+import { CommunityRole } from '@alkemio/client-lib';
 
 export const assignUserAsMember = (
   client: AlkemioPopulatorClient,
@@ -9,7 +10,7 @@ export const assignUserAsMember = (
   userNameIds: string[]
 ) => {
   const requests = userNameIds.map(nameId =>
-    client.alkemioLibClient.assignUserAsCommunityMember(communityId, nameId)
+    client.assignCommunityRoleToUser(nameId, communityId, CommunityRole.Member)
   );
 
   return handleRequests(

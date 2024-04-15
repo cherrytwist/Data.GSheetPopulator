@@ -1,0 +1,12 @@
+query subsubspacesInSpace($spaceID: UUID_NAMEID!) {
+  space(ID: $spaceID) {
+    id
+    subspaces {
+      id
+      subspaces {
+        ...SpaceProfile
+        ...SpaceCommunity
+      }
+    }
+  }
+}

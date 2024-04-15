@@ -5,13 +5,13 @@
 
 # Populate a Alkemio Space with data from a spreadsheet
 
-This repository has functionality to enable the population of a Challenge Space with data from a spreadshet. The spreadsheet is a local file, in the "OpenDocument Spreadsheet" (ODS) format.
+This repository has functionality to enable the population of a Space with data from a spreadshet. The spreadsheet is a local file, in the "OpenDocument Spreadsheet" (ODS) format.
 
 ## Spreadsheet Format
 
 The spreadsheet does have a required format. An example of such a sheet is [provided in this repo](https://github.com/alkem-io/populator/blob/develop/alkemio-sdgs.ods).
 
-If you want to make a custom load of data into an Challenge Space then please make a copy of this sheet and fill as needed.
+If you want to make a custom load of data into an Space then please make a copy of this sheet and fill as needed.
 
 ## Checks steps before starting:
 
@@ -33,10 +33,10 @@ Finally you should now be in a position to run the data population!
 - Execute `npm install` - to ensure the dependencies in the project are installed
 - Execute `npm run populate`
 
-Now you can navigate the web client and see a sample populated Challenge Space - enjoy!
+Now you can navigate the web client and see a sample populated Space - enjoy!
 
 ## Updating
 The populator provides the ability to separately create / update the information on the following entities:
 
 - Organization: execute `npm run populate-organizations`
-- Space/Challenge/Opportunity: execute `npm run populate-context`
+- Space with subspaces: execute `npm run populate-context`

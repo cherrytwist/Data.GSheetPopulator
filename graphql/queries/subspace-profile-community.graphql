@@ -1,0 +1,8 @@
+query subspaceProfileCommunity($spaceID: UUID_NAMEID!, $subspaceID: UUID_NAMEID!) {
+  space(ID: $spaceID) {
+    subspace(ID: $subspaceID) {
+      ...SpaceProfile
+      ...SpaceCommunity
+    }
+  }
+}
