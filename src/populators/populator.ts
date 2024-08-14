@@ -70,14 +70,14 @@ export class Populator extends AbstractPopulator {
     );
 
     // organizations first as they are needed for Space + Subspaces
-    await organizationPopulator.populate();
-    await spacePopulator.populate();
-    await userPopulator.populate();
+    // await organizationPopulator.populate();
+    // await spacePopulator.populate();
+    // await userPopulator.populate();
 
-    await subspacesPopulator.populate();
-    await subsubspacesPopulator.populate();
+    // await subspacesPopulator.populate();
+    // await subsubspacesPopulator.populate();
 
-    await calloutPopulator.populate();
+    // await calloutPopulator.populate();
 
     await userPopulator.populateUserRoles();
   }

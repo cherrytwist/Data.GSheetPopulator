@@ -11,12 +11,5 @@ query organizations {
       }
       description
     }
-    agent {
-      id
-      credentials {
-        type
-        resourceID
-      }
-    }
   }
 }
