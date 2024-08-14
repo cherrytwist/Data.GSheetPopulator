@@ -137,7 +137,6 @@ export class UserPopulator extends AbstractPopulator {
       nameID: userData.nameID,
       firstName: userData.firstName,
       lastName: userData.lastName,
-      gender: userData.gender,
       email: userData.email,
       phone: userData.phone,
       profileData: {

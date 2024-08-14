@@ -98,7 +98,6 @@ export interface UserSheet {
   PHONE: string;
   CITY: string;
   COUNTRY: string;
-  GENDER: string;
   AVATAR: string;
   ORGANIZATION: string;
   JOB_TITLE: string;

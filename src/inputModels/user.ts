@@ -7,7 +7,6 @@ export type User = {
   phone: string;
   city: string;
   country: string;
-  gender: string;
   avatar: string;
   organization: string;
   jobTitle: string;
