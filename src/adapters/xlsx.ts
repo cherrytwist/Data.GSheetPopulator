@@ -105,7 +105,6 @@ export class XLSXAdapter extends AbstractDataAdapter {
       phone: x.PHONE,
       city: x.CITY,
       country: x.COUNTRY,
-      gender: x.GENDER,
       avatar: x.AVATAR,
       bio: x.BIO,
       jobTitle: x.JOB_TITLE,

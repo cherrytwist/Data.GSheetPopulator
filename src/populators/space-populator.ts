@@ -164,6 +164,9 @@ export class SpacePopulator extends AbstractPopulator {
 
     this.logger.info(`Account created: ${spaceData.displayName}`);
     const spaceID = result.data.createAccount.spaceID;
+    if (!spaceID) {
+      throw new Error('Space ID not found');
+    }
     const response = await this.client.sdkClient.spaceProfile({
       id: spaceID,
     });

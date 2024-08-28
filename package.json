@@ -51,7 +51,7 @@
     "tsconfig-paths": "^4.0.0"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.29.1",
+    "@alkemio/client-lib": "^0.32.0",
     "@graphql-codegen/typescript-graphql-request": "^4.5.3",
     "@graphql-codegen/typescript-operations": "^2.5.3",
     "@types/graphql-upload": "^8.0.11",

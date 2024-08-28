@@ -152,8 +152,9 @@ export class CalloutPopulator extends AbstractPopulator {
               `Unable to find callout with nameID: ${postData.callout} in subspace: ${postData.subspace}`
             );
           } else {
+            const calloutNameIDs = collaboration.callouts.map(c => c.nameID);
             this.logger.error(
-              `Unable to find callout with nameID: ${postData.callout} in space`
+              `Unable to find callout with nameID: ${postData.callout} in space: ${calloutNameIDs}`
             );
           }
           continue;

@@ -81,6 +81,8 @@ export class UserPopulator extends AbstractPopulator {
       return;
     }
 
+    const organizations = await this.client.alkemioLibClient.organizations();
+
     let count = 0;
     for (const userData of usersData) {
       // start processing
@@ -93,11 +95,20 @@ export class UserPopulator extends AbstractPopulator {
         );
         continue;
       }
+      const organization = organizations.find(
+        org => org.nameID === userData.organization
+      );
+      if (!organization) {
+        this.logger.warn(
+          `Organization not found to populate roles: ${userData.organization}`
+        );
+        continue;
+      }
 
       try {
         await this.client.alkemioLibClient.addUserToOrganization(
           existingUser.id,
-          userData.organization
+          organization.id
         );
       } catch (e: any) {
         if (e.response && e.response.errors) {
@@ -137,7 +148,6 @@ export class UserPopulator extends AbstractPopulator {
       nameID: userData.nameID,
       firstName: userData.firstName,
       lastName: userData.lastName,
-      gender: userData.gender,
       email: userData.email,
       phone: userData.phone,
       profileData: {
